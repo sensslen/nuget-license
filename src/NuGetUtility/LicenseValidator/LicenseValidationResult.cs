@@ -7,11 +7,11 @@ namespace NuGetUtility.LicenseValidator
         string? PackageProjectUrl,
         string? License,
         LicenseInformationOrigin LicenseInformationOrigin,
-        List<ValidationError>? ValidationErrors = null)
+        List<ValidationCheck> ValidationChecks)
     {
-        public List<ValidationError> ValidationErrors { get; } = ValidationErrors ?? new List<ValidationError>();
-
         public string? License { get; set; } = License;
         public LicenseInformationOrigin LicenseInformationOrigin { get; set; } = LicenseInformationOrigin;
+
+        public override string ToString() => $"LicenseValidationResult {{ PackageId = {PackageId}, PackageVersion = {PackageVersion}, PackageProjectUrl = {PackageProjectUrl}, ValidationChecks = {{{string.Join(',', ValidationChecks)}}}, License = {License}, LicenseInformationOrigin = {LicenseInformationOrigin} }}";
     }
 }

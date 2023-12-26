@@ -1,0 +1,43 @@
+﻿[
+  {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "PackageProjectUrl": "http://madisyn.name",
+    "ValidationChecks": [
+      {
+        "Context": "Myriam",
+        "Error": null
+      },
+      {
+        "Context": "Lue",
+        "Error": null
+      },
+      {
+        "Context": "Emery",
+        "Error": null
+      },
+      {
+        "Context": "Pearlie",
+        "Error": null
+      },
+      {
+        "Context": "Joey",
+        "Error": null
+      },
+      {
+        "Context": "Marielle",
+        "Error": null
+      },
+      {
+        "Context": "Jayne",
+        "Error": null
+      },
+      {
+        "Context": "Katelin",
+        "Error": null
+      }
+    ],
+    "License": "I\u0027ll override the haptic AGP feed, that should feed the AGP feed!",
+    "LicenseInformationOrigin": 3
+  }
+]

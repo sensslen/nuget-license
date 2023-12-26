@@ -81,6 +81,11 @@ namespace NuGetUtility
             Description = "If this option is set, the packages matching the ignore regexes are also printed to the output by specifying that they were explicitly ignored.")]
         public bool IncludeIgnoredPackages { get; } = false;
 
+        [Option(LongName = "always-include-validation-context",
+            ShortName = "include-context",
+            Description = "If this option is set, the output will include the license context even if no error occurred.")]
+        public bool AlwaysIncludeValidationContext { get; } = false;
+
         public static async Task Main(string[] args)
         {
             var lifetime = new AppLifetime();
@@ -135,7 +140,7 @@ namespace NuGetUtility
 
             await using Stream outputStream = Console.OpenStandardOutput();
             await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
-            return results.Count(r => r.ValidationErrors.Any());
+            return results.Count(r => r.ValidationChecks.Exists(c => c.Error is not null));
         }
         private static IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfos(
             ProjectWithReferencedPackages projectWithReferences,
@@ -156,9 +161,9 @@ namespace NuGetUtility
         {
             return OutputType switch
             {
-                OutputType.Json => new JsonOutputFormatter(false, ReturnErrorsOnly, !IncludeIgnoredPackages),
-                OutputType.JsonPretty => new JsonOutputFormatter(true, ReturnErrorsOnly, !IncludeIgnoredPackages),
-                OutputType.Table => new TableOutputFormatter(ReturnErrorsOnly, !IncludeIgnoredPackages),
+                OutputType.Json => new JsonOutputFormatter(false, ReturnErrorsOnly, !IncludeIgnoredPackages, AlwaysIncludeValidationContext),
+                OutputType.JsonPretty => new JsonOutputFormatter(true, ReturnErrorsOnly, !IncludeIgnoredPackages, AlwaysIncludeValidationContext),
+                OutputType.Table => new TableOutputFormatter(ReturnErrorsOnly, !IncludeIgnoredPackages, AlwaysIncludeValidationContext),
                 _ => throw new ArgumentOutOfRangeException($"{OutputType} not supported")
             };
         }
@@ -215,10 +220,7 @@ namespace NuGetUtility
                 return UrlToLicenseMapping.Default;
             }
 
-            var serializerOptions = new JsonSerializerOptions();
-            serializerOptions.Converters.Add(new UriDictionaryJsonConverter<string>());
-            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping),
-                serializerOptions)!;
+            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping))!;
 
             return UrlToLicenseMapping.Default.SetItems(userDictionary);
         }
@@ -235,12 +237,12 @@ namespace NuGetUtility
 
         private string[] GetInputFiles()
         {
-            if (InputFile != null)
+            if (InputFile is not null)
             {
                 return new[] { InputFile };
             }
 
-            if (InputJsonFile != null)
+            if (InputJsonFile is not null)
             {
                 return JsonSerializer.Deserialize<string[]>(File.ReadAllText(InputJsonFile))!;
             }

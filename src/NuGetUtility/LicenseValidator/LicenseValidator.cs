@@ -38,13 +38,14 @@ namespace NuGetUtility.LicenseValidator
                 {
                     AddOrUpdateLicense(result,
                         info.PackageInfo,
-                        LicenseInformationOrigin.Ignored);
+                        LicenseInformationOrigin.Ignored,
+                        new ValidationCheck(info.Context));
                 }
-                else if (info.PackageInfo.LicenseMetadata != null)
+                else if (info.PackageInfo.LicenseMetadata is not null)
                 {
                     ValidateLicenseByMetadata(info.PackageInfo, info.Context, result);
                 }
-                else if (info.PackageInfo.LicenseUrl != null)
+                else if (info.PackageInfo.LicenseUrl is not null)
                 {
                     await ValidateLicenseByUrl(info.PackageInfo, info.Context, result, token);
                 }
@@ -53,7 +54,7 @@ namespace NuGetUtility.LicenseValidator
                     AddOrUpdateLicense(result,
                         info.PackageInfo,
                         LicenseInformationOrigin.Unknown,
-                        new ValidationError("No license information found", info.Context));
+                        new ValidationCheck(info.Context, "No license information found"));
                 }
             }
             return result.Values;
@@ -68,7 +69,7 @@ namespace NuGetUtility.LicenseValidator
             ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
             IPackageMetadata info,
             LicenseInformationOrigin origin,
-            ValidationError error,
+            ValidationCheck check,
             string? license = null)
         {
             var newValue = new LicenseValidationResult(
@@ -77,24 +78,7 @@ namespace NuGetUtility.LicenseValidator
                 info.ProjectUrl?.ToString(),
                 license,
                 origin,
-                new List<ValidationError> { error });
-            result.AddOrUpdate(new LicenseNameAndVersion(info.Identity.Id, info.Identity.Version),
-                newValue,
-                (key, oldValue) => UpdateResult(oldValue, newValue));
-        }
-
-        private void AddOrUpdateLicense(
-            ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
-            IPackageMetadata info,
-            LicenseInformationOrigin origin,
-            string? license = null)
-        {
-            var newValue = new LicenseValidationResult(
-                info.Identity.Id,
-                info.Identity.Version,
-                info.ProjectUrl?.ToString(),
-                license,
-                origin);
+                new List<ValidationCheck> { check });
             result.AddOrUpdate(new LicenseNameAndVersion(info.Identity.Id, info.Identity.Version),
                 newValue,
                 (key, oldValue) => UpdateResult(oldValue, newValue));
@@ -103,7 +87,7 @@ namespace NuGetUtility.LicenseValidator
         private LicenseValidationResult UpdateResult(LicenseValidationResult oldValue,
             LicenseValidationResult newValue)
         {
-            oldValue.ValidationErrors.AddRange(newValue.ValidationErrors);
+            oldValue.ValidationChecks.AddRange(newValue.ValidationChecks);
             if (oldValue.License is null && newValue.License is not null)
             {
                 oldValue.License = newValue.License;
@@ -126,6 +110,7 @@ namespace NuGetUtility.LicenseValidator
                         AddOrUpdateLicense(result,
                             info,
                             ToLicenseOrigin(info.LicenseMetadata.Type),
+                            new ValidationCheck(context),
                             info.LicenseMetadata.License);
                     }
                     else
@@ -133,7 +118,7 @@ namespace NuGetUtility.LicenseValidator
                         AddOrUpdateLicense(result,
                             info,
                             ToLicenseOrigin(info.LicenseMetadata.Type),
-                            new ValidationError(GetLicenseNotAllowedMessage(info.LicenseMetadata.License), context),
+                            new ValidationCheck(context, GetLicenseNotAllowedMessage(info.LicenseMetadata.License)),
                             info.LicenseMetadata.License);
                     }
 
@@ -142,9 +127,9 @@ namespace NuGetUtility.LicenseValidator
                     AddOrUpdateLicense(result,
                         info,
                         LicenseInformationOrigin.Unknown,
-                        new ValidationError(
-                            $"Validation for licenses of type {info.LicenseMetadata!.Type} not yet supported",
-                            context));
+                        new ValidationCheck(
+                            context,
+                            $"Validation for licenses of type {info.LicenseMetadata!.Type} not yet supported"));
                     break;
             }
         }
@@ -179,6 +164,7 @@ namespace NuGetUtility.LicenseValidator
                     AddOrUpdateLicense(result,
                         info,
                         LicenseInformationOrigin.Url,
+                        new ValidationCheck(context),
                         licenseId);
                 }
                 else
@@ -186,7 +172,7 @@ namespace NuGetUtility.LicenseValidator
                     AddOrUpdateLicense(result,
                         info,
                         LicenseInformationOrigin.Url,
-                        new ValidationError(GetLicenseNotAllowedMessage(licenseId), context),
+                        new ValidationCheck(context, GetLicenseNotAllowedMessage(licenseId)),
                         licenseId);
                 }
             }
@@ -195,6 +181,7 @@ namespace NuGetUtility.LicenseValidator
                 AddOrUpdateLicense(result,
                     info,
                     LicenseInformationOrigin.Url,
+                    new ValidationCheck(context),
                     info.LicenseUrl.ToString());
             }
             else
@@ -202,7 +189,7 @@ namespace NuGetUtility.LicenseValidator
                 AddOrUpdateLicense(result,
                     info,
                     LicenseInformationOrigin.Url,
-                    new ValidationError($"Cannot determine License type for url {info.LicenseUrl}", context),
+                    new ValidationCheck(context, $"Cannot determine License type for url {info.LicenseUrl}"),
                     info.LicenseUrl.ToString());
             }
         }

@@ -39,9 +39,9 @@ namespace NuGetUtility.Output.Table
 
         private string[] GetLines(object? lines)
         {
-            if (lines is IEnumerable<object> enumerable)
+            if (lines is IEnumerable<object?> enumerable)
             {
-                return enumerable.Select(o => o.ToString() ?? string.Empty).ToArray();
+                return enumerable.Select(o => o?.ToString() ?? string.Empty).ToArray();
             }
             return new[] { lines?.ToString() ?? string.Empty };
         }

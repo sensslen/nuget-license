@@ -1,0 +1,14 @@
+﻿+-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+----------------------+-----------+
+| Package                       | Version | License Information Origin | License Expression                                                                   | Error                | Context   |
++-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+----------------------+-----------+
+| Principal Functionality Agent | 1.5.3   | Expression                 | connecting the firewall won't do anything, we need to copy the digital XSS firewall! | https://paige.org    | Ciara     |
+|                               |         |                            |                                                                                      | https://isobel.info  | Aletha    |
+|                               |         |                            |                                                                                      |                      | Skylar    |
+|                               |         |                            |                                                                                      |                      | Haylie    |
+|                               |         |                            |                                                                                      | http://graciela.net  | Audreanne |
+|                               |         |                            |                                                                                      |                      | Daphney   |
+|                               |         |                            |                                                                                      |                      | Oceane    |
+|                               |         |                            |                                                                                      | http://francisco.biz | Clifton   |
+|                               |         |                            |                                                                                      | https://xander.org   | Addie     |
+|                               |         |                            |                                                                                      | https://torrey.biz   | Furman    |
++-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+----------------------+-----------+

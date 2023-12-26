@@ -13,7 +13,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 
         public bool IsValid()
         {
-            return _spec != null;
+            return _spec is not null;
         }
 
         public IEnumerable<ITargetFrameworkInformation> TargetFrameworks =>

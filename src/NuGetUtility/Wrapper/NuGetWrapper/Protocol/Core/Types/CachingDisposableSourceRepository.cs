@@ -21,7 +21,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 
         public async Task<IPackageMetadataResource?> GetPackageMetadataResourceAsync()
         {
-            if (_packageMetadataResource != null)
+            if (_packageMetadataResource is not null)
             {
                 return _packageMetadataResource;
             }

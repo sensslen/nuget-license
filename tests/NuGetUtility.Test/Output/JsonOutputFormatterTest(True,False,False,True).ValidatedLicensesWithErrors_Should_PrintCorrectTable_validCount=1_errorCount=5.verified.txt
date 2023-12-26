@@ -1,0 +1,236 @@
+﻿[
+  {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "PackageProjectUrl": "http://madisyn.name",
+    "ValidationChecks": [
+      {
+        "Context": "Myriam",
+        "Error": null
+      },
+      {
+        "Context": "Lue",
+        "Error": null
+      },
+      {
+        "Context": "Emery",
+        "Error": null
+      },
+      {
+        "Context": "Pearlie",
+        "Error": null
+      },
+      {
+        "Context": "Joey",
+        "Error": null
+      },
+      {
+        "Context": "Marielle",
+        "Error": null
+      },
+      {
+        "Context": "Jayne",
+        "Error": null
+      },
+      {
+        "Context": "Katelin",
+        "Error": null
+      }
+    ],
+    "License": "I\u0027ll override the haptic AGP feed, that should feed the AGP feed!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Principal Functionality Agent",
+    "PackageVersion": "1.5.3",
+    "PackageProjectUrl": null,
+    "ValidationChecks": [
+      {
+        "Context": "Ciara",
+        "Error": "https://paige.org"
+      },
+      {
+        "Context": "Aletha",
+        "Error": "https://isobel.info"
+      },
+      {
+        "Context": "Skylar",
+        "Error": null
+      },
+      {
+        "Context": "Haylie",
+        "Error": null
+      },
+      {
+        "Context": "Audreanne",
+        "Error": "http://graciela.net"
+      },
+      {
+        "Context": "Daphney",
+        "Error": null
+      },
+      {
+        "Context": "Oceane",
+        "Error": null
+      },
+      {
+        "Context": "Clifton",
+        "Error": "http://francisco.biz"
+      },
+      {
+        "Context": "Addie",
+        "Error": "https://xander.org"
+      },
+      {
+        "Context": "Furman",
+        "Error": "https://torrey.biz"
+      }
+    ],
+    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Direct Branding Supervisor",
+    "PackageVersion": "3.6.2",
+    "PackageProjectUrl": "https://shaina.info",
+    "ValidationChecks": [
+      {
+        "Context": "Juana",
+        "Error": "http://aniya.biz"
+      },
+      {
+        "Context": "Shanna",
+        "Error": "http://katelyn.name"
+      },
+      {
+        "Context": "Abe",
+        "Error": null
+      },
+      {
+        "Context": "Neoma",
+        "Error": "http://catherine.com"
+      },
+      {
+        "Context": "Chet",
+        "Error": null
+      },
+      {
+        "Context": "Hailie",
+        "Error": null
+      }
+    ],
+    "License": null,
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Investor Assurance Producer",
+    "PackageVersion": "3.0.5",
+    "PackageProjectUrl": "http://delpha.net",
+    "ValidationChecks": [
+      {
+        "Context": "Rae",
+        "Error": "http://cynthia.name"
+      },
+      {
+        "Context": "Greta",
+        "Error": "http://adolph.com"
+      },
+      {
+        "Context": "Quinton",
+        "Error": "http://emmalee.org"
+      },
+      {
+        "Context": "Johann",
+        "Error": "http://andres.net"
+      },
+      {
+        "Context": "Horace",
+        "Error": "http://tessie.com"
+      },
+      {
+        "Context": "Mortimer",
+        "Error": "https://alicia.biz"
+      },
+      {
+        "Context": "Bobby",
+        "Error": null
+      },
+      {
+        "Context": "Cecil",
+        "Error": "https://kira.net"
+      },
+      {
+        "Context": "Amely",
+        "Error": null
+      },
+      {
+        "Context": "Nikki",
+        "Error": "https://mckayla.info"
+      },
+      {
+        "Context": "Ursula",
+        "Error": null
+      }
+    ],
+    "License": null,
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Dynamic Marketing Representative",
+    "PackageVersion": "4.4.7",
+    "PackageProjectUrl": "http://mariam.com",
+    "ValidationChecks": [
+      {
+        "Context": "Nikko",
+        "Error": "https://pamela.net"
+      },
+      {
+        "Context": "Marcella",
+        "Error": null
+      },
+      {
+        "Context": "Helga",
+        "Error": "https://alisha.biz"
+      },
+      {
+        "Context": "Jolie",
+        "Error": "http://dianna.net"
+      }
+    ],
+    "License": "synthesizing the alarm won\u0027t do anything, we need to program the back-end USB alarm!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "National Assurance Orchestrator",
+    "PackageVersion": "3.9.1",
+    "PackageProjectUrl": "https://pietro.info",
+    "ValidationChecks": [
+      {
+        "Context": "Hazle",
+        "Error": "https://eldred.info"
+      },
+      {
+        "Context": "Enos",
+        "Error": null
+      },
+      {
+        "Context": "Gerhard",
+        "Error": "https://mckenna.info"
+      },
+      {
+        "Context": "Rosanna",
+        "Error": null
+      },
+      {
+        "Context": "Kian",
+        "Error": "https://lia.net"
+      },
+      {
+        "Context": "Fabiola",
+        "Error": null
+      }
+    ],
+    "License": null,
+    "LicenseInformationOrigin": 1
+  }
+]

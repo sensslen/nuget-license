@@ -1,0 +1,9 @@
+﻿+------------------------------+---------+----------------------------+-------------------------------------------------------------------------------------------------+---------------------+
+| Package                      | Version | License Information Origin | License Expression                                                                              | Package Project Url |
++------------------------------+---------+----------------------------+-------------------------------------------------------------------------------------------------+---------------------+
+| Legacy Metrics Planner       | 9.5.0   | Ignored                    | I'll override the haptic AGP feed, that should feed the AGP feed!                               | http://madisyn.name |
+| Human Branding Officer       | 6.3.1   | Expression                 | If we hack the hard drive, we can get to the RSS hard drive through the digital RSS hard drive! | http://vilma.info   |
+| Chief Functionality Director | 3.4.7   | Expression                 | Try to back up the SDD interface, maybe it will back up the cross-platform interface!           | http://gladyce.biz  |
+| Customer Accounts Planner    | 4.1.5   | Url                        | The COM monitor is down, reboot the digital monitor so we can reboot the COM monitor!           | http://hyman.org    |
+| Lead Configuration Liaison   | 1.8.9   | Unknown                    | Try to navigate the RAM capacitor, maybe it will navigate the wireless capacitor!               | https://alize.info  |
++------------------------------+---------+----------------------------+-------------------------------------------------------------------------------------------------+---------------------+

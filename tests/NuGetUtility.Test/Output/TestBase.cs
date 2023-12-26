@@ -21,7 +21,8 @@ namespace NuGetUtility.Test.Output
                         new NuGetVersion(f.System.Semver()),
                         f.Internet.Url(),
                         f.Hacker.Phrase(),
-                        f.Random.Enum<LicenseInformationOrigin>()))
+                        f.Random.Enum<LicenseInformationOrigin>(),
+                        GetSuccessValidationChecks(f).ToList()))
                 .UseSeed(8675309);
             LicenseValidationErrorFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
                     new LicenseValidationResult(f.Name.JobTitle(),
@@ -53,12 +54,24 @@ namespace NuGetUtility.Test.Output
             return faker.Hacker.Phrase();
         }
 
-        private IEnumerable<ValidationError> GetErrorList(Faker faker)
+        private IEnumerable<ValidationCheck> GetSuccessValidationChecks(Faker faker)
         {
             int itemCount = faker.Random.Int(3, 10);
             for (int i = 0; i < itemCount; i++)
             {
-                yield return new ValidationError(faker.Name.FirstName(), faker.Internet.Url());
+                yield return new ValidationCheck(faker.Name.FirstName());
+            }
+        }
+
+        private IEnumerable<ValidationCheck> GetErrorList(Faker faker)
+        {
+            yield return new ValidationCheck(faker.Name.FirstName(), faker.Internet.Url());
+            int itemCount = faker.Random.Int(3, 10);
+            for (int i = 0; i < itemCount; i++)
+            {
+                yield return faker.Random.Bool() ?
+                    new ValidationCheck(faker.Name.FirstName(), faker.Internet.Url()) :
+                    new ValidationCheck(faker.Name.FirstName(), null);
             }
         }
 

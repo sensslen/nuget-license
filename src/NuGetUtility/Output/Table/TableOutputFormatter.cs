@@ -6,25 +6,27 @@ namespace NuGetUtility.Output.Table
     {
         private readonly bool _printErrorsOnly;
         private readonly bool _skipIgnoredPackages;
+        private readonly bool _alwaysIncludeValidationContext;
 
-        public TableOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages)
+        public TableOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages, bool alwaysIncludeValidationContext)
         {
             _printErrorsOnly = printErrorsOnly;
             _skipIgnoredPackages = skipIgnoredPackages;
+            _alwaysIncludeValidationContext = alwaysIncludeValidationContext;
         }
 
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
         {
-            var errorColumnDefinition = new ColumnDefinition("Error", license => license.ValidationErrors.Select(e => e.Error), license => license.ValidationErrors.Any());
+            var errorColumnDefinition = new ColumnDefinition("Error", license => license.ValidationChecks.Select(e => e.Error), license => license.ValidationChecks.Exists(c => c.Error is not null));
             ColumnDefinition[] columnDefinitions = new[]
             {
                 new ColumnDefinition("Package", license => license.PackageId, license => true, true),
                 new ColumnDefinition("Version", license => license.PackageVersion, license => true, true),
                 new ColumnDefinition("License Information Origin", license => license.LicenseInformationOrigin, license => true, true),
-                new ColumnDefinition("License Expression", license => license.License, license => license.License != null),
-                new ColumnDefinition("Package Project Url",license => license.PackageProjectUrl, license => license.PackageProjectUrl != null),
+                new ColumnDefinition("License Expression", license => license.License, license => license.License is not null),
+                new ColumnDefinition("Package Project Url",license => license.PackageProjectUrl, license => license.PackageProjectUrl is not null),
                 errorColumnDefinition,
-                new ColumnDefinition("Error Context", license => license.ValidationErrors.Select(e => e.Context), license => license.ValidationErrors.Any()),
+                new ColumnDefinition("Context", license => license.ValidationChecks.Select(e => e.Context), license => _alwaysIncludeValidationContext || license.ValidationChecks.Exists(c => c.Error is not null)),
             };
 
             foreach (LicenseValidationResult license in results)
@@ -37,7 +39,7 @@ namespace NuGetUtility.Output.Table
 
             if (_printErrorsOnly && errorColumnDefinition.Enabled)
             {
-                results = results.Where(r => r.ValidationErrors.Any()).ToList();
+                results = results.Where(r => r.ValidationChecks.Exists(c => c.Error is not null)).ToList();
             }
 
             if (_skipIgnoredPackages)

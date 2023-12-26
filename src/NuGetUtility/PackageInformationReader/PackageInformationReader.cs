@@ -52,7 +52,7 @@ namespace NuGetUtility.PackageInformationReader
         private PackageSearchResult TryGetPackageInformationFromGlobalPackageFolder(PackageIdentity package)
         {
             IPackageMetadata? metadata = _globalPackagesFolderUtility.GetPackage(package);
-            if (metadata != null)
+            if (metadata is not null)
             {
                 return new PackageSearchResult(metadata);
             }
@@ -74,7 +74,7 @@ namespace NuGetUtility.PackageInformationReader
 
                 IPackageMetadata? updatedPackageMetadata = await resource.TryGetMetadataAsync(package, cancellation);
 
-                if (updatedPackageMetadata != null)
+                if (updatedPackageMetadata is not null)
                 {
                     return new PackageSearchResult(updatedPackageMetadata);
                 }

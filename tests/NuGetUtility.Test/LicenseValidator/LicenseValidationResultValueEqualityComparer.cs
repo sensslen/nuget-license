@@ -10,25 +10,25 @@ namespace NuGetUtility.Test.LicenseValidator
             if (x is null) return false;
             if (y is null) return false;
             if (x.GetType() != y.GetType()) return false;
-            return x.ValidationErrors.SequenceEqual(y.ValidationErrors) && (x.License == y.License) &&
+            return x.ValidationChecks.SequenceEqual(y.ValidationChecks) && (x.License == y.License) &&
                    (x.LicenseInformationOrigin == y.LicenseInformationOrigin) && (x.PackageId == y.PackageId) &&
                    x.PackageVersion.Equals(y.PackageVersion) && (x.PackageProjectUrl == y.PackageProjectUrl);
         }
         public int GetHashCode(LicenseValidationResult obj)
         {
-            return HashCode.Combine(GetHashCode(obj.ValidationErrors),
+            return HashCode.Combine(GetHashCode(obj.ValidationChecks),
                 obj.License,
                 (int)obj.LicenseInformationOrigin,
                 obj.PackageId,
                 obj.PackageVersion,
                 obj.PackageProjectUrl);
         }
-        private HashCode GetHashCode(List<ValidationError> validationErrors)
+        private HashCode GetHashCode(List<ValidationCheck> validationChecks)
         {
             var code = new HashCode();
-            foreach (ValidationError error in validationErrors)
+            foreach (ValidationCheck check in validationChecks)
             {
-                code.Add(error);
+                code.Add(check);
             }
             return code;
         }

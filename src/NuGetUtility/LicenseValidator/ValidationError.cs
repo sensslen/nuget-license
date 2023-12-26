@@ -1,4 +1,4 @@
 ﻿namespace NuGetUtility.LicenseValidator
 {
-    public record ValidationError(string Error, string Context);
+    public record ValidationCheck(string Context, string? Error = null);
 }
