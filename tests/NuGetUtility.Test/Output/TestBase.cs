@@ -25,6 +25,8 @@ namespace NuGetUtility.Test.Output
                         f.Internet.Url(),
                         f.Hacker.Phrase(),
                         f.Internet.Url(),
+                        f.Hacker.Phrase(),
+                        string.Join(",", Enumerable.Repeat(true, 5).Select(_ => f.Name.FullName())),
                         f.Random.Enum<LicenseInformationOrigin>()))
                 .UseSeed(8675309);
             LicenseValidationErrorFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
@@ -33,6 +35,8 @@ namespace NuGetUtility.Test.Output
                         GetNullableUrl(f),
                         GetNullableLicense(f),
                         GetNullableUrl(f),
+                        f.Hacker.Phrase(),
+                        string.Join(",", Enumerable.Repeat(true, 5).Select(_ => f.Name.FullName())),
                         f.Random.Enum<LicenseInformationOrigin>(),
                         GetErrorList(f).ToList()))
                 .UseSeed(9078345);
