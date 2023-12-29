@@ -75,6 +75,8 @@ namespace NuGetUtility.LicenseValidator
                 info.Identity.Version,
                 info.ProjectUrl?.ToString(),
                 license,
+                info.Copyright,
+                info.Authors,
                 origin,
                 new List<ValidationError> { error });
             result.AddOrUpdate(new LicenseNameAndVersion(info.Identity.Id, info.Identity.Version),
@@ -93,6 +95,8 @@ namespace NuGetUtility.LicenseValidator
                 info.Identity.Version,
                 info.ProjectUrl?.ToString(),
                 license,
+                info.Copyright,
+                info.Authors,
                 origin);
             result.AddOrUpdate(new LicenseNameAndVersion(info.Identity.Id, info.Identity.Version),
                 newValue,
