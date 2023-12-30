@@ -118,6 +118,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             null,
+                            null,
+                            null,
                             LicenseInformationOrigin.Ignored)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
@@ -146,6 +148,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             license,
+                            null,
+                            null,
                             LicenseInformationOrigin.Expression)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
@@ -176,6 +180,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             null,
+                            null,
+                            null,
                             LicenseInformationOrigin.Ignored)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
@@ -205,6 +211,8 @@ namespace NuGetUtility.Test.LicenseValidator
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
+                            null,
+                            null,
                             null,
                             LicenseInformationOrigin.Ignored)
                     })
@@ -237,6 +245,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             null,
+                            null,
+                            null,
                             LicenseInformationOrigin.Ignored)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
@@ -263,6 +273,8 @@ namespace NuGetUtility.Test.LicenseValidator
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
+                            null,
+                            null,
                             null,
                             LicenseInformationOrigin.Ignored)
                     })
@@ -292,6 +304,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             license,
+                            null,
+                            null,
                             LicenseInformationOrigin.Expression)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
@@ -320,6 +334,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             license,
+                            null,
+                            null,
                             LicenseInformationOrigin.Overwrite)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
@@ -357,6 +373,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             mappingLicense.Value,
+                            null,
+                            null,
                             LicenseInformationOrigin.Url)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
@@ -385,6 +403,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             licenseUrl.ToString(),
+                            null,
+                            null,
                             LicenseInformationOrigin.Url)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
@@ -415,6 +435,8 @@ namespace NuGetUtility.Test.LicenseValidator
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
+                            null,
+                            null,
                             null,
                             LicenseInformationOrigin.Unknown,
                             new List<ValidationError>
@@ -448,6 +470,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             null,
+                            null,
+                            null,
                             LicenseInformationOrigin.Unknown,
                             new List<ValidationError>
                             {
@@ -476,6 +500,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             license,
+                            null,
+                            null,
                             LicenseInformationOrigin.Expression,
                             new List<ValidationError>
                             {
@@ -504,6 +530,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             license,
+                            null,
+                            null,
                             LicenseInformationOrigin.Overwrite,
                             new List<ValidationError>
                             {
@@ -532,6 +560,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             validLicense,
+                            null,
+                            null,
                             LicenseInformationOrigin.Expression)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
@@ -555,6 +585,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             validLicense,
+                            null,
+                            null,
                             LicenseInformationOrigin.Overwrite)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
@@ -578,6 +610,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             urlMatch.Value,
+                            null,
+                            null,
                             LicenseInformationOrigin.Url,
                             new List<ValidationError>
                             {
@@ -645,6 +679,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             urlMatch.Value,
+                            null,
+                            null,
                             LicenseInformationOrigin.Url)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
@@ -668,6 +704,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             licenseUrl.ToString(),
+                            null,
+                            null,
                             LicenseInformationOrigin.Url,
                             new List<ValidationError>
                             {
