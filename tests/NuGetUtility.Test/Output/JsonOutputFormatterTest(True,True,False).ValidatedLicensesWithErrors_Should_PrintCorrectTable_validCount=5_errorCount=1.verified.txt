@@ -2,37 +2,26 @@
   {
     "PackageId": "Principal Functionality Agent",
     "PackageVersion": "1.5.3",
+    "Authors": "Wilson Senger,Guadalupe Barrows,Otho Kirlin,General Schimmel,Skylar Langosh,Haylie Grimes,Audreanne Koelpin,Graciela Rosenbaum",
     "ValidationErrors": [
       {
-        "Error": "Paige",
-        "Context": "https://remington.info"
+        "Error": "Randy",
+        "Context": "https://dereck.biz"
       },
       {
-        "Error": "Aletha",
-        "Context": "https://isobel.info"
+        "Error": "Cara",
+        "Context": "http://dawson.com"
       },
       {
-        "Error": "Pearline",
-        "Context": "https://johnathon.info"
+        "Error": "Addie",
+        "Context": "https://xander.org"
       },
       {
-        "Error": "Eleanora",
-        "Context": "http://jaeden.info"
-      },
-      {
-        "Error": "Nikolas",
-        "Context": "https://daphney.net"
-      },
-      {
-        "Error": "Oceane",
-        "Context": "http://clifton.com"
-      },
-      {
-        "Error": "Francisco",
-        "Context": "http://bessie.com"
+        "Error": "Everette",
+        "Context": "http://otha.org"
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 3
   }
 ]
