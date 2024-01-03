@@ -75,6 +75,22 @@ namespace NuGetUtility.Test.LicenseValidator
             packageInfo.LicenseMetadata.Returns(new LicenseMetadata(type, license));
             return packageInfo;
         }
+        private IPackageMetadata SetupPackageWithCopyright(string packageId,
+            INuGetVersion packageVersion,
+            string copyrigth)
+        {
+            IPackageMetadata packageInfo = SetupPackage(packageId, packageVersion);
+            packageInfo.Copyright.Returns(copyrigth);
+            return packageInfo;
+        }
+        private IPackageMetadata SetupPackageWithAuthors(string packageId,
+            INuGetVersion packageVersion,
+            string authors)
+        {
+            IPackageMetadata packageInfo = SetupPackage(packageId, packageVersion);
+            packageInfo.Authors.Returns(authors);
+            return packageInfo;
+        }
 
         private IPackageMetadata SetupPackageWithExpressionLicenseInformation(string packageId,
             INuGetVersion packageVersion,
@@ -712,6 +728,66 @@ namespace NuGetUtility.Test.LicenseValidator
                                 new ValidationError($"Cannot determine License type for url {licenseUrl}",
                                     _context)
                             })
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicenses_ShouldContainCopyright(
+            string packageId,
+            INuGetVersion packageVersion,
+            string copyrigth)
+        {
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
+                Array.Empty<string>(),
+                _fileDownloader,
+                _ignoredLicenses.Append(packageId).ToArray());
+
+            IPackageMetadata package = SetupPackageWithCopyright(packageId, packageVersion, copyrigth);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            null,
+                            copyrigth,
+                            null,
+                            LicenseInformationOrigin.Ignored)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicenses_ShouldContainAuthors(
+            string packageId,
+            INuGetVersion packageVersion,
+            string authors)
+        {
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
+                Array.Empty<string>(),
+                _fileDownloader,
+                _ignoredLicenses.Append(packageId).ToArray());
+
+            IPackageMetadata package = SetupPackageWithAuthors(packageId, packageVersion, authors);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            null,
+                            authors,
+                            null,
+                            LicenseInformationOrigin.Ignored)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
