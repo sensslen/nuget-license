@@ -30,7 +30,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 
         public string Copyright => _metadata.Copyright;
 
-        public string Authors => string.Join(',', _metadata.Authors); // https://learn.microsoft.com/en-us/nuget/reference/nuspec#authors
+        public IEnumerable<string> Authors => _metadata.Authors;
 
         public Packaging.LicenseMetadata? LicenseMetadata { get; }
     }
