@@ -88,7 +88,7 @@ namespace NuGetUtility.Test.LicenseValidator
         }
         private IPackageMetadata SetupPackageWithAuthors(string packageId,
             INuGetVersion packageVersion,
-            string authors)
+            string[] authors)
         {
             IPackageMetadata packageInfo = SetupPackage(packageId, packageVersion);
             packageInfo.Authors.Returns(authors);
@@ -958,14 +958,14 @@ namespace NuGetUtility.Test.LicenseValidator
         public async Task ValidatingLicenses_ShouldContainCopyright(
             string packageId,
             INuGetVersion packageVersion,
-            string copyrigth)
+            string copyright)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
                 _ignoredLicenses.Append(packageId).ToArray());
 
-            IPackageMetadata package = SetupPackageWithCopyright(packageId, packageVersion, copyrigth);
+            IPackageMetadata package = SetupPackageWithCopyright(packageId, packageVersion, copyright);
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
@@ -976,7 +976,7 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             null,
-                            copyrigth,
+                            copyright,
                             null,
                             LicenseInformationOrigin.Ignored)
                     })
@@ -988,7 +988,7 @@ namespace NuGetUtility.Test.LicenseValidator
         public async Task ValidatingLicenses_ShouldContainAuthors(
             string packageId,
             INuGetVersion packageVersion,
-            string authors)
+            string[] authors)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
@@ -1006,8 +1006,8 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             null,
-                            authors,
                             null,
+                            authors,
                             LicenseInformationOrigin.Ignored)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
