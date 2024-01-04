@@ -11,7 +11,7 @@ namespace NuGetUtility.LicenseValidator
         string? License,
         string? LicenseUrl,
         string? Copyright,
-        IEnumerable<string> Authors,
+        string? Authors,
         LicenseInformationOrigin LicenseInformationOrigin,
         List<ValidationError>? ValidationErrors = null)
     {
