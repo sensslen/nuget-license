@@ -77,7 +77,7 @@ namespace NuGetUtility.Test.LicenseValidator
         }
         private IPackageMetadata SetupPackageWithAuthors(string packageId,
             INuGetVersion packageVersion,
-            string[] authors)
+            string authors)
         {
             IPackageMetadata packageInfo = SetupPackage(packageId, packageVersion);
             packageInfo.Authors.Returns(authors);
@@ -758,7 +758,7 @@ namespace NuGetUtility.Test.LicenseValidator
         public async Task ValidatingLicenses_ShouldContainAuthors(
             string packageId,
             INuGetVersion packageVersion,
-            string[] authors)
+            string authors)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),

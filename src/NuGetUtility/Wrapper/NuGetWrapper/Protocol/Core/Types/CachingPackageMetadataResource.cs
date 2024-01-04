@@ -60,7 +60,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 
             public string Copyright => string.Empty;
 
-            public IEnumerable<string> Authors => _searchMetadata.Authors.Split(','); // https://learn.microsoft.com/en-us/nuget/reference/nuspec#authors
+            public string Authors => _searchMetadata.Authors;
 
             public LicenseMetadata? LicenseMetadata { get; }
         }
