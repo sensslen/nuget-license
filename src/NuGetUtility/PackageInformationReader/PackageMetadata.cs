@@ -30,7 +30,7 @@ namespace NuGetUtility.PackageInformationReader
 
         public string Copyright => string.Empty;
 
-        public IEnumerable<string> Authors => Enumerable.Empty<string>();
+        public string Authors => string.Empty;
 
         public LicenseMetadata? LicenseMetadata { get; } = null;
     }
