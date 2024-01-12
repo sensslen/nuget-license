@@ -4,7 +4,6 @@ using Microsoft.Build.Exceptions;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Locator;
-using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Wrapper.MsBuildWrapper
@@ -12,6 +11,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
     public class MsBuildAbstraction : IMsBuildAbstraction
     {
         private const string CollectPackageReferences = "CollectPackageReferences";
+        private readonly Dictionary<string, string> _globalProjectProperties = new();
 
         public MsBuildAbstraction()
         {
@@ -40,16 +40,9 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
         {
             ProjectRootElement rootElement = TryGetProjectRootElement(projectPath);
 
-            var project = new Project(rootElement);
-            var projectWrapper = new ProjectWrapper(project);
+            var project = new Project(rootElement, _globalProjectProperties, null);
 
-            if (!projectWrapper.IsPackageReferenceProject())
-            {
-                throw new MsBuildAbstractionException(
-                    $"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {project.FullPath})");
-            }
-
-            return projectWrapper;
+            return new ProjectWrapper(project);
         }
 
         public IEnumerable<string> GetProjectsFromSolution(string inputPath)
@@ -78,5 +71,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
                 throw new MsBuildAbstractionException($"Failed to open project: {projectPath}", e);
             }
         }
+
+        protected void AddGlobalProjectProperty(string name, string value) => _globalProjectProperties.Add(name, value);
     }
 }

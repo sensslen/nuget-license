@@ -1,3 +1,4 @@
+using Microsoft.Build.Evaluation;
 using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
@@ -11,7 +12,10 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [SetUp]
         public void SetUp()
         {
-            _uut = new ReferencedPackageReader(new MsBuildAbstraction(), new LockFileFactory());
+            IMsBuildAbstraction msBuildAbstraction = OperatingSystem.IsWindows() ? new WindowsMsBuildAbstraction() : new MsBuildAbstraction();
+            IPackagesConfigReader packagesConfigReader = OperatingSystem.IsWindows() ? new WindowsPackagesConfigReader() : new FailingPackagesConfigReader();
+
+            _uut = new ReferencedPackageReader(msBuildAbstraction, new LockFileFactory(), packagesConfigReader);
         }
 
         private ReferencedPackageReader? _uut;
@@ -65,12 +69,23 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
         [Test]
         [Platform(Include = "Win")]
-        public void GetInstalledPackagesShould_ThrowMsBuildAbstractionException_If_ProjectUsesPackagesConfig()
+        public void GetInstalledPackagesShould_ReturnPackagesForPackagesConfigProject()
         {
             string path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
 
-            MsBuildAbstractionException? exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, false));
-            Assert.That(exception?.Message, Is.EqualTo($"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {path})"));
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false);
+
+            Assert.That(result.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        [Platform(Exclude = "Win")]
+        public void GetInstalledPackagesShould_ThrowError()
+        {
+            string path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
+
+            PackagesConfigReaderException? exception = Assert.Throws<PackagesConfigReaderException>(() => _uut!.GetInstalledPackages(path, false));
+            Assert.That(exception?.Message, Is.EqualTo($"Invalid project structure detected. Currently packages.config projects are only supported on Windows (Project: {path})"));
         }
     }
 }

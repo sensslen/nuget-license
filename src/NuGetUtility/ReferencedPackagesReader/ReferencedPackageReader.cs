@@ -9,13 +9,16 @@ namespace NuGetUtility.ReferencedPackagesReader
     {
         private const string ProjectReferenceIdentifier = "project";
         private readonly ILockFileFactory _lockFileFactory;
+        private readonly IPackagesConfigReader _packagesConfigReader;
         private readonly IMsBuildAbstraction _msBuild;
 
         public ReferencedPackageReader(IMsBuildAbstraction msBuild,
-            ILockFileFactory lockFileFactory)
+            ILockFileFactory lockFileFactory,
+            IPackagesConfigReader packagesConfigReader)
         {
             _msBuild = msBuild;
             _lockFileFactory = lockFileFactory;
+            _packagesConfigReader = packagesConfigReader;
         }
 
         public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive)
@@ -27,7 +30,10 @@ namespace NuGetUtility.ReferencedPackagesReader
                 return Enumerable.Empty<PackageIdentity>();
             }
 
-            return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
+            if (project.IsPackageReferenceProject())
+                return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
+
+            return _packagesConfigReader.GetPackages(project);
         }
 
         private IEnumerable<PackageIdentity> GetInstalledPackagesFromAssetsFile(bool includeTransitive,
