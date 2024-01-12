@@ -746,7 +746,7 @@ namespace NuGetUtility.Test.LicenseValidator
 
             IPackageMetadata package = SetupPackageWithCopyright(packageId, packageVersion, copyright);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -776,7 +776,7 @@ namespace NuGetUtility.Test.LicenseValidator
 
             IPackageMetadata package = SetupPackageWithAuthors(packageId, packageVersion, authors);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
