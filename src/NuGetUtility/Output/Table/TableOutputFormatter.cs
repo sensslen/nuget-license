@@ -26,7 +26,7 @@ namespace NuGetUtility.Output.Table
                 new ColumnDefinition("License Information Origin", license => license.LicenseInformationOrigin, license => true, true),
                 new ColumnDefinition("License Expression", license => license.License, license => license.License != null),
                 new ColumnDefinition("License Url", license => license.LicenseUrl, license => license.LicenseUrl != null),
-                new ColumnDefinition("Copyrigth", license => license.Copyright, license => license.Copyright != null),
+                new ColumnDefinition("Copyright", license => license.Copyright, license => license.Copyright != null),
                 new ColumnDefinition("Authors", license => license.Authors, license => license.Authors != null),
                 new ColumnDefinition("Package Project Url",license => license.PackageProjectUrl, license => license.PackageProjectUrl != null),
                 errorColumnDefinition,
