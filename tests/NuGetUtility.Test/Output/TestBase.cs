@@ -72,7 +72,7 @@ namespace NuGetUtility.Test.Output
             {
                 return null;
             }
-            var authorCount = faker.Random.Int(1, 5);
+            int authorCount = faker.Random.Int(1, 5);
             return string.Join(",", Enumerable.Repeat(true, authorCount).Select(_ => faker.Person.FullName));
         }
 
