@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.0" />
-    <PackageReference Include="Microsoft.Build.Locator" Version="1.6.10" />
+    <PackageReference Include="Microsoft.Build.Locator" Version="1.7.1" />
     <PackageReference Include="NuGet.Commands" Version="6.8.0" />
     <PackageReference Include="NuGet.Packaging" Version="6.8.0" />
     <PackageReference Include="System.Management" Version="8.0.0" />
