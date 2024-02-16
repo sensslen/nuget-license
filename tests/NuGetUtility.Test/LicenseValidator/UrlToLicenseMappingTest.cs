@@ -55,6 +55,7 @@ namespace NuGetUtility.Test.LicenseValidator
                 nodes.ScrubAttributes("aria-labelledby");
                 nodes.ScrubAttributes("popovertarget");
                 nodes.ScrubAttributes("aria-controls");
+                nodes.ScrubAttributes("data-cookie-consent-required");
                 nodes.ScrubEmptyDivs();
             }).HashParameters();
         }
