@@ -14,6 +14,11 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             // to support VC-projects we need to workaround : https://github.com/3F/MvsSln/issues/1
             // adding 'VCTargetsPath' to Project::GlobalProperties seem to be enough
 
+            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("NUGET_LICENSE_SKIP_VS_SEARCH")))
+            {
+                return;
+            }
+
             if (GetBestVCTargetsPath() is string path)
             {
                 AddGlobalProjectProperty("VCTargetsPath", $"{path}\\");
@@ -45,7 +50,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
                     if (vs_instance["InstallLocation"] is string install_path)
                         result.Add(install_path);
             }
-            catch (ManagementException me) when (me.Message.Contains("Invalid namespace"))
+            catch (ManagementException)
             {
                 // Visual Studio might not be installed
             }
