@@ -15,7 +15,9 @@ namespace NuGetUtility.Test.LicenseValidator
         [TestCaseSource(typeof(UrlToLicenseMapping), nameof(UrlToLicenseMapping.Default))]
         public async Task License_Should_Be_Available_And_Match_Expected_License(KeyValuePair<Uri, string> mappedValue)
         {
-            var driver = new ChromeDriver();
+            var options = new ChromeOptions();
+            options.AddArguments("--no-sandbox", "--disable-dev-shm-usage", "--headless");
+            var driver = new ChromeDriver(options);
             try
             {
                 driver.Navigate().GoToUrl(mappedValue.Key.ToString());
