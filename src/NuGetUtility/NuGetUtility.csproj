@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net472;net6.0;net7.0;net8.0</TargetFrameworks>
@@ -58,6 +58,10 @@
       <Pack>true</Pack>
       <PackagePath>README.md</PackagePath>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tethys.SPDX.ExpressionParser\Tethys.SPDX.ExpressionParser.csproj" />
   </ItemGroup>
 
 </Project>
