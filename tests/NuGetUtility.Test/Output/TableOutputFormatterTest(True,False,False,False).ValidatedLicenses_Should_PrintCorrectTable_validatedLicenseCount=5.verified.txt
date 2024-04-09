@@ -1,9 +1,0 @@
-﻿+---------------------------------+---------+----------------------------+---------------------------------------------------------------------------------------------+---------------------+---------------------+
-| Package                         | Version | License Information Origin | License Expression                                                                          | License Url         | Package Project Url |
-+---------------------------------+---------+----------------------------+---------------------------------------------------------------------------------------------+---------------------+---------------------+
-| Legacy Metrics Planner          | 9.5.0   | Url                        | I'll override the haptic AGP feed, that should feed the AGP feed!                           | https://marquis.net | http://madisyn.name |
-| Global Usability Representative | 3.5.9   | Expression                 | You can't copy the program without navigating the redundant USB program!                    | http://gerson.name  | http://flavie.biz   |
-| Dynamic Creative Engineer       | 5.5.5   | Overwrite                  | We need to input the open-source EXE matrix!                                                | https://clair.info  | https://kelley.info |
-| Corporate Research Assistant    | 9.7.0   | Ignored                    | The SAS firewall is down, transmit the mobile firewall so we can transmit the SAS firewall! | https://destany.biz | http://erika.com    |
-| Senior Mobility Liaison         | 0.9.9   | Url                        | You can't bypass the program without transmitting the digital THX program!                  | https://leanne.org  | https://nakia.name  |
-+---------------------------------+---------+----------------------------+---------------------------------------------------------------------------------------------+---------------------+---------------------+

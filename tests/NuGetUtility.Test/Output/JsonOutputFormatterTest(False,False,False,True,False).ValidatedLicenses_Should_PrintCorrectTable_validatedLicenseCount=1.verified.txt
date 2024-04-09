@@ -1,1 +1,0 @@
-﻿[{"PackageId":"Legacy Metrics Planner","PackageVersion":"9.5.0","PackageProjectUrl":"http://madisyn.name","Copyright":"The USB transmitter is down, generate the bluetooth transmitter so we can generate the USB transmitter!","License":"I\u0027ll override the haptic AGP feed, that should feed the AGP feed!","LicenseInformationOrigin":3}]
