@@ -217,12 +217,25 @@ namespace NuGetUtility.LicenseValidator
             }
         }
 
+        private Uri FixupLicenseUrl(Uri licenseUrl)
+        {
+            if ((licenseUrl.Host == "github.com" || licenseUrl.Host == "www.github.com")
+                && licenseUrl.Query == ""
+                && licenseUrl.Segments.Length >= 5
+                && licenseUrl.Segments[3] == "blob/")
+            {
+                return new Uri(licenseUrl.ToString() + "?raw=true");
+            }
+            return licenseUrl;
+        }
+
         private async Task DownloadLicenseAsync(Uri licenseUrl, PackageIdentity identity, string context, CancellationToken token)
         {
+            licenseUrl = FixupLicenseUrl(licenseUrl);
             try
             {
                 await _fileDownloader.DownloadFile(licenseUrl,
-                    $"{identity.Id}__{identity.Version}.html",
+                    $"{identity.Id}__{identity.Version}",
                     token);
             }
             catch (OperationCanceledException)

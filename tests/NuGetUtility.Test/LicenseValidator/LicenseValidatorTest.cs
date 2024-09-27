@@ -423,7 +423,7 @@ namespace NuGetUtility.Test.LicenseValidator
             _ = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             await _fileDownloader.Received(1).DownloadFile(new Uri($"https://licenses.nuget.org/({expression})"),
-                    $"{package.Identity.Id}__{package.Identity.Version}.html",
+                    $"{package.Identity.Id}__{package.Identity.Version}",
                     _token.Token);
         }
 
@@ -893,7 +893,7 @@ namespace NuGetUtility.Test.LicenseValidator
             _ = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             await _fileDownloader.Received(1).DownloadFile(package.LicenseUrl!,
-                    $"{package.Identity.Id}__{package.Identity.Version}.html",
+                    $"{package.Identity.Id}__{package.Identity.Version}",
                     _token.Token);
         }
 

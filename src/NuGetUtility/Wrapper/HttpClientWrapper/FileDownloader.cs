@@ -19,14 +19,14 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
             _downloadDirectory = downloadDirectory;
         }
 
-        public async Task DownloadFile(Uri url, string fileName, CancellationToken token)
+        public async Task DownloadFile(Uri url, string fileNameStem, CancellationToken token)
         {
             await _parallelDownloadLimiter.WaitAsync(token);
             try
             {
                 for (int i = 0; i < MAX_RETRIES; i++)
                 {
-                    if (await TryDownload(fileName, url, token))
+                    if (await TryDownload(fileNameStem, url, token))
                     {
                         return;
                     }
@@ -40,9 +40,8 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
         }
 
 #if NETFRAMEWORK
-        private async Task<bool> TryDownload(string fileName, Uri url, CancellationToken _)
+        private async Task<bool> TryDownload(string fileNameStem, Uri url, CancellationToken _)
         {
-            using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
             var request = new HttpRequestMessage(HttpMethod.Get, url);
 
             HttpResponseMessage response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
@@ -52,16 +51,22 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
                 return false;
             }
             response.EnsureSuccessStatusCode();
+
+            string extension = "html";
+            if (response.Content.Headers.ContentType.MediaType == "text/plain")
+            {
+                extension = "txt";
+            }
+            string fileName = fileNameStem + "." + extension;
+            using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
             using Stream downloadStream = await response.Content.ReadAsStreamAsync();
 
             await downloadStream.CopyToAsync(file);
             return true;
         }
 #else
-        private async Task<bool> TryDownload(string fileName, Uri url, CancellationToken token)
+        private async Task<bool> TryDownload(string fileNameStem, Uri url, CancellationToken token)
         {
-
-            await using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
             var request = new HttpRequestMessage(HttpMethod.Get, url);
 
             HttpResponseMessage response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
@@ -70,7 +75,15 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
                 return false;
             }
             response.EnsureSuccessStatusCode();
-            using Stream downloadStream = await response.Content.ReadAsStreamAsync(token);
+
+            string extension = "html";
+            if (response.Content.Headers.ContentType?.MediaType == "text/plain")
+            {
+                extension = "txt";
+            }
+            string fileName = fileNameStem + "." + extension;
+            using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
+            using Stream downloadStream = await response.Content.ReadAsStreamAsync();
 
             await downloadStream.CopyToAsync(file, token);
             return true;
