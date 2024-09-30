@@ -82,7 +82,7 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
                 extension = "txt";
             }
             string fileName = fileNameStem + "." + extension;
-            using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
+            await using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
             using Stream downloadStream = await response.Content.ReadAsStreamAsync();
 
             await downloadStream.CopyToAsync(file, token);
