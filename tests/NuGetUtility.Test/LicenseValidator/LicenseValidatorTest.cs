@@ -899,6 +899,22 @@ namespace NuGetUtility.Test.LicenseValidator
 
         [Test]
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithGithubWebUiUrl_Should_StartDownloadingLicenseAsRaw(
+            string packageId,
+            INuGetVersion packageVersion)
+        {
+            string ghUrl = "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT";
+            IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, new Uri(ghUrl));
+
+            _ = await _uut.Validate(CreateInput(package, _context), _token.Token);
+
+            await _fileDownloader.Received(1).DownloadFile(new Uri(ghUrl + "?raw=true"),
+                    $"{package.Identity.Id}__{package.Identity.Version}",
+                    _token.Token);
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public void ValidatingLicensesWithUrlInformation_Should_ThrowLicenseDownloadInformation_If_DownloadThrows(
             string packageId,
             INuGetVersion packageVersion)
