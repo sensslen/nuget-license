@@ -217,7 +217,7 @@ namespace NuGetUtility.LicenseValidator
             }
         }
 
-        private Uri FixupLicenseUrl(Uri licenseUrl)
+        private static Uri FixupLicenseUrl(Uri licenseUrl)
         {
             if ((licenseUrl.Host == "github.com" || licenseUrl.Host == "www.github.com")
                 && licenseUrl.Query == ""
