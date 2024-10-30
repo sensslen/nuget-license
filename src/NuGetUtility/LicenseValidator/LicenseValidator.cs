@@ -244,7 +244,7 @@ namespace NuGetUtility.LicenseValidator
             }
             catch (Exception e)
             {
-                throw new LicenseDownloadException(e, context, identity);
+                throw new LicenseDownloadException(e, context, licenseUrl, identity);
             }
         }
 

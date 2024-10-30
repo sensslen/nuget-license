@@ -928,7 +928,7 @@ namespace NuGetUtility.Test.LicenseValidator
                 Assert.ThrowsAsync<LicenseDownloadException>(() => _uut.Validate(CreateInput(package, _context), _token.Token));
             Assert.IsInstanceOf<Exception>(exception!.InnerException);
             Assert.AreEqual(
-                $"Failed to download license for package {packageId} ({packageVersion}).\nContext: {_context}",
+                $"Failed to download license for package {packageId} ({packageVersion}) from url: {urlMatch.Key}.\nContext: {_context}",
                 exception.Message);
         }
 

@@ -7,10 +7,10 @@ namespace NuGetUtility.LicenseValidator
 {
     public class LicenseDownloadException : Exception
     {
-        public LicenseDownloadException(Exception inner, string context, PackageIdentity packageInfo)
+        public LicenseDownloadException(Exception inner, string context, Uri url, PackageIdentity packageInfo)
             :
             base(
-                $"Failed to download license for package {packageInfo.Id} ({packageInfo.Version}).\nContext: {context}",
+                $"Failed to download license for package {packageInfo.Id} ({packageInfo.Version}) from url:{url}.\nContext: {context}",
                 inner)
         { }
     }
