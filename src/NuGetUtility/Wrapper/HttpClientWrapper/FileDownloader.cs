@@ -39,38 +39,20 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
             }
         }
 
-#if NETFRAMEWORK
-        private async Task<bool> TryDownload(string fileNameStem, Uri url, CancellationToken _)
+#pragma warning disable S1172
+        private async Task<bool> TryDownload(string fileNameStem, Uri url, CancellationToken token)
+#pragma warning restore S1172
         {
             var request = new HttpRequestMessage(HttpMethod.Get, url);
 
+#if NETFRAMEWORK
             HttpResponseMessage response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             // System.Net.HttpStatusCode.TooManyRequests does not exist in .net472
             if (response.StatusCode == (System.Net.HttpStatusCode)429)
-            {
-                return false;
-            }
-            response.EnsureSuccessStatusCode();
-
-            string extension = "html";
-            if (response.Content.Headers.ContentType.MediaType == "text/plain")
-            {
-                extension = "txt";
-            }
-            string fileName = fileNameStem + "." + extension;
-            using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
-            using Stream downloadStream = await response.Content.ReadAsStreamAsync();
-
-            await downloadStream.CopyToAsync(file);
-            return true;
-        }
 #else
-        private async Task<bool> TryDownload(string fileNameStem, Uri url, CancellationToken token)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-
             HttpResponseMessage response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
             if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+#endif
             {
                 return false;
             }
@@ -82,12 +64,19 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
                 extension = "txt";
             }
             string fileName = fileNameStem + "." + extension;
+#if NETFRAMEWORK
+            using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
+#else
             await using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
+#endif
             using Stream downloadStream = await response.Content.ReadAsStreamAsync();
 
+#if NETFRAMEWORK
+            await downloadStream.CopyToAsync(file);
+#else
             await downloadStream.CopyToAsync(file, token);
+#endif
             return true;
         }
-#endif
     }
 }
