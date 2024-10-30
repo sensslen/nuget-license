@@ -30,7 +30,7 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
                     {
                         return;
                     }
-                    await Task.Delay((int)Math.Pow(EXPONENTIAL_BACKOFF_WAIT_TIME_MILLISECONDS, i + 1), token);
+                    await Task.Delay(EXPONENTIAL_BACKOFF_WAIT_TIME_MILLISECONDS * ((int)Math.Pow(2, i)), token);
                 }
             }
             finally
@@ -63,7 +63,7 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
             {
                 extension = "txt";
             }
-            string fileName = fileNameStem + "." + extension;
+            string fileName = $"{fileNameStem}.{extension}";
 #if NETFRAMEWORK
             using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
 #else
