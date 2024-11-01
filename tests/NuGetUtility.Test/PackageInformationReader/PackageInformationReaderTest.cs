@@ -33,7 +33,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             _sourceRepositoryProvider.GetRepositories()
                 .Returns(_ =>
                 {
-                    Assert.AreEqual(0, _repositories.Length);
+                    Assert.That(_repositories, Is.Empty);
                     _repositories = _fixture.CreateMany<ISourceRepository>().ToArray();
                     foreach (ISourceRepository repo in _repositories)
                     {
@@ -92,8 +92,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             IEnumerable<CustomPackageInformation> packages,
             LicenseType licenseType)
         {
-            CollectionAssert.AreEquivalent(packages,
-                result.Select(s => new CustomPackageInformation(s.PackageInfo.Identity.Id,
+            Assert.That(packages, Is.EquivalentTo(result.Select(s => new CustomPackageInformation(s.PackageInfo.Identity.Id,
                                                                 s.PackageInfo.Identity.Version,
                                                                 s.PackageInfo.LicenseMetadata!.License,
                                                                 s.PackageInfo.Copyright,
@@ -101,11 +100,11 @@ namespace NuGetUtility.Test.PackageInformationReader
                                                                 s.PackageInfo.Title,
                                                                 s.PackageInfo.ProjectUrl,
                                                                 s.PackageInfo.Summary,
-                                                                s.PackageInfo.Description)));
+                                                                s.PackageInfo.Description))));
             foreach (ReferencedPackageWithContext r in result)
             {
-                Assert.AreEqual(project, r.Context);
-                Assert.AreEqual(licenseType, r.PackageInfo.LicenseMetadata!.Type);
+                Assert.That(r.Context, Is.EqualTo(project));
+                Assert.That(r.PackageInfo.LicenseMetadata!.Type, Is.EqualTo(licenseType));
             }
         }
 
@@ -201,18 +200,18 @@ namespace NuGetUtility.Test.PackageInformationReader
 
             (string project, ReferencedPackageWithContext[] results) = await PerformSearch(searchedPackages);
 
-            Assert.AreEqual(searchedPackages.Count(), results.Length);
+            Assert.That(results, Has.Length.EqualTo(searchedPackages.Length));
             for (int i = 0; i < results.Length; i++)
             {
                 PackageIdentity expectation = searchedPackages[i];
                 ReferencedPackageWithContext result = results[i];
-                Assert.AreEqual(project, result.Context);
-                Assert.AreEqual(expectation.Id, result.PackageInfo.Identity.Id);
-                Assert.AreEqual(expectation.Version, result.PackageInfo.Identity.Version);
-                Assert.IsNull(result.PackageInfo.LicenseMetadata);
-                Assert.IsNull(result.PackageInfo.LicenseUrl);
-                Assert.IsNull(result.PackageInfo.Summary);
-                Assert.IsNull(result.PackageInfo.Title);
+                Assert.That(result.Context, Is.EqualTo(project));
+                Assert.That(result.PackageInfo.Identity.Id, Is.EqualTo(expectation.Id));
+                Assert.That(result.PackageInfo.Identity.Version, Is.EqualTo(expectation.Version));
+                Assert.That(result.PackageInfo.LicenseMetadata, Is.Null);
+                Assert.That(result.PackageInfo.LicenseUrl, Is.Null);
+                Assert.That(result.PackageInfo.Summary, Is.Null);
+                Assert.That(result.PackageInfo.Title, Is.Null);
             }
         }
     }
