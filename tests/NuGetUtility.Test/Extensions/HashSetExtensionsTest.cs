@@ -28,7 +28,7 @@ namespace NuGetUtility.Test.Extensions
             var initialElements = _uut!.ToImmutableList();
             _uut!.AddRange(newElements);
 
-            Assert.That(_uut, Is.EquivalentTo(initialElements.AddRange(newElements)));
+            Assert.That(_uut, Is.EquivalentTo(initialElements.AddRange(newElements).Distinct()));
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace NuGetUtility.Test.Extensions
             var initialElements = _uut!.ToImmutableList();
             _uut!.AddRange(initialElements.AddRange(newElements));
 
-            Assert.That(_uut, Is.EquivalentTo(initialElements.AddRange(newElements)));
+            Assert.That(_uut, Is.EquivalentTo(initialElements.AddRange(newElements).Distinct()));
         }
 
         [Test]
