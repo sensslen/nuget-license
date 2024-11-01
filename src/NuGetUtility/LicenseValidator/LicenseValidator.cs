@@ -68,7 +68,7 @@ namespace NuGetUtility.LicenseValidator
             return Array.Exists(_ignoredPackages, ignored => identity.Id.Like(ignored));
         }
 
-        private void AddOrUpdateLicense(
+        private static void AddOrUpdateLicense(
             ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
             IPackageMetadata info,
             LicenseInformationOrigin origin,
@@ -90,7 +90,7 @@ namespace NuGetUtility.LicenseValidator
                 (key, oldValue) => UpdateResult(oldValue, newValue));
         }
 
-        private void AddOrUpdateLicense(
+        private static void AddOrUpdateLicense(
             ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
             IPackageMetadata info,
             LicenseInformationOrigin origin,
@@ -110,7 +110,7 @@ namespace NuGetUtility.LicenseValidator
                 (key, oldValue) => UpdateResult(oldValue, newValue));
         }
 
-        private LicenseValidationResult UpdateResult(LicenseValidationResult oldValue,
+        private static LicenseValidationResult UpdateResult(LicenseValidationResult oldValue,
             LicenseValidationResult newValue)
         {
             oldValue.ValidationErrors.AddRange(newValue.ValidationErrors);
@@ -259,17 +259,17 @@ namespace NuGetUtility.LicenseValidator
             return _allowedLicenses.Any(allowedLicense => allowedLicense.Equals(licenseId));
         }
 
-        private string GetLicenseNotAllowedMessage(string license)
+        private static string GetLicenseNotAllowedMessage(string license)
         {
             return $"License \"{license}\" not found in list of supported licenses";
         }
 
-        private Uri GetLicenseUrl(string spdxIdentifier)
+        private static Uri GetLicenseUrl(string spdxIdentifier)
         {
             return new Uri($"https://licenses.nuget.org/({spdxIdentifier})");
         }
 
-        private LicenseInformationOrigin ToLicenseOrigin(LicenseType type) => type switch
+        private static LicenseInformationOrigin ToLicenseOrigin(LicenseType type) => type switch
         {
             LicenseType.Overwrite => LicenseInformationOrigin.Overwrite,
             LicenseType.Expression => LicenseInformationOrigin.Expression,
