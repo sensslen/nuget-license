@@ -39,9 +39,9 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
             }
         }
 
-#pragma warning disable S1172
+#pragma warning disable S1172 // Unused parameter
         private async Task<bool> TryDownload(string fileNameStem, Uri url, CancellationToken token)
-#pragma warning restore S1172
+#pragma warning restore S1172 // Unused parameter
         {
             var request = new HttpRequestMessage(HttpMethod.Get, url);
 
