@@ -2,7 +2,7 @@
 // The license conditions are provided in the LICENSE file located in the project root
 
 using AutoFixture;
-using AutoFixture.NUnit3;
+using AutoFixture.NUnit4;
 using NuGetUtility.Test.Extensions;
 
 namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning

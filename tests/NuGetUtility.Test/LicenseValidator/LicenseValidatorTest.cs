@@ -58,7 +58,7 @@ namespace NuGetUtility.Test.LicenseValidator
         {
             IAsyncEnumerable<ReferencedPackageWithContext> emptyListToValidate = Enumerable.Empty<ReferencedPackageWithContext>().AsAsyncEnumerable();
             IEnumerable<LicenseValidationResult> results = await _uut.Validate(emptyListToValidate, _token.Token);
-            CollectionAssert.AreEqual(Enumerable.Empty<LicenseValidationResult>(), results);
+            Assert.That(results, Is.Empty);
         }
 
         private IPackageMetadata SetupPackage(string packageId, INuGetVersion packageVersion)
@@ -926,10 +926,9 @@ namespace NuGetUtility.Test.LicenseValidator
 
             LicenseDownloadException? exception =
                 Assert.ThrowsAsync<LicenseDownloadException>(() => _uut.Validate(CreateInput(package, _context), _token.Token));
-            Assert.IsInstanceOf<Exception>(exception!.InnerException);
-            Assert.AreEqual(
-                $"Failed to download license for package {packageId} ({packageVersion}) from url: {urlMatch.Key}.\nContext: {_context}",
-                exception.Message);
+            Assert.That(exception!.InnerException, Is.InstanceOf<Exception>());
+            Assert.That(exception.Message,
+                Is.EqualTo($"Failed to download license for package {packageId} ({packageVersion}) from url: {urlMatch.Key}.\nContext: {_context}"));
         }
 
         [Test]

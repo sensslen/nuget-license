@@ -130,7 +130,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
                 _uut.GetInstalledPackages(_projectPath, includeTransitive));
 
-            Assert.AreEqual($"Failed to validate project assets for project {_projectPath}", exception!.Message);
+            Assert.That(exception!.Message, Is.EqualTo($"Failed to validate project assets for project {_projectPath}"));
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
                 _uut.GetInstalledPackages(_projectPath, includeTransitive));
 
-            Assert.AreEqual($"Failed to validate project assets for project {_projectPath}", exception!.Message);
+            Assert.That(exception!.Message, Is.EqualTo($"Failed to validate project assets for project {_projectPath}"));
         }
 
         [Test]
@@ -155,7 +155,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
                 _uut.GetInstalledPackages(_projectPath, includeTransitive));
 
-            Assert.AreEqual($"Failed to validate project assets for project {_projectPath}", exception!.Message);
+            Assert.That(exception!.Message, Is.EqualTo($"Failed to validate project assets for project {_projectPath}"));
         }
 
         [Test]
@@ -167,11 +167,9 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
                 _uut.GetInstalledPackages(_projectPath, false));
 
-            Assert.AreEqual(
-                $"Failed to identify the target framework information for {_lockFileTargets.First()}",
-                exception!.Message);
-            Assert.IsInstanceOf(typeof(InvalidOperationException), exception.InnerException);
-            Assert.AreEqual("Sequence contains no matching element", exception.InnerException!.Message);
+            Assert.That(exception!.Message, Is.EqualTo($"Failed to identify the target framework information for {_lockFileTargets.First()}"));
+            Assert.That(exception.InnerException, Is.InstanceOf<InvalidOperationException>());
+            Assert.That(exception!.InnerException!.Message, Is.EqualTo("Sequence contains no matching element"));
         }
 
         [Test]
@@ -184,9 +182,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
                 _uut.GetInstalledPackages(_projectPath, false, targetFramework));
 
-            Assert.AreEqual(
-                $"Target framework {targetFramework} not found.",
-                exception!.Message);
+            Assert.That(exception!.Message, Is.EqualTo($"Target framework {targetFramework} not found."));
         }
 
         [Test]
@@ -195,7 +191,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _packageSpecMock.TargetFrameworks.Returns(Enumerable.Empty<ITargetFrameworkInformation>());
             IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true);
-            CollectionAssert.AreEquivalent(_referencedPackagesForFramework.SelectMany(kvp => kvp.Value).Distinct(), result);
+            Assert.That(result, Is.EquivalentTo(_referencedPackagesForFramework.SelectMany(kvp => kvp.Value).Distinct()));
         }
 
         [Test]
@@ -219,7 +215,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void GetInstalledPackages_Should_ReturnCorrectValues_If_IncludingTransitive()
         {
             IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true);
-            CollectionAssert.AreEquivalent(_referencedPackagesForFramework.SelectMany(kvp => kvp.Value).Distinct(), result);
+            Assert.That(result, Is.EquivalentTo(_referencedPackagesForFramework.SelectMany(kvp => kvp.Value).Distinct()));
         }
 
         [Test]
@@ -229,7 +225,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             INuGetFramework targetFramework = _targetFrameworks.Shuffle(new Random(69843456)).First();
             targetFramework.Equals(name).Returns(true);
             IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, name);
-            CollectionAssert.AreEquivalent(_referencedPackagesForFramework[targetFramework], result);
+            Assert.That(result, Is.EquivalentTo(_referencedPackagesForFramework[targetFramework]));
         }
 
         [Test]
@@ -244,10 +240,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                     Array.Exists(expectedReferences, e => e.Id.Equals(l.Name)) &&
                     Array.Exists(expectedReferences, e => e.Version!.Equals(l.Version)))
                 .ToArray();
-            CollectionAssert.AreEquivalent(
-                expectedResult.Select(l =>
-                    new PackageIdentity(l.Name, l.Version)),
-                result);
+            Assert.That(result, Is.EquivalentTo(expectedResult.Select(l => new PackageIdentity(l.Name, l.Version))));
         }
 
         [Test]
@@ -287,7 +280,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             IEnumerable<PackageIdentity> packages = _uut.GetInstalledPackages(_projectPath, includeTransitive);
 
-            CollectionAssert.AreEqual(expectedPackages, packages);
+            Assert.That(packages, Is.EquivalentTo(expectedPackages));
         }
     }
 }

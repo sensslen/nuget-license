@@ -31,7 +31,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void GetProjects_Should_ReturnProjectsAsListDirectly(string projectFile)
         {
             IEnumerable<string> result = _uut.GetProjects(projectFile);
-            CollectionAssert.AreEqual(new[] { Path.GetFullPath(projectFile) }, result);
+            Assert.That(result, Is.EqualTo(new[] { Path.GetFullPath(projectFile) }));
             _msBuild.DidNotReceive().GetProjectsFromSolution(Arg.Any<string>());
         }
 
@@ -53,7 +53,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _msBuild.GetProjectsFromSolution(Arg.Any<string>()).Returns(Enumerable.Empty<string>());
 
             IEnumerable<string> result = _uut.GetProjects(solutionFile);
-            CollectionAssert.AreEqual(Array.Empty<string>(), result);
+            Assert.That(result, Is.Empty);
 
             _msBuild.Received(1).GetProjectsFromSolution(Path.GetFullPath(solutionFile));
         }
@@ -67,7 +67,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _msBuild.GetProjectsFromSolution(Arg.Any<string>()).Returns(projects);
 
             IEnumerable<string> result = _uut.GetProjects(solutionFile);
-            CollectionAssert.AreEqual(Array.Empty<string>(), result);
+            Assert.That(result, Is.Empty);
 
             _msBuild.Received(1).GetProjectsFromSolution(Path.GetFullPath(solutionFile));
         }
@@ -82,7 +82,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _msBuild.GetProjectsFromSolution(Arg.Any<string>()).Returns(projects);
 
             IEnumerable<string> result = _uut.GetProjects(solutionFile);
-            CollectionAssert.AreEqual(projects.Select(Path.GetFullPath), result);
+            Assert.That(result, Is.EqualTo(projects.Select(Path.GetFullPath)));
 
             _msBuild.Received(1).GetProjectsFromSolution(Path.GetFullPath(solutionFile));
         }
@@ -101,7 +101,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 .Returns(existingProjects.Concat(missingProjects).Shuffle(54321));
 
             IEnumerable<string> result = _uut.GetProjects(solutionFile);
-            CollectionAssert.AreEquivalent(existingProjects.Select(Path.GetFullPath), result);
+            Assert.That(result, Is.EquivalentTo(existingProjects.Select(Path.GetFullPath)));
 
             _msBuild.Received(1).GetProjectsFromSolution(Path.GetFullPath(solutionFile));
         }
@@ -111,7 +111,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             var msbuild = new MsBuildAbstraction();
             IEnumerable<string> result = msbuild.GetProjectsFromSolution("../../../../targets/Projects.sln");
-            Assert.AreEqual(5, result.Count());
+            Assert.That(result.Count(), Is.EqualTo(5));
         }
 
         [Test]
@@ -119,7 +119,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             var msbuild = new MsBuildAbstraction();
             IEnumerable<string> result = msbuild.GetProjectsFromSolution(Path.GetFullPath("../../../../targets/Projects.sln"));
-            Assert.AreEqual(5, result.Count());
+            Assert.That(result.Count(), Is.EqualTo(5));
         }
 
         private void CreateFiles(IEnumerable<string> files)

@@ -85,7 +85,7 @@ namespace NuGetUtility.Test.Output
                 .ToList();
             await _uut.Write(stream, result);
 
-            await Verify(stream.AsString());
+            await Verify(stream.AsString()).HashParameters();
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace NuGetUtility.Test.Output
             var validated = ValidatedLicenseFaker.GenerateForever().Take(validatedLicenseCount).ToList();
             await _uut.Write(stream, validated);
 
-            await Verify(stream.AsString());
+            await Verify(stream.AsString()).HashParameters();
         }
 
         private class NuGetVersion : INuGetVersion

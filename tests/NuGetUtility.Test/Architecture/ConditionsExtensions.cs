@@ -11,7 +11,7 @@ namespace NuGetUtility.Test.Architecture
         {
             TestResult ruleResult = conditions.GetResult();
             string failingTypeNames = string.Join(Environment.NewLine, ruleResult.FailingTypeNames ?? Array.Empty<string>());
-            NUnit.Framework.Assert.True(ruleResult.IsSuccessful, $"{message}{Environment.NewLine}Offending types:{Environment.NewLine}{failingTypeNames}");
+            NUnit.Framework.Assert.That(ruleResult.IsSuccessful, Is.True, $"{message}{Environment.NewLine}Offending types:{Environment.NewLine}{failingTypeNames}");
         }
     }
 }

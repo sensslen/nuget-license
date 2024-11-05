@@ -3,7 +3,7 @@
 
 using System.Collections.Immutable;
 using AutoFixture;
-using AutoFixture.NUnit3;
+using AutoFixture.NUnit4;
 using NuGetUtility.Extensions;
 
 namespace NuGetUtility.Test.Extensions
@@ -28,7 +28,7 @@ namespace NuGetUtility.Test.Extensions
             var initialElements = _uut!.ToImmutableList();
             _uut!.AddRange(newElements);
 
-            CollectionAssert.AreEquivalent(initialElements.AddRange(newElements).Distinct(), _uut);
+            Assert.That(_uut, Is.EquivalentTo(initialElements.AddRange(newElements).Distinct()));
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace NuGetUtility.Test.Extensions
             var initialElements = _uut!.ToImmutableList();
             _uut!.AddRange(initialElements.AddRange(newElements));
 
-            CollectionAssert.AreEquivalent(initialElements.AddRange(newElements).Distinct(), _uut);
+            Assert.That(_uut, Is.EquivalentTo(initialElements.AddRange(newElements).Distinct()));
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace NuGetUtility.Test.Extensions
             _uut!.AddRange(initialElements);
             _uut!.AddRange(initialElements);
 
-            CollectionAssert.AreEquivalent(initialElements, _uut);
+            Assert.That(_uut, Is.EquivalentTo(initialElements));
         }
     }
 }

@@ -163,7 +163,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive, framework);
 
-            CollectionAssert.AreEquivalent(packages, result.Select(p => p.Id));
+            Assert.That(packages, Is.EquivalentTo(result.Select(p => p.Id)));
         }
     }
 }
