@@ -26,7 +26,7 @@ namespace NuGetUtility.PackageInformationReader
 
         public string? Title => CustomPackageInformation?.Title;
 
-        public Uri? LicenseUrl => null;
+        public Uri? LicenseUrl => CustomPackageInformation?.LicenseUrl;
 
         public string? ProjectUrl => CustomPackageInformation?.ProjectUrl;
 

@@ -95,6 +95,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             Assert.That(packages, Is.EquivalentTo(result.Select(s => new CustomPackageInformation(s.PackageInfo.Identity.Id,
                                                                 s.PackageInfo.Identity.Version,
                                                                 s.PackageInfo.LicenseMetadata!.License,
+                                                                s.PackageInfo.LicenseUrl,
                                                                 s.PackageInfo.Copyright,
                                                                 s.PackageInfo.Authors,
                                                                 s.PackageInfo.Title,
