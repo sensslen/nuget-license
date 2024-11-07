@@ -126,6 +126,7 @@ namespace NuGetUtility.Test.PackageInformationReader
                 mockedInfo.Summary.Returns(info.Summary);
                 mockedInfo.Description.Returns(info.Description);
                 mockedInfo.LicenseMetadata.Returns(new LicenseMetadata(LicenseType.Expression, info.License));
+                mockedInfo.LicenseUrl.Returns(info.LicenseUrl);
                 _globalPackagesFolderUtility.GetPackage(identity).Returns(mockedInfo);
 
                 return identity;
@@ -148,6 +149,7 @@ namespace NuGetUtility.Test.PackageInformationReader
                 IPackageMetadata resultingInfo = Substitute.For<IPackageMetadata>();
                 resultingInfo.Identity.Returns(new PackageIdentity(package.Id, package.Version));
                 resultingInfo.LicenseMetadata.Returns(new LicenseMetadata(LicenseType.Expression, package.License));
+                resultingInfo.LicenseUrl.Returns(package.LicenseUrl);
                 resultingInfo.Copyright.Returns(package.Copyright);
                 resultingInfo.Authors.Returns(package.Authors);
                 resultingInfo.Title.Returns(package.Title);
