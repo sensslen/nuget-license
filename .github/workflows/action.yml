@@ -15,7 +15,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
 
-        framework: [net6.0, net8.0]
+        framework: [net6.0, net8.0, net9.0]
 
         include:
           - framework: net6.0
@@ -23,6 +23,9 @@ jobs:
 
           - framework: net8.0
             dotnetVersion: "8.0.x"
+
+          - framework: net9.0
+            dotnetVersion: "9.0.x"
 
     steps:
       - uses: actions/checkout@v4
@@ -46,7 +49,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        framework: [net6.0, net8.0, net472]
+        framework: [net6.0, net8.0, net472, net9.0]
 
         include:
           - framework: net6.0
@@ -54,6 +57,9 @@ jobs:
 
           - framework: net8.0
             dotnetVersion: "8.0.x"
+
+          - framework: net9.0
+            dotnetVersion: "9.0.x"
     steps:
       - uses: actions/checkout@v4
 
@@ -96,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        targetFramework: [net6.0, net8.0]
+        targetFramework: [net6.0, net8.0, net9.0]
         project: [App, Tests, ProjectWithReferenceContainingLicenseExpression]
 
         include:
@@ -105,6 +111,9 @@ jobs:
 
           - targetFramework: net8.0
             dotnetVersion: "8.0.x"
+
+          - targetFramework: net9.0
+            dotnetVersion: "9.0.x"
 
     steps:
       - uses: actions/checkout@v4
@@ -179,7 +188,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        targetFramework: [net6.0, net8.0]
+        targetFramework: [net6.0, net8.0, net9.0]
 
         include:
           - targetFramework: net6.0
@@ -187,6 +196,9 @@ jobs:
 
           - targetFramework: net8.0
             dotnetVersion: "8.0.x"
+
+          - targetFramework: net9.0
+            dotnetVersion: "9.0.x"
 
     steps:
       - uses: actions/checkout@v4

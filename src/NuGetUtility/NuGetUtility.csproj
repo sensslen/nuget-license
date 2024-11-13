@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net472;net6.0;net8.0;net9.0</TargetFrameworks>
     <RepositoryType>git</RepositoryType>
     <Version>100.100.100</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
@@ -40,9 +40,13 @@
     <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.11.*" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.12.*" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
-    <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="6.0.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
     <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.12.*" />
     <PackageReference Include="PolySharp" Version="1.14.*">
       <PrivateAssets>all</PrivateAssets>
