@@ -30,18 +30,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+      - name: Setup dotnet 6.0.x
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+          dotnet-version: 6.0.x
+
+      - name: Setup dotnet 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup dotnet 9.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
 
       - uses: browser-actions/setup-chrome@latest
 
       - name: restore
-        run: dotnet restore -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet restore
 
       - name: build
-        run: dotnet build --configuration Release -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet build --configuration Release --no-restore
 
       - name: test
         run: dotnet test --configuration Release -f ${{ matrix.framework }} --no-restore
@@ -63,10 +73,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+      - name: Setup dotnet 6.0.x
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+          dotnet-version: 6.0.x
+
+      - name: Setup dotnet 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup dotnet 9.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
 
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln
@@ -77,7 +97,7 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: build
-        run: msbuild -t:rebuild -property:Configuration=TestWindows /p:TargetFramework=${{ matrix.framework }}
+        run: msbuild -t:rebuild -property:Configuration=TestWindows
 
       - name: test
         uses: josepho0918/vstest-action@main
