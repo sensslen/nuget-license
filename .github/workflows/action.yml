@@ -41,7 +41,7 @@ jobs:
         run: dotnet restore -p:TargetFramework=${{ matrix.framework }}
 
       - name: build
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release -p:TargetFramework=${{ matrix.framework }}
 
       - name: test
         run: dotnet test --configuration Release -f ${{ matrix.framework }} --no-restore
@@ -77,7 +77,7 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: build
-        run: msbuild -t:rebuild -property:Configuration=TestWindows -p:TargetFramework=${{ matrix.framework }}
+        run: msbuild -t:rebuild -property:Configuration=TestWindows /p:TargetFramework=${{ matrix.framework }}
 
       - name: test
         uses: josepho0918/vstest-action@main
@@ -91,6 +91,11 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+
+      - name: Setup dotnet 9.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
 
       - name: restore
         run: dotnet restore
@@ -126,7 +131,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln
+        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
 
       - name: build
         run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.targetFramework }} --no-restore
@@ -155,7 +160,7 @@ jobs:
           fetch-depth: 0
 
       - uses: nuget/setup-nuget@v2
-      - run: nuget restore NuGetUtility.sln
+      - run: nuget restore NuGetUtility.sln -p:TargetFramework=net472
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -169,7 +174,7 @@ jobs:
           echo "path=$path" >> $env:GITHUB_OUTPUT
 
       - name: build
-        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }}
+        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }} /p:TargetFramework=net472
 
       - name: check
         run: ${{ steps.release_path.outputs.path }}/NuGetLicenseFramework.exe -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}
@@ -211,7 +216,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln
+        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
 
       - uses: paulhatch/semantic-version@v5.4.0
         id: version
@@ -239,7 +244,7 @@ jobs:
           fetch-depth: 0
 
       - uses: nuget/setup-nuget@v2
-      - run: nuget restore NuGetUtility.sln
+      - run: nuget restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -260,7 +265,7 @@ jobs:
           version_format: "${major}.${minor}.${patch}-test${increment}"
 
       - name: build
-        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }} /p:Version=${{ steps.version.outputs.version }}
+        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }} /p:Version=${{ steps.version.outputs.version }} /p:TargetFramework=net472
 
       - name: check app version
         shell: pwsh
