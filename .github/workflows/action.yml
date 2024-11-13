@@ -69,7 +69,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
       - uses: nuget/setup-nuget@v2
-      - run: nuget restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
+      - run: nuget restore NuGetUtility.sln
 
       - uses: browser-actions/setup-chrome@latest
 
@@ -160,7 +160,7 @@ jobs:
           fetch-depth: 0
 
       - uses: nuget/setup-nuget@v2
-      - run: nuget restore NuGetUtility.sln -p:TargetFramework=net472
+      - run: nuget restore NuGetUtility.sln
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -244,7 +244,7 @@ jobs:
           fetch-depth: 0
 
       - uses: nuget/setup-nuget@v2
-      - run: nuget restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
+      - run: nuget restore NuGetUtility.sln
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
