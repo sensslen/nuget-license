@@ -98,6 +98,11 @@ namespace NuGetUtility
             Description = "This option allows to select a Target framework moniker (https://learn.microsoft.com/en-us/dotnet/standard/frameworks) for which to analyze dependencies.")]
         public string? TargetFramework { get; } = null;
 
+        [Option(LongName = "ignored-columns-from-output",
+            ShortName = "ignored-columns",
+            Description = "This option allows to specify column name(s) to exclude from the output")]
+        public string? IgnoredColumns { get; } = null;
+
         private static string GetVersion()
             => typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
 
@@ -180,9 +185,9 @@ namespace NuGetUtility
         {
             return OutputType switch
             {
-                OutputType.Json => new JsonOutputFormatter(false, ReturnErrorsOnly, !IncludeIgnoredPackages),
-                OutputType.JsonPretty => new JsonOutputFormatter(true, ReturnErrorsOnly, !IncludeIgnoredPackages),
-                OutputType.Table => new TableOutputFormatter(ReturnErrorsOnly, !IncludeIgnoredPackages),
+                OutputType.Json => new JsonOutputFormatter(false, ReturnErrorsOnly, !IncludeIgnoredPackages, GetIgnoredColumns()),
+                OutputType.JsonPretty => new JsonOutputFormatter(true, ReturnErrorsOnly, !IncludeIgnoredPackages, GetIgnoredColumns()),
+                OutputType.Table => new TableOutputFormatter(ReturnErrorsOnly, !IncludeIgnoredPackages, GetIgnoredColumns()),
                 _ => throw new ArgumentOutOfRangeException($"{OutputType} not supported")
             };
         }
@@ -285,6 +290,29 @@ namespace NuGetUtility
             }
 
             throw new FileNotFoundException("Please provide an input file");
+        }
+
+        private OutputColumnType[] GetIgnoredColumns()
+        {
+            if (IgnoredColumns == null)
+            {
+                return Array.Empty<OutputColumnType>();
+            }
+
+            if (File.Exists(IgnoredColumns))
+            {
+                string[] columnNames = JsonSerializer.Deserialize<string[]>(File.ReadAllText(IgnoredColumns))!;
+                try
+                {
+                    return columnNames.Select(columnName => (OutputColumnType)Enum.Parse(typeof(OutputColumnType), columnName, true)).ToArray();
+                }
+                catch(ArgumentException e)
+                {
+                    throw new ArgumentOutOfRangeException($"One of the column names ({e.ParamName}) isn't valid");
+                }
+            }
+
+            return new[] { (OutputColumnType)Enum.Parse(typeof(OutputColumnType), IgnoredColumns, true) };
         }
     }
 }

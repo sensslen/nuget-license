@@ -1,0 +1,27 @@
+﻿+--------------------------------------+
+| Package                              |
++--------------------------------------+
+| Customer Metrics Analyst             |
+| Principal Functionality Agent        |
+| Future Accounts Designer             |
+| Internal Factors Facilitator         |
+| Global Usability Manager             |
+| Global Configuration Consultant      |
+| Legacy Metrics Planner               |
+| Principal Brand Developer            |
+| Regional Factors Designer            |
+| Future Data Manager                  |
+| District Creative Designer           |
+| Global Markets Administrator         |
+| Central Tactics Director             |
+| Dynamic Configuration Assistant      |
+| National Security Orchestrator       |
+| Customer Interactions Representative |
+| Investor Interactions Designer       |
+| Investor Tactics Strategist          |
+| Lead Configuration Liaison           |
+| Dynamic Factors Producer             |
+| Human Accountability Developer       |
+| Chief Functionality Planner          |
+| Corporate Intranet Associate         |
++--------------------------------------+

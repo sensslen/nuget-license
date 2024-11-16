@@ -1,0 +1,10 @@
+﻿+-------------------------------+
+| Package                       |
++-------------------------------+
+| District Creative Designer    |
+| Principal Functionality Agent |
+| Corporate Intranet Associate  |
+| Lead Configuration Liaison    |
+| Legacy Metrics Planner        |
+| Chief Functionality Planner   |
++-------------------------------+

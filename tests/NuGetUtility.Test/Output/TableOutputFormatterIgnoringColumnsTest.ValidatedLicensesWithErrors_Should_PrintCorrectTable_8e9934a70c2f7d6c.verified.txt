@@ -1,0 +1,8 @@
+﻿+-------------------------------+
+| Package                       |
++-------------------------------+
+| Principal Brand Developer     |
+| Principal Functionality Agent |
+| Future Data Manager           |
+| Investor Tactics Strategist   |
++-------------------------------+

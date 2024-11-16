@@ -1,6 +1,7 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using NuGetUtility.Extensions;
 using NuGetUtility.LicenseValidator;
 
 namespace NuGetUtility.Output.Table
@@ -9,28 +10,30 @@ namespace NuGetUtility.Output.Table
     {
         private readonly bool _printErrorsOnly;
         private readonly bool _skipIgnoredPackages;
+        private readonly HashSet<OutputColumnType>? _ignoredColumns;
 
-        public TableOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages)
+        public TableOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages, IEnumerable<OutputColumnType>? ignoredColumns = null)
         {
             _printErrorsOnly = printErrorsOnly;
             _skipIgnoredPackages = skipIgnoredPackages;
+            _ignoredColumns = ignoredColumns?.ToHashSet();
         }
 
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
         {
-            var errorColumnDefinition = new ColumnDefinition("Error", license => license.ValidationErrors.Select(e => e.Error), license => license.ValidationErrors.Any());
+            var errorColumnDefinition = new ColumnDefinition(OutputColumnType.ValidationErrors, license => license.ValidationErrors.Select(e => e.Error), license => license.ValidationErrors.Any());
             ColumnDefinition[] columnDefinitions = new[]
             {
-                new ColumnDefinition("Package", license => license.PackageId, license => true, true),
-                new ColumnDefinition("Version", license => license.PackageVersion, license => true, true),
-                new ColumnDefinition("License Information Origin", license => license.LicenseInformationOrigin, license => true, true),
-                new ColumnDefinition("License Expression", license => license.License, license => license.License != null),
-                new ColumnDefinition("License Url", license => license.LicenseUrl, license => license.LicenseUrl != null),
-                new ColumnDefinition("Copyright", license => license.Copyright, license => license.Copyright != null),
-                new ColumnDefinition("Authors", license => license.Authors, license => license.Authors != null),
-                new ColumnDefinition("Package Project Url",license => license.PackageProjectUrl, license => license.PackageProjectUrl != null),
+                new ColumnDefinition(OutputColumnType.PackageId, license => license.PackageId, license => true, true),
+                new ColumnDefinition(OutputColumnType.PackageVersion, license => license.PackageVersion, license => true, true),
+                new ColumnDefinition(OutputColumnType.LicenseInformationOrigin, license => license.LicenseInformationOrigin, license => true, true),
+                new ColumnDefinition(OutputColumnType.License, license => license.License, license => license.License != null),
+                new ColumnDefinition(OutputColumnType.LicenseUrl, license => license.LicenseUrl, license => license.LicenseUrl != null),
+                new ColumnDefinition(OutputColumnType.Copyright, license => license.Copyright, license => license.Copyright != null),
+                new ColumnDefinition(OutputColumnType.Authors, license => license.Authors, license => license.Authors != null),
+                new ColumnDefinition(OutputColumnType.PackageProjectUrl,license => license.PackageProjectUrl, license => license.PackageProjectUrl != null),
                 errorColumnDefinition,
-                new ColumnDefinition("Error Context", license => license.ValidationErrors.Select(e => e.Context), license => license.ValidationErrors.Any()),
+                new ColumnDefinition(OutputColumnType.ErrorContext, license => license.ValidationErrors.Select(e => e.Context), license => license.ValidationErrors.Any()),
             };
 
             foreach (LicenseValidationResult license in results)
@@ -38,6 +41,14 @@ namespace NuGetUtility.Output.Table
                 foreach (ColumnDefinition? definition in columnDefinitions)
                 {
                     definition.Enabled |= definition.IsRelevant(license);
+                }
+            }
+
+            if (_ignoredColumns is not null)
+            {
+                foreach (ColumnDefinition? definition in columnDefinitions)
+                {
+                    definition.Enabled &= !_ignoredColumns.Contains(definition.Type);
                 }
             }
 
@@ -59,9 +70,11 @@ namespace NuGetUtility.Output.Table
                 .Print();
         }
 
-        private sealed record ColumnDefinition(string Title, Func<LicenseValidationResult, object?> PropertyAccessor, Func<LicenseValidationResult, bool> IsRelevant, bool Enabled = false)
+        private sealed record ColumnDefinition(OutputColumnType Type, Func<LicenseValidationResult, object?> PropertyAccessor, Func<LicenseValidationResult, bool> IsRelevant, bool Enabled = false)
         {
             public bool Enabled { get; set; } = Enabled;
+
+            public string Title { get; } = Type.GetDescription() ?? throw new InvalidOperationException($"Enum value {Type} is missing the Description attribute");
         }
     }
 }

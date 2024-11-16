@@ -1,0 +1,13 @@
+﻿+-------------------------------+
+| Package                       |
++-------------------------------+
+| District Creative Designer    |
+| Principal Functionality Agent |
+| Chief Functionality Planner   |
+| Investor Tactics Strategist   |
+| Future Data Manager           |
+| Legacy Metrics Planner        |
+| Corporate Intranet Associate  |
+| Lead Configuration Liaison    |
+| Principal Brand Developer     |
++-------------------------------+

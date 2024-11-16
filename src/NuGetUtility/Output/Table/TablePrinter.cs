@@ -17,9 +17,12 @@ namespace NuGetUtility.Output.Table
 
         public TablePrinter(Stream stream, IEnumerable<string> titles)
         {
-            _stream = stream;
             _titles = titles.ToArray();
+            _stream = stream;
             _lengths = _titles.Select(t => t.Length).ToArray();
+
+            if (_titles.Length == 0)
+                throw new InvalidOperationException("Too many columns ignored would result in a empty file !");
         }
 
         public void AddRow(object?[] row)

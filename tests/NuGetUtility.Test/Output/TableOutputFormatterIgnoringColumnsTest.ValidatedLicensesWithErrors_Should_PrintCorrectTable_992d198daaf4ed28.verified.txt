@@ -1,0 +1,7 @@
+﻿+-------------------------------+
+| Package                       |
++-------------------------------+
+| Investor Tactics Strategist   |
+| Principal Functionality Agent |
+| Future Data Manager           |
++-------------------------------+
