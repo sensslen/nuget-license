@@ -31,7 +31,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Selenium.WebDriver" Version="4.26.1" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.27.0" />
     <PackageReference Include="Verify.NUnit" Version="28.3.2" />
   </ItemGroup>
 
