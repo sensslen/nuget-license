@@ -98,10 +98,17 @@ namespace NuGetUtility
             Description = "This option allows to select a Target framework moniker (https://learn.microsoft.com/en-us/dotnet/standard/frameworks) for which to analyze dependencies.")]
         public string? TargetFramework { get; } = null;
 
+        [Option(LongName = "file-output",
+            ShortName = "fo",
+            Description = "The destination file to put the valiation output to. If omitted, the output is printed to the console.")]
+        public string? DestinationFile { get; } = null;
+
         private static string GetVersion()
             => typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
 
+#pragma warning disable S1144 // Unused private types or members should be removed
         private async Task<int> OnExecuteAsync(CancellationToken cancellationToken)
+#pragma warning restore S1144 // Unused private types or members should be removed
         {
             using var httpClient = new HttpClient();
             string[] inputFiles = GetInputFiles();
@@ -119,37 +126,41 @@ namespace NuGetUtility
                 allowedLicenses,
                 urlLicenseFileDownloader,
                 ignoredPackages);
-            var projectReaderExceptions = new List<Exception>();
 
             string[] excludedProjects = GetExcludedProjects();
             IEnumerable<string> projects = inputFiles.SelectMany(projectCollector.GetProjects).Where(p => !Array.Exists(excludedProjects, ignored => p.Like(ignored)));
-            IEnumerable<ProjectWithReferencedPackages> packagesForProject = projects.Select(p =>
-            {
-                IEnumerable<PackageIdentity>? installedPackages = null;
-                try
-                {
-                    installedPackages = projectReader.GetInstalledPackages(p, IncludeTransitive, TargetFramework);
-                }
-                catch (Exception e)
-                {
-                    projectReaderExceptions.Add(e);
-                }
-                return new ProjectWithReferencedPackages(p, installedPackages ?? Enumerable.Empty<PackageIdentity>());
-            });
+            IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects, projectReader, out IReadOnlyCollection<Exception>? projectReaderExceptions);
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
                 packagesForProject.SelectMany(p => GetPackageInformations(p, overridePackageInformation, cancellationToken));
             var results = (await validator.Validate(downloadedLicenseInformation, cancellationToken)).ToList();
 
-            if (projectReaderExceptions.Any())
+            if (projectReaderExceptions.Count > 0)
             {
                 await WriteValidationExceptions(projectReaderExceptions);
 
                 return -1;
             }
 
-            using Stream outputStream = Console.OpenStandardOutput();
-            await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
-            return results.Count(r => r.ValidationErrors.Any());
+            try
+            {
+                using Stream outputStream = GetOutputStream();
+                await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
+                return results.Count(r => r.ValidationErrors.Any());
+            }
+            catch (Exception e)
+            {
+                await Console.Error.WriteLineAsync(e.ToString());
+                return -1;
+            }
+        }
+
+        private Stream GetOutputStream()
+        {
+            if (DestinationFile is null)
+            {
+                return Console.OpenStandardOutput();
+            }
+            return File.Open(Path.GetFullPath(DestinationFile), FileMode.Create, FileAccess.Write, FileShare.None);
         }
 
         private static IPackagesConfigReader GetPackagesConfigReader()
@@ -157,7 +168,7 @@ namespace NuGetUtility
 #if NETFRAMEWORK
             return new WindowsPackagesConfigReader();
 #else
-           return OperatingSystem.IsWindows() ? new WindowsPackagesConfigReader() : new FailingPackagesConfigReader();
+            return OperatingSystem.IsWindows() ? new WindowsPackagesConfigReader() : new FailingPackagesConfigReader();
 #endif
         }
 
@@ -202,7 +213,7 @@ namespace NuGetUtility
             return new FileDownloader(httpClient, DownloadLicenseInformation);
         }
 
-        private static async Task WriteValidationExceptions(List<Exception> validationExceptions)
+        private static async Task WriteValidationExceptions(IReadOnlyCollection<Exception> validationExceptions)
         {
             foreach (Exception exception in validationExceptions)
             {
@@ -285,6 +296,28 @@ namespace NuGetUtility
             }
 
             throw new FileNotFoundException("Please provide an input file");
+        }
+
+        private IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(IEnumerable<string> projects, ReferencedPackageReader reader, out IReadOnlyCollection<Exception> exceptions)
+        {
+            var encounteredExceptions = new List<Exception>();
+            var result = new List<ProjectWithReferencedPackages>();
+            exceptions = encounteredExceptions;
+            foreach (string project in projects)
+            {
+
+                try
+                {
+                    IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, IncludeTransitive, TargetFramework);
+                    result.Add(new ProjectWithReferencedPackages(project, installedPackages));
+                }
+                catch (Exception e)
+                {
+                    encounteredExceptions.Add(e);
+                }
+            }
+
+            return result;
         }
     }
 }

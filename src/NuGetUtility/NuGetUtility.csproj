@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.11.*" />
+    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.12.*" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">

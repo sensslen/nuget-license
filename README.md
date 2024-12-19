@@ -39,6 +39,7 @@ Usage: nuget-license [options]
 | `-include-ignored\|--include-ignored-packages` | If this option is set, the packages that are ignored from validation are still included in the output. |
 | `-exclude-projects\|--exclude-projects-matching <EXCLUDED_PROJECTS>` | This option allows to specify project name(s) to exclude from the analysis. This can be useful to exclude test projects from the analysis when supplying a solution file as input. Wildcard characters (*) are supported to specify ranges of ignored projects. The input can either be a file name containing a list of project names in json format or a plain string that is then used as a single entry. |
 | `-f\|--target-framework <TARGET_FRAMEWORK>` | This option allows to select a Target framework moniker (https://learn.microsoft.com/en-us/dotnet/standard/frameworks) for which to analyze dependencies. |
+| `-fo\|--file-output <DESTINATION_FILE>` | The destination file to put the valiation output to. If omitted, the output is printed to the console. |
 | `-?\|-h\|--help` | Show help information. |
 
 ## Example tool commands
