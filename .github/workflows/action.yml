@@ -15,7 +15,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
 
-        framework: [net6.0, net8.0]
+        framework: [net6.0, net8.0, net9.0]
 
         include:
           - framework: net6.0
@@ -24,21 +24,34 @@ jobs:
           - framework: net8.0
             dotnetVersion: "8.0.x"
 
+          - framework: net9.0
+            dotnetVersion: "9.0.x"
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+      - name: Setup dotnet 6.0.x
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+          dotnet-version: 6.0.x
+
+      - name: Setup dotnet 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup dotnet 9.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
 
       - uses: browser-actions/setup-chrome@latest
 
       - name: restore
-        run: dotnet restore -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet restore
 
       - name: build
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release --no-restore
 
       - name: test
         run: dotnet test --configuration Release -f ${{ matrix.framework }} --no-restore
@@ -46,7 +59,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        framework: [net6.0, net8.0, net472]
+        framework: [net6.0, net8.0, net472, net9.0]
 
         include:
           - framework: net6.0
@@ -54,13 +67,26 @@ jobs:
 
           - framework: net8.0
             dotnetVersion: "8.0.x"
+
+          - framework: net9.0
+            dotnetVersion: "9.0.x"
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+      - name: Setup dotnet 6.0.x
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+          dotnet-version: 6.0.x
+
+      - name: Setup dotnet 8.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup dotnet 9.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
 
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln
@@ -86,6 +112,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Setup dotnet 9.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
       - name: restore
         run: dotnet restore
 
@@ -96,15 +127,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        targetFramework: [net6.0, net8.0]
+        framework: [net6.0, net8.0, net9.0]
         project: [App, Tests, ProjectWithReferenceContainingLicenseExpression]
 
         include:
-          - targetFramework: net6.0
+          - framework: net6.0
             dotnetVersion: "6.0.x"
 
-          - targetFramework: net8.0
+          - framework: net8.0
             dotnetVersion: "8.0.x"
+
+          - framework: net9.0
+            dotnetVersion: "9.0.x"
 
     steps:
       - uses: actions/checkout@v4
@@ -117,18 +151,18 @@ jobs:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln
+        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
 
       - name: build
-        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.targetFramework }} --no-restore
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.framework }} --no-restore
 
       - name: check
-        run: dotnet ./release/NuGetLicenseCore.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.targetFramework }}
+        run: dotnet ./release/NuGetLicenseCore.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.framework }}
 
       - name: show downloaded licenses
         shell: pwsh
         run: |
-          foreach($file in Get-ChildItem -Path ./licenses/${{ matrix.project }}/${{ matrix.targetFramework }})
+          foreach($file in Get-ChildItem -Path ./licenses/${{ matrix.project }}/${{ matrix.framework }})
           {
             Write-Host ::group::$file
             Get-Content $file.FullName
@@ -145,6 +179,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup dotnet 9.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln
 
@@ -160,7 +199,7 @@ jobs:
           echo "path=$path" >> $env:GITHUB_OUTPUT
 
       - name: build
-        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }}
+        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }} /p:TargetFramework=net472
 
       - name: check
         run: ${{ steps.release_path.outputs.path }}/NuGetLicenseFramework.exe -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}
@@ -179,14 +218,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        targetFramework: [net6.0, net8.0]
+        framework: [net6.0, net8.0, net9.0]
 
         include:
-          - targetFramework: net6.0
+          - framework:  net6.0
             dotnetVersion: "6.0.x"
 
-          - targetFramework: net8.0
+          - framework:  net8.0
             dotnetVersion: "8.0.x"
+
+          - framework:  net9.0
+            dotnetVersion: "9.0.x"
 
     steps:
       - uses: actions/checkout@v4
@@ -199,7 +241,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln
+        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
 
       - uses: paulhatch/semantic-version@v5.4.0
         id: version
@@ -209,7 +251,7 @@ jobs:
           version_format: "${major}.${minor}.${patch}-test${increment}"
 
       - name: build
-        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.targetFramework }} --no-restore -p:Version=${{ steps.version.outputs.version }}
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.framework }} --no-restore -p:Version=${{ steps.version.outputs.version }}
 
       - name: check app version
         shell: pwsh
@@ -225,6 +267,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup dotnet 9.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
 
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln
@@ -248,7 +295,7 @@ jobs:
           version_format: "${major}.${minor}.${patch}-test${increment}"
 
       - name: build
-        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }} /p:Version=${{ steps.version.outputs.version }}
+        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }} /p:Version=${{ steps.version.outputs.version }} /p:TargetFramework=net472
 
       - name: check app version
         shell: pwsh
