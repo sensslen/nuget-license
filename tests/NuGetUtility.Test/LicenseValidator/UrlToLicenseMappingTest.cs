@@ -10,6 +10,7 @@ namespace NuGetUtility.Test.LicenseValidator
     [TestFixture]
     public class UrlToLicenseMappingTest
     {
+        [Ignore("chrome")]
         [Parallelizable(scope: ParallelScope.All)]
         [TestCaseSource(typeof(UrlToLicenseMapping), nameof(UrlToLicenseMapping.Default))]
         public async Task License_Should_Be_Available_And_Match_Expected_License(KeyValuePair<Uri, string> mappedValue)

@@ -44,6 +44,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [TestCase("A.sln")]
         [TestCase("B.sln")]
         [TestCase("C.sln")]
+        [TestCase("A.slnx")]
         public void GetProjects_Should_QueryMsBuildToGetProjectsForSolutionFiles(string solutionFile)
         {
             _ = _uut.GetProjects(solutionFile);
@@ -54,6 +55,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [TestCase("A.sln")]
         [TestCase("B.sln")]
         [TestCase("C.sln")]
+        [TestCase("C.slnx")]
         public void GetProjects_Should_ReturnEmptyArray_If_SolutionContainsNoProjects(string solutionFile)
         {
             _msBuild.GetProjectsFromSolution(Arg.Any<string>()).Returns(Enumerable.Empty<string>());
@@ -67,6 +69,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [TestCase("A.sln")]
         [TestCase("B.sln")]
         [TestCase("C.sln")]
+        [TestCase("B.slnx")]
         public void GetProjects_Should_ReturnEmptyArray_If_SolutionContainsProjectsThatDontExist(string solutionFile)
         {
             IEnumerable<string> projects = _fixture.CreateMany<string>();
@@ -81,6 +84,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [TestCase("A.sln")]
         [TestCase("B.sln")]
         [TestCase("C.sln")]
+        [TestCase("C.slnx")]
         public void GetProjects_Should_ReturnArrayOfProjects_If_SolutionContainsProjectsThatDoExist(string solutionFile)
         {
             string[] projects = _fixture.CreateMany<string>().ToArray();
@@ -96,6 +100,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [TestCase("A.sln")]
         [TestCase("B.sln")]
         [TestCase("C.sln")]
+        [TestCase("A.slnx")]
         public void GetProjects_Should_ReturnOnlyExistingProjectsInSolutionFile(string solutionFile)
         {
             string[] existingProjects = _fixture.CreateMany<string>().ToArray();
@@ -117,6 +122,14 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             var msbuild = new MsBuildAbstraction();
             IEnumerable<string> result = msbuild.GetProjectsFromSolution("../../../../targets/Projects.sln");
+            await Verify(string.Join(",", result), _osPlatformSpecificVerifySettings);
+        }
+
+        [Test, Ignore("Ignore this specific test as long as msbuild does not fully support slnx solutions everywhere")]
+        public async Task GetProjectsFromXmlSolution_Should_ReturnProjectsInActualSolutionFileRelativePath()
+        {
+            var msbuild = new MsBuildAbstraction();
+            IEnumerable<string> result = msbuild.GetProjectsFromSolution("../../../../targets/slnx/slnx.slnx");
             await Verify(string.Join(",", result), _osPlatformSpecificVerifySettings);
         }
 
