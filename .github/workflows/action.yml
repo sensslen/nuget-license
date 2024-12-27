@@ -99,7 +99,7 @@ jobs:
       - name: build
         run: msbuild -t:rebuild -property:Configuration=TestWindows
 
-      - name: test
+      - name: test (${{ matrix.framework }})
         uses: josepho0918/vstest-action@main
         with:
           testAssembly: "NuGetUtility.Test.dll"

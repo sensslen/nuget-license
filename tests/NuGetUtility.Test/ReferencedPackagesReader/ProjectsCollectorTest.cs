@@ -12,6 +12,11 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
     [TestFixture]
     public class ProjectsCollectorTest
     {
+        public ProjectsCollectorTest()
+        {
+            _osPlatformSpecificVerifySettings = new();
+            _osPlatformSpecificVerifySettings.UniqueForOSPlatform();
+        }
 
         [SetUp]
         public void SetUp()
@@ -23,6 +28,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         private IMsBuildAbstraction _msBuild = null!;
         private ProjectsCollector _uut = null!;
         private Fixture _fixture = null!;
+        private readonly VerifySettings _osPlatformSpecificVerifySettings;
 
         [TestCase("A.csproj")]
         [TestCase("B.fsproj")]
@@ -107,22 +113,22 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
-        public void GetProjectsFromSolution_Should_ReturnProjectsInActualSolutionFileRelativePath()
+        public async Task GetProjectsFromSolution_Should_ReturnProjectsInActualSolutionFileRelativePath()
         {
             var msbuild = new MsBuildAbstraction();
             IEnumerable<string> result = msbuild.GetProjectsFromSolution("../../../../targets/Projects.sln");
-            Assert.That(result.Count(), Is.EqualTo(5));
+            await Verify(string.Join(",", result), _osPlatformSpecificVerifySettings);
         }
 
         [Test]
-        public void GetProjectsFromSolution_Should_ReturnProjectsInActualSolutionFileAbsolutePath()
+        public async Task GetProjectsFromSolution_Should_ReturnProjectsInActualSolutionFileAbsolutePath()
         {
             var msbuild = new MsBuildAbstraction();
             IEnumerable<string> result = msbuild.GetProjectsFromSolution(Path.GetFullPath("../../../../targets/Projects.sln"));
-            Assert.That(result.Count(), Is.EqualTo(5));
+            await Verify(string.Join(",", result), _osPlatformSpecificVerifySettings);
         }
 
-        private void CreateFiles(IEnumerable<string> files)
+        private static void CreateFiles(IEnumerable<string> files)
         {
             foreach (string file in files)
             {

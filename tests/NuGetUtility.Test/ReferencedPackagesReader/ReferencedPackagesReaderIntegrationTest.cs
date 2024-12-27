@@ -80,7 +80,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive);
 
-            Assert.That(result.Count, Is.EqualTo(includeTransitive ? 2 : 1));
+            Assert.That(result.Count, Is.EqualTo(includeTransitive ? 3 : 1));
         }
 
         [Test]
@@ -155,15 +155,15 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [TestCase("net8.0", false, "Microsoft.Extensions.Logging.Abstractions")]
         [TestCase("net8.0-browser", false, "Microsoft.Extensions.Logging.Abstractions")]
         [TestCase("net6.0", true, "TinyCsvParser")]
-        [TestCase("net8.0", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions")]
-        [TestCase("net8.0-browser", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions")]
+        [TestCase("net8.0", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions", "System.Diagnostics.DiagnosticSource")]
+        [TestCase("net8.0-browser", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions", "System.Diagnostics.DiagnosticSource")]
         public void GetInstalledPackagesShould_OnlyReturn_PackagesPackagesReferencedByRequestedFramework(string framework, bool includeTransitive, params string[] packages)
         {
             string path = Path.GetFullPath("../../../../targets/MultiTargetProjectWithDifferentDependencies/MultiTargetProjectWithDifferentDependencies.csproj");
 
             IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive, framework);
 
-            Assert.That(packages, Is.EquivalentTo(result.Select(p => p.Id)));
+            Assert.That(result.Select(p => p.Id), Is.EquivalentTo(packages));
         }
     }
 }
