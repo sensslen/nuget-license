@@ -1,0 +1,8 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="TestWindows" />
+  </Configurations>
+  <Project Path="../ProjectWithTransitiveNuget/ProjectWithTransitiveNuget.csproj" Id="875c0575-95c4-4006-a910-bb1555c90c75" />
+</Solution>
