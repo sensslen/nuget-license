@@ -10,7 +10,6 @@ namespace NuGetUtility.Test.LicenseValidator
     [TestFixture]
     public class UrlToLicenseMappingTest
     {
-        [Ignore("chrome")]
         [Parallelizable(scope: ParallelScope.All)]
         [TestCaseSource(typeof(UrlToLicenseMapping), nameof(UrlToLicenseMapping.Default))]
         public async Task License_Should_Be_Available_And_Match_Expected_License(KeyValuePair<Uri, string> mappedValue)
@@ -21,7 +20,7 @@ namespace NuGetUtility.Test.LicenseValidator
                 try
                 {
                     using var driver = new DisposableWebDriver();
-                    driver.Navigate().GoToUrl(mappedValue.Key.ToString());
+                    await driver.Navigate().GoToUrlAsync(mappedValue.Key.ToString());
 
                     await Verify(driver.FindElement(By.TagName("body")).Text).HashParameters().UseStringComparer(CompareLicense);
                     return;
@@ -33,14 +32,14 @@ namespace NuGetUtility.Test.LicenseValidator
                         throw;
                     }
                     retryCount++;
-                    TestContext.Out.WriteLine($"Failed to check license for the {retryCount} time - retrying");
-                    TestContext.Out.WriteLine(e);
+                    await TestContext.Out.WriteLineAsync($"Failed to check license for the {retryCount} time - retrying");
+                    await TestContext.Out.WriteLineAsync(e.ToString());
                 }
             }
 
         }
 
-        private Task<CompareResult> CompareLicense(string received, string verified, IReadOnlyDictionary<string, object> context)
+        private static Task<CompareResult> CompareLicense(string received, string verified, IReadOnlyDictionary<string, object> context)
         {
             return Task.FromResult(new CompareResult((!string.IsNullOrWhiteSpace(verified)) && received.Contains(verified)));
         }
