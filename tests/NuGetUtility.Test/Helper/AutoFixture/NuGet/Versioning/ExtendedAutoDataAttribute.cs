@@ -7,6 +7,7 @@ using NuGetUtility.Test.Extensions;
 
 namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning
 {
+    [AttributeUsage(AttributeTargets.Method)]
     public class ExtendedAutoDataAttribute : AutoDataAttribute
     {
         public ExtendedAutoDataAttribute(params System.Type[] customizations)

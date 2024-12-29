@@ -54,7 +54,7 @@ namespace NuGetUtility.Test.Output
         }
         protected abstract IOutputFormatter CreateUut();
 
-        private T? GetNullable<T>(Faker faker, Func<T> getter) where T : class
+        private static T? GetNullable<T>(Faker faker, Func<T> getter) where T : class
         {
             if (faker.Random.Bool())
             {
@@ -63,7 +63,7 @@ namespace NuGetUtility.Test.Output
             return getter();
         }
 
-        private IEnumerable<ValidationError> GetErrorList(Faker faker)
+        private static IEnumerable<ValidationError> GetErrorList(Faker faker)
         {
             int itemCount = faker.Random.Int(3, 10);
             for (int i = 0; i < itemCount; i++)

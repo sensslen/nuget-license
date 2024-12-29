@@ -12,12 +12,9 @@ namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning
 
         public object Create(object request, ISpecimenContext context)
         {
-            if (request is System.Type t)
+            if (request is System.Type t && t == typeof(INuGetVersion))
             {
-                if (t == typeof(INuGetVersion))
-                {
-                    return new NuGetVersion($"{_rnd.Next(100, 999)}.{_rnd.Next(100, 999)}{GetPatch()}{GetBeta()}");
-                }
+                return new NuGetVersion($"{_rnd.Next(100, 999)}.{_rnd.Next(100, 999)}{GetPatch()}{GetBeta()}");
             }
 
             return new NoSpecimen();

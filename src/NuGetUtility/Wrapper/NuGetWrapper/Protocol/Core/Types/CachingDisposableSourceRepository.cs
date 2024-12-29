@@ -5,7 +5,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
-    internal class CachingDisposableSourceRepository : IDisposableSourceRepository
+    internal sealed class CachingDisposableSourceRepository : IDisposableSourceRepository
     {
         private readonly SourceCacheContext _cacheContext = new SourceCacheContext();
         private readonly SourceRepository _sourceRepository;

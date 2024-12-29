@@ -7,6 +7,7 @@ using NuGetUtility.Test.Extensions;
 
 namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning
 {
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class ExtendedInlineAutoDataAttribute : InlineAutoDataAttribute
     {
         public ExtendedInlineAutoDataAttribute(System.Type customization, params object[] arguments)

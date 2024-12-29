@@ -26,7 +26,7 @@ namespace NuGetUtility.Test.LicenseValidator
                 obj.PackageVersion,
                 obj.PackageProjectUrl);
         }
-        private HashCode GetHashCode(List<ValidationError> validationErrors)
+        private static HashCode GetHashCode(List<ValidationError> validationErrors)
         {
             var code = new HashCode();
             foreach (ValidationError error in validationErrors)

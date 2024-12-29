@@ -139,7 +139,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             }
         }
 
-        private void SetupPackagesForRepositories(IEnumerable<CustomPackageInformation> packages, IEnumerable<IPackageMetadataResource> packageMetadataResources)
+        private static void SetupPackagesForRepositories(IEnumerable<CustomPackageInformation> packages, IEnumerable<IPackageMetadataResource> packageMetadataResources)
         {
             foreach (CustomPackageInformation package in packages)
             {
