@@ -15,7 +15,7 @@ namespace NuGetUtility.ReferencedPackagesReader
 
         public IEnumerable<string> GetProjects(string inputPath)
         {
-            return Path.GetExtension(inputPath).Equals(".sln")
+            return Path.GetExtension(inputPath).StartsWith(".sln")
                 ? _msBuild.GetProjectsFromSolution(Path.GetFullPath(inputPath)).Where(File.Exists).Select(Path.GetFullPath)
                 : new[] { Path.GetFullPath(inputPath) };
         }
