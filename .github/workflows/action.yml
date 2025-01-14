@@ -115,8 +115,7 @@ jobs:
       - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.2xx
-          dotnet-quality: 'signed'
+          dotnet-version: 9.0.x
 
       - name: restore
         run: dotnet restore
