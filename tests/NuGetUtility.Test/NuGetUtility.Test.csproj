@@ -17,9 +17,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="5.0.0-preview0011" />
-    <PackageReference Include="AutoFixture.AutoNSubstitute" Version="5.0.0-preview0011" />
-    <PackageReference Include="AutoFixture.NUnit4" Version="5.0.0-preview0011" />
+    <PackageReference Include="AutoFixture" Version="5.0.0-preview0012" />
+    <PackageReference Include="AutoFixture.AutoNSubstitute" Version="5.0.0-preview0012" />
+    <PackageReference Include="AutoFixture.NUnit4" Version="5.0.0-preview0012" />
     <PackageReference Include="Bogus" Version="35.6.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="Mono.Cecil" Version="0.11.6" />
