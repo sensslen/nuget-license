@@ -1,1 +1,1 @@
-﻿{ProjectDirectory}bin/Debug/ProjectWithTransitiveNuget/ProjectWithTransitiveNuget.csproj
+﻿..\ProjectWithTransitiveNuget\ProjectWithTransitiveNuget.csproj
