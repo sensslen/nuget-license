@@ -151,10 +151,10 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 #endif
 
 
-        [TestCase("net6.0", false, "TinyCsvParser")]
+        [TestCase("net9.0", false, "TinyCsvParser")]
         [TestCase("net8.0", false, "Microsoft.Extensions.Logging.Abstractions")]
         [TestCase("net8.0-browser", false, "Microsoft.Extensions.Logging.Abstractions")]
-        [TestCase("net6.0", true, "TinyCsvParser")]
+        [TestCase("net9.0", true, "TinyCsvParser")]
         [TestCase("net8.0", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions", "System.Diagnostics.DiagnosticSource")]
         [TestCase("net8.0-browser", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions", "System.Diagnostics.DiagnosticSource")]
         public void GetInstalledPackagesShould_OnlyReturn_PackagesPackagesReferencedByRequestedFramework(string framework, bool includeTransitive, params string[] packages)
