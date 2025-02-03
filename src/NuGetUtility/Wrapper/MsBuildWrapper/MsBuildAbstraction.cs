@@ -1,9 +1,10 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
-using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Locator;
+using Microsoft.VisualStudio.SolutionPersistence;
+using Microsoft.VisualStudio.SolutionPersistence.Serializer;
 
 namespace NuGetUtility.Wrapper.MsBuildWrapper
 {
@@ -32,11 +33,12 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             return new ProjectWrapper(project);
         }
 
-        public IEnumerable<string> GetProjectsFromSolution(string inputPath)
+        public async Task<IEnumerable<string>> GetProjectsFromSolutionAsync(string inputPath)
         {
-            string absolutePath = Path.IsPathRooted(inputPath) ? inputPath : Path.Combine(Environment.CurrentDirectory, inputPath);
-            var sln = SolutionFile.Parse(absolutePath);
-            return sln.ProjectsInOrder.Select(p => p.AbsolutePath);
+            ISolutionSerializer serializer = SolutionSerializers.GetSerializerByMoniker(inputPath) ?? throw new MsBuildAbstractionException("Failed to determine serializer for solution");
+
+            Microsoft.VisualStudio.SolutionPersistence.Model.SolutionModel model = await serializer.OpenAsync(inputPath, CancellationToken.None);
+            return model.SolutionProjects.Select(p => p.FilePath);
         }
 
         private static void RegisterMsBuildLocatorIfNeeded()

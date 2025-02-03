@@ -13,10 +13,10 @@ namespace NuGetUtility.ReferencedPackagesReader
             _msBuild = msBuild;
         }
 
-        public IEnumerable<string> GetProjects(string inputPath)
+        public async Task<IEnumerable<string>> GetProjectsAsync(string inputPath)
         {
             return Path.GetExtension(inputPath).StartsWith(".sln")
-                ? _msBuild.GetProjectsFromSolution(Path.GetFullPath(inputPath)).Where(File.Exists).Select(Path.GetFullPath)
+                ? (await _msBuild.GetProjectsFromSolutionAsync(Path.GetFullPath(inputPath))).Where(File.Exists).Select(Path.GetFullPath)
                 : new[] { Path.GetFullPath(inputPath) };
         }
     }

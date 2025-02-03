@@ -1,0 +1,1 @@
+﻿{ProjectDirectory}bin\Debug\ProjectWithTransitiveNuget\ProjectWithTransitiveNuget.csproj

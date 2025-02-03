@@ -128,7 +128,7 @@ namespace NuGetUtility
                 ignoredPackages);
 
             string[] excludedProjects = GetExcludedProjects();
-            IEnumerable<string> projects = inputFiles.SelectMany(projectCollector.GetProjects).Where(p => !Array.Exists(excludedProjects, ignored => p.Like(ignored)));
+            IEnumerable<string> projects = (await inputFiles.SelectManyAsync(projectCollector.GetProjectsAsync)).Where(p => !Array.Exists(excludedProjects, ignored => p.Like(ignored)));
             IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects, projectReader, out IReadOnlyCollection<Exception>? projectReaderExceptions);
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
                 packagesForProject.SelectMany(p => GetPackageInformations(p, overridePackageInformation, cancellationToken));
