@@ -3,8 +3,6 @@
 
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Locator;
-using Microsoft.VisualStudio.SolutionPersistence;
-using Microsoft.VisualStudio.SolutionPersistence.Serializer;
 
 namespace NuGetUtility.Wrapper.MsBuildWrapper
 {
@@ -31,14 +29,6 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             Project project = Projects.LoadProject(projectPath);
 
             return new ProjectWrapper(project);
-        }
-
-        public async Task<IEnumerable<string>> GetProjectsFromSolutionAsync(string inputPath)
-        {
-            ISolutionSerializer serializer = SolutionSerializers.GetSerializerByMoniker(inputPath) ?? throw new MsBuildAbstractionException("Failed to determine serializer for solution");
-
-            Microsoft.VisualStudio.SolutionPersistence.Model.SolutionModel model = await serializer.OpenAsync(inputPath, CancellationToken.None);
-            return model.SolutionProjects.Select(p => p.FilePath);
         }
 
         private static void RegisterMsBuildLocatorIfNeeded()

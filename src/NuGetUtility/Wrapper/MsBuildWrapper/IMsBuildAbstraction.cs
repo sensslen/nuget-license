@@ -6,6 +6,5 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
     public interface IMsBuildAbstraction
     {
         IProject GetProject(string projectPath);
-        Task<IEnumerable<string>> GetProjectsFromSolutionAsync(string inputPath);
     }
 }

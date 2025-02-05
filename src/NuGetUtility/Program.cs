@@ -23,6 +23,7 @@ using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
+using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
 
 namespace NuGetUtility
 {
@@ -119,8 +120,9 @@ namespace NuGetUtility
             IFileDownloader urlLicenseFileDownloader = GetFileDownloader(httpClient);
             IOutputFormatter output = GetOutputFormatter();
 
-            MsBuildAbstraction msBuild = new MsBuildAbstraction();
-            var projectCollector = new ProjectsCollector(msBuild);
+            var solutionPersistance = new SolutionPersistanceWrapper();
+            var projectCollector = new ProjectsCollector(solutionPersistance);
+            var msBuild = new MsBuildAbstraction();
             var projectReader = new ReferencedPackageReader(msBuild, new LockFileFactory(), GetPackagesConfigReader());
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicenses,
