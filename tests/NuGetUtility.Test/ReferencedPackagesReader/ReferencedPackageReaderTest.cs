@@ -121,6 +121,24 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         private IDictionary<INuGetFramework, PackageIdentity[]> _directlyReferencedPackagesForFramework = null!;
 
         [Test]
+        public void GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_AssetsFileContainsErrors(
+            [Values] bool includeTransitive)
+        {
+            string[] errors = _fixture.CreateMany<string>().ToArray();
+            _lockFileMock.TryGetErrors(out Arg.Any<string[]>()).Returns(args =>
+            {
+                args[0] = errors;
+                return true;
+            });
+            _projectMock.FullPath.Returns(_projectPath);
+
+            ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
+                _uut.GetInstalledPackages(_projectPath, includeTransitive));
+
+            Assert.That(exception!.Message, Is.EqualTo($"Project assets file for project {_projectPath} contains errors:{Environment.NewLine}{string.Join(Environment.NewLine, errors)}"));
+        }
+
+        [Test]
         public void GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_PackageSpecificationIsInvalid(
             [Values] bool includeTransitive)
         {

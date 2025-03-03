@@ -119,6 +119,11 @@ namespace NuGetUtility.ReferencedPackagesReader
             }
             assetsFile = _lockFileFactory.GetFromFile(assetsPath);
 
+            if (assetsFile.TryGetErrors(out string[] errors))
+            {
+                throw new ReferencedPackageReaderException($"Project assets file for project {project.FullPath} contains errors:{Environment.NewLine}{string.Join(Environment.NewLine, errors)}");
+            }
+
             if (!assetsFile.PackageSpec.IsValid() || !(assetsFile.Targets?.Any() ?? false))
             {
                 throw new ReferencedPackageReaderException(
