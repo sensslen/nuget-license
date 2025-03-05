@@ -5,6 +5,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
     public interface ILockFile
     {
+        bool TryGetErrors(out string[] errors);
         IPackageSpec PackageSpec { get; }
         IEnumerable<ILockFileTarget>? Targets { get; }
     }
