@@ -11,7 +11,6 @@ namespace NuGetUtility.LicenseValidator
         private const string Gpl20 = "GPL-2.0";
         private const string Mit = "MIT";
         private const string MsPl = "MS-PL";
-        private const string MitAndBsd3Clause = "MIT AND BSD-3-Clause";
 
         public static IImmutableDictionary<Uri, string> Default { get; } = ImmutableDictionary.CreateRange(
             new[]
@@ -37,7 +36,6 @@ namespace NuGetUtility.LicenseValidator
                 new KeyValuePair<Uri, string>(new Uri("http://go.microsoft.com/fwlink/?linkid=833178"), Mit),
                 new KeyValuePair<Uri, string>(new Uri("http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"), Gpl20),
                 new KeyValuePair<Uri, string>(new Uri("https://raw.githubusercontent.com/AArnott/Validation/8377954d86/LICENSE.txt"), MsPl),
-                new KeyValuePair<Uri, string>(new Uri("https://raw.githubusercontent.com/bchavez/Bogus/master/LICENSE"), MitAndBsd3Clause),
                 new KeyValuePair<Uri, string>(new Uri("https://github.com/Microsoft/dotnet/blob/master/LICENSE"), Mit)
             }
         );
