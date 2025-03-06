@@ -1,6 +1,11 @@
 # Nuget License Utility [![Tests](https://github.com/sensslen/nuget-license/actions/workflows/action.yml/badge.svg)](https://github.com/sensslen/nuget-license/actions/workflows/action.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sensslen_nuget-license&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=sensslen_nuget-license) [![NuGet](https://img.shields.io/nuget/v/nuget-license.svg)](https://www.nuget.org/packages/nuget-license)
 
-A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects. Native c++ projects are supported too but only in the .NET Framework variant of nuget-license. These projects will not work if the tool is installed via `dotnet tool install`.
+A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard, .NET Framework and native c++ projects.
+There are two variants of the tool published. See the following table for a more detailed compatibility report:
+|                                                    | .net (core) projects | .net standard projects | .net framework projects | native <br/> (c++) projects |
+|----------------------------------------------------|:--------------------:|:----------------------:|:-----------------------:|:---------------------:|
+| dotnet tool <br/> (.net core variant - installed via `dotnet tool install`)                    | :white_check_mark:   | :white_check_mark:     |  :warning: <br/> Your milage may vary, as there are some environmental differences between the msbuild used in nuget-license and the compiler  | :x:                   |
+| NuGetLicenseFramework.exe <br/> (.net framework variant) | :white_check_mark:   | :white_check_mark:     |  :white_check_mark:      | :white_check_mark:    |
 
 ## nuget-license tool
 
