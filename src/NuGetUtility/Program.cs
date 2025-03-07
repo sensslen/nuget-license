@@ -15,6 +15,7 @@ using NuGetUtility.Output;
 using NuGetUtility.Output.Json;
 using NuGetUtility.Output.Table;
 using NuGetUtility.PackageInformationReader;
+using NuGetUtility.ProjectFiltering;
 using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Serialization;
 using NuGetUtility.Wrapper.HttpClientWrapper;
@@ -93,6 +94,11 @@ namespace NuGetUtility
             ShortName = "exclude-projects",
             Description = "This option allows to specify project name(s) to exclude from the analysis. This can be useful to exclude test projects from the analysis when supplying a solution file as input. Wildcard characters (*) are supported to specify ranges of ignored projects. The input can either be a file name containing a list of project names in json format or a plain string that is then used as a single entry.")]
         public string? ExcludedProjects { get; } = null;
+
+        [Option(LongName = "include-shared-projects",
+        ShortName = "isp",
+        Description = "If set, shared projects (.shproj) will be included in the analysis. By default, shared projects are excluded.")]
+        public bool IncludeSharedProjects { get; } = false;
 
         [Option(LongName = "target-framework",
             ShortName = "f",
@@ -305,9 +311,11 @@ namespace NuGetUtility
             var encounteredExceptions = new List<Exception>();
             var result = new List<ProjectWithReferencedPackages>();
             exceptions = encounteredExceptions;
-            foreach (string project in projects)
-            {
 
+            IEnumerable<string> filteredProjects = ProjectFilterer.Instance.FilterProjects(projects, IncludeSharedProjects);
+
+            foreach (string project in filteredProjects)
+            {
                 try
                 {
                     IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, IncludeTransitive, TargetFramework);
