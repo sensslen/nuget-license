@@ -18,6 +18,7 @@
     <Platforms>AnyCPU</Platforms>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects.</Description>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="  '$(TargetFramework)' == 'net472' ">

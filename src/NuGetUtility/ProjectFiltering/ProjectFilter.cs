@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
 
 namespace NuGetUtility.ProjectFiltering
 {
-    public class ProjectFilterer
+    public class ProjectFilter
     {
 
         /// <summary>
@@ -25,7 +22,7 @@ namespace NuGetUtility.ProjectFiltering
         /// </summary>
         /// <param name="projectPath">Path to the project file</param>
         /// <returns>True if the project is a shared project, otherwise false</returns>
-        private bool IsSharedProject(string projectPath)
+        private static bool IsSharedProject(string projectPath)
         {
             return projectPath.EndsWith(".shproj", StringComparison.OrdinalIgnoreCase);
         }

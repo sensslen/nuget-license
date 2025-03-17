@@ -25,6 +25,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects.</Description>
     <PackageTags>NuGet;License</PackageTags>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>

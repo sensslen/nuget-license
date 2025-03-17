@@ -10,6 +10,7 @@
     <Configurations>Debug;Release;TestWindows</Configurations>
 
     <Platforms>AnyCPU</Platforms>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="  '$(TargetFramework)' == 'net472' ">

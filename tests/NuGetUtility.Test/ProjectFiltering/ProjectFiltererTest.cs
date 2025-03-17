@@ -5,12 +5,12 @@ namespace NuGetUtility.Test.ProjectFiltering
     [TestFixture]
     class ProjectFiltererTest
     {
-        private ProjectFilterer _filterer = null!;
+        private ProjectFilter _filterer = null!;
 
         [SetUp]
         public void Setup()
         {
-            _filterer = new ProjectFilterer();
+            _filterer = new ProjectFilter();
         }
 
         [Test]
