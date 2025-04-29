@@ -494,7 +494,7 @@
   },
   {
     "Id": "Bogus",
-    "Version": "35.6.2",
+    "Version": "35.6.3",
     "ProjectUrl": "https://github.com/bchavez/Bogus",
     "Authors": "Brian Chavez",
     "License": "MIT AND BSD-3-Clause"
