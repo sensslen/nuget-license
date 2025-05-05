@@ -37,8 +37,6 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - uses: browser-actions/setup-chrome@latest
-
       - name: restore
         run: dotnet restore
 
@@ -46,7 +44,25 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: test
-        run: dotnet test --configuration Release -f ${{ matrix.framework }} --no-restore
+        run: dotnet test ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore
+
+  test_url_to_license_mapping:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet 9.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      
+      - uses: browser-actions/setup-chrome@latest
+      
+      - name: restore
+        run: dotnet restore
+      
+      - name: test
+        run: dotnet test ./tests/NuGetUtility.Test.UrlToLicenseMapping/NuGetUtility.Test.UrlToLicenseMapping.csproj --configuration Release --no-restore
+
   test_windows:
     runs-on: windows-latest
     strategy:
@@ -74,8 +90,6 @@ jobs:
 
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln
-
-      - uses: browser-actions/setup-chrome@latest
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2

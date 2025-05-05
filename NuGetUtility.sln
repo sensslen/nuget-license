@@ -46,6 +46,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VersionRangesProject", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiTargetProjectWithDifferentDependencies", "tests\targets\MultiTargetProjectWithDifferentDependencies\MultiTargetProjectWithDifferentDependencies.csproj", "{A19BF89A-8B1F-4612-A923-08F52B53DC84}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetUtility.Test.UrlToLicenseMapping", "tests\NuGetUtility.Test.UrlToLicenseMapping\NuGetUtility.Test.UrlToLicenseMapping.csproj", "{A77F9673-8296-4680-A713-8AC26B7DE41C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -305,6 +307,24 @@ Global
 		{A19BF89A-8B1F-4612-A923-08F52B53DC84}.TestWindows|x64.Build.0 = Debug|Any CPU
 		{A19BF89A-8B1F-4612-A923-08F52B53DC84}.TestWindows|x86.ActiveCfg = Debug|Any CPU
 		{A19BF89A-8B1F-4612-A923-08F52B53DC84}.TestWindows|x86.Build.0 = Debug|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.Debug|x64.Build.0 = Debug|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.Debug|x86.Build.0 = Debug|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.Release|x64.ActiveCfg = Release|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.Release|x64.Build.0 = Release|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.Release|x86.ActiveCfg = Release|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.Release|x86.Build.0 = Release|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.TestWindows|Any CPU.ActiveCfg = TestWindows|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.TestWindows|Any CPU.Build.0 = TestWindows|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.TestWindows|x64.ActiveCfg = TestWindows|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.TestWindows|x64.Build.0 = TestWindows|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.TestWindows|x86.ActiveCfg = TestWindows|Any CPU
+		{A77F9673-8296-4680-A713-8AC26B7DE41C}.TestWindows|x86.Build.0 = TestWindows|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -325,6 +345,7 @@ Global
 		{9B107A91-87F9-420C-ADF8-732C77DAFB93} = {FA92392F-D895-4D1E-A5ED-E6DC3C08223E}
 		{6C96D10E-6CB6-4387-922F-C7C97C037495} = {FA92392F-D895-4D1E-A5ED-E6DC3C08223E}
 		{A19BF89A-8B1F-4612-A923-08F52B53DC84} = {FA92392F-D895-4D1E-A5ED-E6DC3C08223E}
+		{A77F9673-8296-4680-A713-8AC26B7DE41C} = {C00E0699-ACCD-44CD-91A7-243A30504DB9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {70887D40-0182-4C32-BFA1-B5A02E405F11}
