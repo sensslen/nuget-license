@@ -33,8 +33,6 @@ jobs:
       - name: build
         run: msbuild -t:rebuild -property:Configuration=Release
 
-      - uses: browser-actions/setup-chrome@latest
-
       - name: test
         uses: josepho0918/vstest-action@main
         with:

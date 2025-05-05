@@ -7,7 +7,6 @@ using OpenQA.Selenium.Chrome;
 
 namespace NuGetUtility.Test.LicenseValidator
 {
-    #if defined( ENABLE_URL_TO_LICENSE_MAPPING_TESTS)
     [TestFixture]
     public class UrlToLicenseMappingTest
     {
@@ -67,5 +66,4 @@ namespace NuGetUtility.Test.LicenseValidator
             internal INavigation Navigate() => _driver.Navigate();
         }
     }
-    #endif
 }
