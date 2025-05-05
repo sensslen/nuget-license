@@ -61,7 +61,7 @@ jobs:
         run: dotnet restore
       
       - name: test
-      run: dotnet test ./tests/NuGetLicense.Test.NuGetLicenseTest.UrlToLicenseMapping.csproj --configuration Release --no-restore
+        run: dotnet test ./tests/NuGetLicense.Test.NuGetLicenseTest.UrlToLicenseMapping.csproj --configuration Release --no-restore
 
   test_windows:
     runs-on: windows-latest
