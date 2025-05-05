@@ -44,7 +44,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: test
-        run: dotnet test ./tests/NuGetLicense.Test.NuGetLicenseTest.csproj --configuration Release -f ${{ matrix.framework }} --no-restore
+        run: dotnet test ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore
 
   test_url_to_license_mapping:
     runs-on: macos-latest
@@ -61,7 +61,7 @@ jobs:
         run: dotnet restore
       
       - name: test
-        run: dotnet test ./tests/NuGetLicense.Test.NuGetLicenseTest.UrlToLicenseMapping.csproj --configuration Release --no-restore
+        run: dotnet test ./tests/NuGetLicense.Test.UrlToLicenseMapping/NuGetLicense.Test.UrlToLicenseMapping.csproj --configuration Release --no-restore
 
   test_windows:
     runs-on: windows-latest
