@@ -7,12 +7,12 @@ using OpenQA.Selenium.Chrome;
 
 namespace NuGetUtility.Test.LicenseValidator
 {
+    #if defined( ENABLE_URL_TO_LICENSE_MAPPING_TESTS)
     [TestFixture]
     public class UrlToLicenseMappingTest
     {
         [Parallelizable(scope: ParallelScope.All)]
         [TestCaseSource(typeof(UrlToLicenseMapping), nameof(UrlToLicenseMapping.Default))]
-        [Platform(Exclude = "Win")]
         public async Task License_Should_Be_Available_And_Match_Expected_License(KeyValuePair<Uri, string> mappedValue)
         {
             int retryCount = 0;
@@ -67,4 +67,5 @@ namespace NuGetUtility.Test.LicenseValidator
             internal INavigation Navigate() => _driver.Navigate();
         }
     }
+    #endif
 }

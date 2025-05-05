@@ -47,4 +47,7 @@
     <ProjectReference Include="..\..\src\NuGetUtility\NuGetUtility.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);ENABLE_URL_TO_LICENSE_MAPPING_TESTS</DefineConstants>
+  </PropertyGroup>
 </Project>
