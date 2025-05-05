@@ -47,7 +47,6 @@ jobs:
         run: dotnet test ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore
 
   test_url_to_license_mapping:
-    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup dotnet 9.0.x
