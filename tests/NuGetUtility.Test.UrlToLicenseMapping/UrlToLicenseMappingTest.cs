@@ -43,7 +43,7 @@ namespace NuGetUtility.Test.LicenseValidator
                     Assert.Fail(licenseResult.Error);
                 }
 
-                int retryTimeout = (int)(baseDelayMs * Math.Pow(2, retryCount)) + Random.Shared.Next(1000, 3000);
+                int retryTimeout = (int)(baseDelayMs * Math.Pow(10, retryCount)) + Random.Shared.Next(1000, 3000);
                 retryCount++;
                 await TestContext.Out.WriteLineAsync($"Failed to check license for the {retryCount} time - retrying after {retryTimeout}ms");
                 await TestContext.Out.WriteLineAsync(licenseResult.Error);
