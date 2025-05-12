@@ -29,33 +29,40 @@ namespace NuGetUtility.Test.LicenseValidator
         public async Task License_Should_Be_Available_And_Match_Expected_License(KeyValuePair<Uri, string> mappedValue)
         {
             int retryCount = 0;
-            while (retryCount < RETRY_COUNT)
+            int baseDelayMs = 2000;
+            while (true)
             {
-                try
+                Result<string> licenseResult = await GetLicenseValue(mappedValue.Key);
+                if (licenseResult.IsSuccess)
                 {
-                    Result<string> licenseResult = await GetLicenseValue(mappedValue.Key);
-                    if (licenseResult.IsSuccess)
-                    {
-                        await Verify(licenseResult.Value).HashParameters().UseStringComparer(CompareLicense);
-                        return;
-                    }
-                    await Task.Delay(500 + Random.Shared.Next(5000));
-                    await TestContext.Out.WriteLineAsync(licenseResult.Error);
+                    await Verify(licenseResult.Value).HashParameters().UseStringComparer(CompareLicense);
+                    return;
                 }
-                catch (WebDriverException e)
+                if (retryCount >= RETRY_COUNT)
                 {
-                    retryCount++;
-                    await TestContext.Out.WriteLineAsync(e.ToString());
+                    Assert.Fail(licenseResult.Error);
                 }
-                await TestContext.Out.WriteLineAsync($"Failed to check license for the {retryCount} time - retrying");
+
+                int retryTimeout = (int)(baseDelayMs * Math.Pow(2, retryCount)) + Random.Shared.Next(1000, 3000);
+                retryCount++;
+                await TestContext.Out.WriteLineAsync($"Failed to check license for the {retryCount} time - retrying after {retryTimeout}ms");
+                await TestContext.Out.WriteLineAsync(licenseResult.Error);
+                await Task.Delay(retryTimeout);
             }
-            Assert.Fail($"Failed to check license for {mappedValue.Key} after {RETRY_COUNT} attempts.");
         }
 
         private async Task<Result<string>> GetLicenseValue(Uri licenseUrl)
         {
-            await _driver.Navigate().GoToUrlAsync(licenseUrl.ToString());
-            string bodyText = _driver.FindElement(By.TagName("body")).Text;
+            string bodyText;
+            try
+            {
+                await _driver.Navigate().GoToUrlAsync(licenseUrl.ToString());
+                bodyText = _driver.FindElement(By.TagName("body")).Text;
+            }
+            catch (WebDriverException e)
+            {
+                return new() { Error = $"Failed to navigate to {licenseUrl}.\n{e}" };
+            }
             if (bodyText.Contains("rate limit"))
             {
                 return new() { Error = $"Rate limit exceeded:\n{bodyText}" };
