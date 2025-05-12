@@ -30,6 +30,8 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
+      - uses: browser-actions/setup-firefox@v1
+
       - name: build
         run: msbuild -t:rebuild -property:Configuration=Release
 
@@ -38,6 +40,13 @@ jobs:
         with:
           testAssembly: "NuGetUtility.Test.dll"
           searchFolder: "tests/NuGetUtility.Test/bin/Release/net8.0/"
+          runInParallel: true
+
+      - name: test
+        uses: josepho0918/vstest-action@main
+        with:
+          testAssembly: "NuGetUtility.Test.UrlToLicenseMapping.dll"
+          searchFolder: "tests/NuGetUtility.Test.UrlToLicenseMapping/bin/Release/net8.0/"
           runInParallel: true
 
       - name: fully qualify artifacts path
