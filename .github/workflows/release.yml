@@ -46,7 +46,7 @@ jobs:
         uses: josepho0918/vstest-action@main
         with:
           testAssembly: "NuGetUtility.Test.UrlToLicenseMapping.dll"
-          searchFolder: "tests/NuGetUtility.Test.UrlToLicenseMapping/bin/Release/net8.0/"
+          searchFolder: "tests/NuGetUtility.Test.UrlToLicenseMapping/bin/Release/net9.0/"
           runInParallel: true
 
       - name: fully qualify artifacts path
