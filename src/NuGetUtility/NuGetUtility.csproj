@@ -29,8 +29,8 @@
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
     <PackageReference Include="Microsoft.Build.Locator" Version="1.9.1" />
     <PackageReference Include="Microsoft.VisualStudio.SolutionPersistence" Version="1.0.52" />
-    <PackageReference Include="NuGet.Commands" Version="6.13.2" />
-    <PackageReference Include="NuGet.Packaging" Version="6.13.2" />
+    <PackageReference Include="NuGet.Commands" Version="6.14.0" />
+    <PackageReference Include="NuGet.Packaging" Version="6.14.0" />
     <PackageReference Include="Tethys.SPDX.ExpressionParser" Version="2.1.2" />
   </ItemGroup>
 
