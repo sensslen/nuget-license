@@ -84,7 +84,7 @@ namespace NuGetUtility.Test.LicenseValidator
             public DisposableWebDriver()
             {
                 var options = new FirefoxOptions();
-                options.AddArguments("--headless");
+                options.AddArgument("-headless");
                 _driver = new FirefoxDriver(options);
             }
 
