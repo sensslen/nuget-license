@@ -3,7 +3,7 @@
 
 using NuGetUtility.LicenseValidator;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Chrome;
 
 namespace NuGetUtility.Test.LicenseValidator
 {
@@ -30,6 +30,7 @@ namespace NuGetUtility.Test.LicenseValidator
         {
             int retryCount = 0;
             int baseDelayMs = 2000;
+            using var driver = new DisposableWebDriver();
             while (true)
             {
                 Result<string> licenseResult = await GetLicenseValue(mappedValue.Key);
@@ -83,9 +84,9 @@ namespace NuGetUtility.Test.LicenseValidator
 
             public DisposableWebDriver()
             {
-                var options = new FirefoxOptions();
-                options.AddArgument("-headless");
-                _driver = new FirefoxDriver(options);
+                var options = new ChromeOptions();
+                options.AddArguments("--disable-dev-shm-usage", "--headless");
+                _driver = new ChromeDriver(options);
             }
 
             public void Dispose()

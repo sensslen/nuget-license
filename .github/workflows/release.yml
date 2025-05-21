@@ -30,7 +30,7 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      - uses: browser-actions/setup-firefox@v1
+      - uses: browser-actions/setup-chrome@latest
 
       - name: build
         run: msbuild -t:rebuild -property:Configuration=Release

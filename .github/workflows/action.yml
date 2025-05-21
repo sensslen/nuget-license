@@ -55,7 +55,7 @@ jobs:
         with:
           dotnet-version: 9.0.x
       
-      - uses: browser-actions/setup-firefox@v1
+      - uses: browser-actions/setup-chrome@latest
       
       - name: restore
         run: dotnet restore
