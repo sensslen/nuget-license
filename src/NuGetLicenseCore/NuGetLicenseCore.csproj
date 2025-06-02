@@ -33,6 +33,10 @@
       <Pack>true</Pack>
       <PackagePath>README.md</PackagePath>
     </Content>
+    <Content Include="..\..\docs\**\*.md">
+      <Pack>true</Pack>
+      <PackagePath>docs\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
