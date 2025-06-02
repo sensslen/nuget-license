@@ -11,20 +11,6 @@ namespace NuGetUtility.Test.LicenseValidator
     public class UrlToLicenseMappingTest
     {
         private const int RETRY_COUNT = 3;
-        private DisposableWebDriver _driver = null!;
-
-        [OneTimeSetUp]
-        public void Setup()
-        {
-            _driver = new DisposableWebDriver();
-        }
-
-        [OneTimeTearDown]
-        public void Cleanup()
-        {
-            _driver.Dispose();
-        }
-
         [TestCaseSource(typeof(UrlToLicenseMapping), nameof(UrlToLicenseMapping.Default))]
         public async Task License_Should_Be_Available_And_Match_Expected_License(KeyValuePair<Uri, string> mappedValue)
         {
@@ -33,7 +19,7 @@ namespace NuGetUtility.Test.LicenseValidator
             using var driver = new DisposableWebDriver();
             while (true)
             {
-                Result<string> licenseResult = await GetLicenseValue(mappedValue.Key);
+                Result<string> licenseResult = await GetLicenseValue(mappedValue.Key, driver);
                 if (licenseResult.IsSuccess)
                 {
                     await Verify(licenseResult.Value).HashParameters().UseStringComparer(CompareLicense);
@@ -54,13 +40,13 @@ namespace NuGetUtility.Test.LicenseValidator
             }
         }
 
-        private async Task<Result<string>> GetLicenseValue(Uri licenseUrl)
+        private async Task<Result<string>> GetLicenseValue(Uri licenseUrl, DisposableWebDriver driver)
         {
             string bodyText;
             try
             {
-                await _driver.Navigate().GoToUrlAsync(licenseUrl.ToString());
-                bodyText = _driver.FindElement(By.TagName("body")).Text;
+                await driver.Navigate().GoToUrlAsync(licenseUrl.ToString());
+                bodyText = driver.FindElement(By.TagName("body")).Text;
             }
             catch (WebDriverException e)
             {
