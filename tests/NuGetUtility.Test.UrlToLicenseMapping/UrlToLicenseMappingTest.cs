@@ -8,10 +8,12 @@ using OpenQA.Selenium.Chrome;
 namespace NuGetUtility.Test.LicenseValidator
 {
     [TestFixture]
+    [NonParallelizable]
     public class UrlToLicenseMappingTest
     {
         private const int RETRY_COUNT = 3;
         [TestCaseSource(typeof(UrlToLicenseMapping), nameof(UrlToLicenseMapping.Default))]
+        [NonParallelizable]
         public async Task License_Should_Be_Available_And_Match_Expected_License(KeyValuePair<Uri, string> mappedValue)
         {
             int retryCount = 0;
