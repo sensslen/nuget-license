@@ -126,4 +126,4 @@ nuget-license -i MyProject.csproj -d licenses/
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+See [LICENSE](LICENSE) for details.
