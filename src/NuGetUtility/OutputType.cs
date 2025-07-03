@@ -7,6 +7,7 @@ namespace NuGetUtility
     {
         Table,
         Json,
-        JsonPretty
+        JsonPretty,
+        Markdown
     }
 }
