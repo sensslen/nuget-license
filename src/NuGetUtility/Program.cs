@@ -202,6 +202,7 @@ namespace NuGetUtility
                 OutputType.Json => new JsonOutputFormatter(false, ReturnErrorsOnly, !IncludeIgnoredPackages),
                 OutputType.JsonPretty => new JsonOutputFormatter(true, ReturnErrorsOnly, !IncludeIgnoredPackages),
                 OutputType.Table => new TableOutputFormatter(ReturnErrorsOnly, !IncludeIgnoredPackages),
+                OutputType.Markdown => new TableOutputFormatter(ReturnErrorsOnly, !IncludeIgnoredPackages, printMarkdown: true),
                 _ => throw new ArgumentOutOfRangeException($"{OutputType} not supported")
             };
         }

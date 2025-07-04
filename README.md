@@ -63,7 +63,7 @@ nuget-license [options]
 | `-mapping`, `--licenseurl-to-license-mappings <FILE>` | JSON dictionary mapping license URLs to license types. See [docs/licenseurl-mappings-json.md](docs/licenseurl-mappings-json.md). |
 | `-override`, `--override-package-information <FILE>` | JSON list to override package/license info. See [docs/override-package-json.md](docs/override-package-json.md). |
 | `-d`, `--license-information-download-location <FOLDER>` | Download all license files to the specified folder. |
-| `-o`, `--output <TYPE>` | Output format: `Table`, `Json`, or `JsonPretty` (default: Table). |
+| `-o`, `--output <TYPE>` | Output format: `Table`, `Markdown`, `Json` or `JsonPretty` (default: Table). |
 | `-err`, `--error-only` | Only show validation errors. |
 | `-include-ignored`, `--include-ignored-packages` | Include ignored packages in output. |
 | `-exclude-projects`, `--exclude-projects-matching <PATTERN\|FILE>` | Exclude projects by name or pattern (supports wildcards or JSON file). See [docs/exclude-projects-json.md](docs/exclude-projects-json.md). |

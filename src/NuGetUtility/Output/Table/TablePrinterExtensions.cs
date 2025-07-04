@@ -7,11 +7,11 @@ namespace NuGetUtility.Output.Table
     {
         public static TablePrinter Create(Stream stream, params string[] headings)
         {
-            return new TablePrinter(stream, headings);
+            return new TablePrinter(stream, headings, false);
         }
-        public static TablePrinter Create(Stream stream, IEnumerable<string> headings)
+        public static TablePrinter Create(Stream stream, IEnumerable<string> headings, bool printMarkdown)
         {
-            return new TablePrinter(stream, headings);
+            return new TablePrinter(stream, headings, printMarkdown);
         }
 
         public static TablePrinter FromValues<T>(this TablePrinter printer,

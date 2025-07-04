@@ -9,11 +9,13 @@ namespace NuGetUtility.Output.Table
     {
         private readonly bool _printErrorsOnly;
         private readonly bool _skipIgnoredPackages;
+        private readonly bool _printMarkdown;
 
-        public TableOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages)
+        public TableOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages, bool printMarkdown = false)
         {
             _printErrorsOnly = printErrorsOnly;
             _skipIgnoredPackages = skipIgnoredPackages;
+            _printMarkdown = printMarkdown;
         }
 
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
@@ -52,7 +54,7 @@ namespace NuGetUtility.Output.Table
 
             ColumnDefinition[] relevantColumns = columnDefinitions.Where(c => c.Enabled).ToArray();
             await TablePrinterExtensions
-                .Create(stream, relevantColumns.Select(d => d.Title))
+                .Create(stream, relevantColumns.Select(d => d.Title), _printMarkdown)
                 .FromValues(
                     results,
                     license => relevantColumns.Select(d => d.PropertyAccessor(license)))

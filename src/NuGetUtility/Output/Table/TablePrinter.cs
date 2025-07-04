@@ -14,12 +14,14 @@ namespace NuGetUtility.Output.Table
         private readonly List<string[][]> _rows = new List<string[][]>();
         private readonly Stream _stream;
         private readonly string[] _titles;
+        private readonly bool _printMarkdown;
 
-        public TablePrinter(Stream stream, IEnumerable<string> titles)
+        public TablePrinter(Stream stream, IEnumerable<string> titles, bool printMarkdown)
         {
             _stream = stream;
             _titles = titles.ToArray();
             _lengths = _titles.Select(t => t.Length).ToArray();
+            _printMarkdown = printMarkdown;
         }
 
         public void AddRow(object?[] row)
@@ -89,11 +91,14 @@ namespace NuGetUtility.Output.Table
 
         private async Task WriteSeparator(TextWriter writer)
         {
+            string startOfLine = _printMarkdown ? "| " : "+-";
+            char endOfColumn = _printMarkdown ? ' ' : '-';
+            string endOfLine = _printMarkdown ? "|" : "+";
             foreach (int l in _lengths)
             {
-                await writer.WriteAsync("+-" + new string('-', l) + '-');
+                await writer.WriteAsync(startOfLine + new string('-', l) + endOfColumn);
             }
-            await writer.WriteLineAsync("+");
+            await writer.WriteLineAsync(endOfLine);
         }
     }
 }
