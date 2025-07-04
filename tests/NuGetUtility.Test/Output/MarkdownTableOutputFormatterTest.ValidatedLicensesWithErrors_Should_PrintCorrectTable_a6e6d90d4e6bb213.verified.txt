@@ -1,5 +1,4 @@
-﻿| ----------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------------------ | ----------- | ------------------- | --------- | --------------------- |
-| Package                       | Version | License Information Origin | License Expression                                                                   | License Url | Package Project Url | Error     | Error Context         |
+﻿| Package                       | Version | License Information Origin | License Expression                                                                   | License Url | Package Project Url | Error     | Error Context         |
 | ----------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------------------ | ----------- | ------------------- | --------- | --------------------- |
 | Corporate Data Supervisor     | 3.9.4   | Overwrite                  |                                                                                      |             | http://andres.net   | Adelbert  | https://zoe.com       |
 |                               |         |                            |                                                                                      |             |                     | Clare     | https://bobby.info    |
@@ -13,4 +12,3 @@
 |                               |         |                            |                                                                                      |             |                     | Dawson    | http://addie.org      |
 |                               |         |                            |                                                                                      |             |                     | Xander    | https://everette.info |
 |                               |         |                            |                                                                                      |             |                     | Otha      | https://cletus.net    |
-| ----------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------------------ | ----------- | ------------------- | --------- | --------------------- |

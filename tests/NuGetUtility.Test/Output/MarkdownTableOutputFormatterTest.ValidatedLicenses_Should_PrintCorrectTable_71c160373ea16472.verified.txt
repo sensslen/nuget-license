@@ -1,4 +1,2 @@
-﻿| ------- | ------- | -------------------------- |
-| Package | Version | License Information Origin |
-| ------- | ------- | -------------------------- |
+﻿| Package | Version | License Information Origin |
 | ------- | ------- | -------------------------- |

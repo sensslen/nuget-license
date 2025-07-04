@@ -1,5 +1,4 @@
-﻿| ----------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------------------ | --------- | ------------------- | --------- | ---------------------- |
-| Package                       | Version | License Information Origin | License Expression                                                                   | Copyright | Package Project Url | Error     | Error Context          |
+﻿| Package                       | Version | License Information Origin | License Expression                                                                   | Copyright | Package Project Url | Error     | Error Context          |
 | ----------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------------------ | --------- | ------------------- | --------- | ---------------------- |
 | Principal Functionality Agent | 1.5.3   | Expression                 | connecting the firewall won't do anything, we need to copy the digital XSS firewall! |           |                     | Paige     | https://remington.info |
 |                               |         |                            |                                                                                      |           |                     | Aletha    | https://isobel.info    |
@@ -26,4 +25,3 @@
 |                               |         |                            |                                                                                      |           |                     | Miles     | https://freddie.com    |
 |                               |         |                            |                                                                                      |           |                     | Kade      | https://jaunita.biz    |
 |                               |         |                            |                                                                                      |           |                     | Marcelina | http://donna.net       |
-| ----------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------------------ | --------- | ------------------- | --------- | ---------------------- |

@@ -1,4 +1,2 @@
-﻿| ------- | ------- | -------------------------- | ------------------ | ----------- | ------- | ------------------- |
-| Package | Version | License Information Origin | License Expression | License Url | Authors | Package Project Url |
-| ------- | ------- | -------------------------- | ------------------ | ----------- | ------- | ------------------- |
+﻿| Package | Version | License Information Origin | License Expression | License Url | Authors | Package Project Url |
 | ------- | ------- | -------------------------- | ------------------ | ----------- | ------- | ------------------- |
