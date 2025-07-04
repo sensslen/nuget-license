@@ -57,7 +57,10 @@ namespace NuGetUtility.Output.Table
         {
             using var writer = new StreamWriter(_stream, encoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true), bufferSize: 1024, leaveOpen: true);
 
-            await WriteSeparator(writer);
+            if (!_printMarkdown)
+            {
+                await WriteSeparator(writer);
+            }
             await WriteRow(_titles, writer);
             await WriteSeparator(writer);
 
@@ -66,7 +69,10 @@ namespace NuGetUtility.Output.Table
                 await WriteRow(row, writer);
             }
 
-            await WriteSeparator(writer);
+            if (!_printMarkdown)
+            {
+                await WriteSeparator(writer);
+            }
         }
 
         private async Task WriteRow(string[][] values, TextWriter writer)
