@@ -1,5 +1,3 @@
-﻿| ---------------------------- | ------- | -------------------------- | ------------------ | ----------- | ------------------------------------------------------------------------- | ------------------- |
-| Package                      | Version | License Information Origin | License Expression | License Url | Copyright                                                                 | Package Project Url |
+﻿| Package                      | Version | License Information Origin | License Expression | License Url | Copyright                                                                 | Package Project Url |
 | ---------------------------- | ------- | -------------------------- | ------------------ | ----------- | ------------------------------------------------------------------------- | ------------------- |
 | Central Infrastructure Agent | 6.1.6   | Expression                 |                    |             | You can't quantify the program without overriding the online SDD program! |                     |
-| ---------------------------- | ------- | -------------------------- | ------------------ | ----------- | ------------------------------------------------------------------------- | ------------------- |

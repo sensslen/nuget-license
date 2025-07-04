@@ -1,5 +1,4 @@
-﻿| ------------------------------ | ------- | -------------------------- | ------------------------------------------------------------------------------------ | --------------------- | ----------- | --------------------- |
-| Package                        | Version | License Information Origin | License Expression                                                                   | Package Project Url   | Error       | Error Context         |
+﻿| Package                        | Version | License Information Origin | License Expression                                                                   | Package Project Url   | Error       | Error Context         |
 | ------------------------------ | ------- | -------------------------- | ------------------------------------------------------------------------------------ | --------------------- | ----------- | --------------------- |
 | National Solutions Coordinator | 8.7.3   | Expression                 | Use the bluetooth USB panel, then you can calculate the bluetooth panel!             | https://adrianna.name | Maximillian | http://leola.name     |
 |                                |         |                            |                                                                                      |                       | Shaina      | http://dean.name      |
@@ -25,4 +24,3 @@
 |                                |         |                            |                                                                                      |                       | Albin       | http://hal.com        |
 |                                |         |                            |                                                                                      |                       | Betsy       | http://quinton.com    |
 |                                |         |                            |                                                                                      |                       | Emmalee     | https://haleigh.name  |
-| ------------------------------ | ------- | -------------------------- | ------------------------------------------------------------------------------------ | --------------------- | ----------- | --------------------- |

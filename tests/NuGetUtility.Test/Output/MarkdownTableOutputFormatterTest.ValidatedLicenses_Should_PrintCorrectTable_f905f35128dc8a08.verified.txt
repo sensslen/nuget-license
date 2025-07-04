@@ -1,5 +1,4 @@
-﻿| --------------------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------- |
-| Package                                 | Version | License Information Origin | License Expression                                                                                     | Package Project Url   |
+﻿| Package                                 | Version | License Information Origin | License Expression                                                                                     | Package Project Url   |
 | --------------------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------- |
 | Legacy Metrics Planner                  | 9.5.0   | Url                        | Use the open-source JBOD matrix, then you can synthesize the open-source matrix!                       |                       |
 | Forward Quality Producer                | 6.3.7   | Overwrite                  | The CSS microchip is down, back up the bluetooth microchip so we can back up the CSS microchip!        | https://jayne.name    |
@@ -101,4 +100,3 @@
 | Investor Accountability Officer         | 2.4.3   | Overwrite                  |                                                                                                        |                       |
 | Investor Usability Officer              | 2.5.2   | Ignored                    | Try to program the XML capacitor, maybe it will program the haptic capacitor!                          | http://orlo.name      |
 | Customer Integration Agent              | 3.6.0   | Expression                 | If we reboot the driver, we can get to the RAM driver through the digital RAM driver!                  |                       |
-| --------------------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------- |
