@@ -25,7 +25,6 @@ namespace NuGetUtility.LicenseValidator
                     new Uri("https://github.com/Microsoft/Microsoft.IO.RecyclableMemoryStream/blob/master/LICENSE"),
                     Mit
                 ),
-                new KeyValuePair<Uri, string>(new Uri("https://github.com/AutoMapper/AutoMapper/blob/master/LICENSE.txt"), Mit),
                 new KeyValuePair<Uri, string>(new Uri("https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE"), Mit),
                 new KeyValuePair<Uri, string>(new Uri("https://raw.githubusercontent.com/hey-red/markdownsharp/master/LICENSE"), Mit),
                 new KeyValuePair<Uri, string>(new Uri("https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md"), Mit),
