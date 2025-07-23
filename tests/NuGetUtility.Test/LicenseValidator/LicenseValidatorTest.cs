@@ -80,10 +80,10 @@ namespace NuGetUtility.Test.LicenseValidator
         }
         private IPackageMetadata SetupPackageWithCopyright(string packageId,
             INuGetVersion packageVersion,
-            string copyrigth)
+            string copyright)
         {
             IPackageMetadata packageInfo = SetupPackage(packageId, packageVersion);
-            packageInfo.Copyright.Returns(copyrigth);
+            packageInfo.Copyright.Returns(copyright);
             return packageInfo;
         }
         private IPackageMetadata SetupPackageWithAuthors(string packageId,

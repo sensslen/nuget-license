@@ -44,13 +44,14 @@ namespace NuGetUtility.LicenseValidator
                         info.PackageInfo,
                         LicenseInformationOrigin.Ignored);
                 }
-                else if (info.PackageInfo.LicenseMetadata != null)
-                {
-                    await ValidateLicenseByMetadataAsync(info.PackageInfo, info.Context, result, token);
-                }
+                // LicenseMetadata exists in all cases when using --override-package-information
                 else if (info.PackageInfo.LicenseUrl != null)
                 {
                     await ValidateLicenseByUrl(info.PackageInfo, info.Context, result, token);
+                }
+                else if (info.PackageInfo.LicenseMetadata != null)
+                {
+                    await ValidateLicenseByMetadataAsync(info.PackageInfo, info.Context, result, token);
                 }
                 else
                 {
