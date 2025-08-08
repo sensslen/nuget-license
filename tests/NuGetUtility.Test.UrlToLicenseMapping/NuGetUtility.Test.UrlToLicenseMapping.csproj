@@ -27,7 +27,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Selenium.WebDriver" Version="4.34.0" />
-    <PackageReference Include="Verify.NUnit" Version="30.6.0" />
+    <PackageReference Include="Verify.NUnit" Version="30.6.1" />
     <PackageReference Include="Verify.ParametersHashing" Version="1.0.0" />
   </ItemGroup>
 
