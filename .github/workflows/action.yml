@@ -25,7 +25,7 @@ jobs:
             dotnetVersion: "9.0.x"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup dotnet 8.0.x
         uses: actions/setup-dotnet@v4
@@ -49,7 +49,7 @@ jobs:
   test_url_to_license_mapping:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v4
         with:
@@ -76,7 +76,7 @@ jobs:
           - framework: net9.0
             dotnetVersion: "9.0.x"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup dotnet 8.0.x
         uses: actions/setup-dotnet@v4
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v4
@@ -136,7 +136,7 @@ jobs:
             dotnetVersion: "9.0.x"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -170,7 +170,7 @@ jobs:
         project: [App, Tests, ProjectWithReferenceContainingLicenseExpression]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -223,7 +223,7 @@ jobs:
             dotnetVersion: "9.0.x"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -256,7 +256,7 @@ jobs:
   check_version_command_net472:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
