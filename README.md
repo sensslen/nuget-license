@@ -52,25 +52,26 @@ nuget-license [options]
 
 ### Common Options
 
-| Option | Description |
-| ------ | ----------- |
-| `--version` | Show version information. |
-| `-i`, `--input <FILE>` | Project or solution file to analyze. |
-| `-ji`, `--json-input <FILE>` | JSON file with an array of project/solution files to analyze. See [docs/input-json.md](docs/input-json.md). |
-| `-t`, `--include-transitive` | Include transitive dependencies. |
-| `-a`, `--allowed-license-types <FILE>` | JSON file listing allowed license types. See [docs/allowed-licenses-json.md](docs/allowed-licenses-json.md). |
-| `-ignore`, `--ignored-packages <FILE>` | JSON file listing package names to ignore (supports wildcards). See [docs/ignored-packages-json.md](docs/ignored-packages-json.md). |
-| `-mapping`, `--licenseurl-to-license-mappings <FILE>` | JSON dictionary mapping license URLs to license types. See [docs/licenseurl-mappings-json.md](docs/licenseurl-mappings-json.md). |
-| `-override`, `--override-package-information <FILE>` | JSON list to override package/license info. See [docs/override-package-json.md](docs/override-package-json.md). |
-| `-d`, `--license-information-download-location <FOLDER>` | Download all license files to the specified folder. |
-| `-o`, `--output <TYPE>` | Output format: `Table`, `Markdown`, `Json` or `JsonPretty` (default: Table). |
-| `-err`, `--error-only` | Only show validation errors. |
-| `-include-ignored`, `--include-ignored-packages` | Include ignored packages in output. |
+| Option                                                             | Description                                                                                                                                |
+|--------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `--version`                                                        | Show version information.                                                                                                                  |
+| `-i`, `--input <FILE>`                                             | Project or solution file to analyze.                                                                                                       |
+| `-ji`, `--json-input <FILE>`                                       | JSON file with an array of project/solution files to analyze. See [docs/input-json.md](docs/input-json.md).                                |
+| `-t`, `--include-transitive`                                       | Include transitive dependencies.                                                                                                           |
+| `-a`, `--allowed-license-types <FILE>`                             | JSON file listing allowed license types. See [docs/allowed-licenses-json.md](docs/allowed-licenses-json.md).                               |
+| `-ignore`, `--ignored-packages <FILE>`                             | JSON file listing package names to ignore (supports wildcards). See [docs/ignored-packages-json.md](docs/ignored-packages-json.md).        |
+| `-mapping`, `--licenseurl-to-license-mappings <FILE>`              | JSON dictionary mapping license URLs to license types. See [docs/licenseurl-mappings-json.md](docs/licenseurl-mappings-json.md).           |
+| `-override`, `--override-package-information <FILE>`               | JSON list to override package/license info. See [docs/override-package-json.md](docs/override-package-json.md).                            |
+| `-d`, `--license-information-download-location <FOLDER>`           | Download all license files to the specified folder.                                                                                        |
+| `-dl`, `--deprecate-license`                                       | How to handle file types with a deprecate license link in their NuSpec file: `ignore` or `link`.                                           |
+| `-o`, `--output <TYPE>`                                            | Output format: `Table`, `Markdown`, `Json` or `JsonPretty` (default: Table).                                                               |
+| `-err`, `--error-only`                                             | Only show validation errors.                                                                                                               |
+| `-include-ignored`, `--include-ignored-packages`                   | Include ignored packages in output.                                                                                                        |
 | `-exclude-projects`, `--exclude-projects-matching <PATTERN\|FILE>` | Exclude projects by name or pattern (supports wildcards or JSON file). See [docs/exclude-projects-json.md](docs/exclude-projects-json.md). |
-| `-isp`, `--include-shared-projects` | Include shared projects (`.shproj`). |
-| `-f`, `--target-framework <TFM>` | Analyze for a specific Target Framework Moniker. |
-| `-fo`, `--file-output <FILE>` | Write output to a file instead of console. |
-| `-?`, `-h`, `--help` | Show help information. |
+| `-isp`, `--include-shared-projects`                                | Include shared projects (`.shproj`).                                                                                                       |
+| `-f`, `--target-framework <TFM>`                                   | Analyze for a specific Target Framework Moniker.                                                                                           |
+| `-fo`, `--file-output <FILE>`                                      | Write output to a file instead of console.                                                                                                 |
+| `-?`, `-h`, `--help`                                               | Show help information.                                                                                                                     |
 
 ## Examples
 

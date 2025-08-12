@@ -75,7 +75,7 @@ namespace NuGetUtility
                 "When set, the application downloads all licenses given using a license URL to the specified folder.")]
         public string? DownloadLicenseInformation { get; } = null;
 
-        [Option(LongName = "deprecated-license",
+        [Option(LongName = "deprecate-license",
             ShortName = "dl",
             Description = "This parameter allows you to choose how to handle deprecated license URLs.")]
         public DeprecatedLicenseAction DeprecatedLicenseAction { get; } = DeprecatedLicenseAction.Ignore;
