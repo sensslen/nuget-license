@@ -14,6 +14,9 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 {
     internal class GlobalPackagesFolderUtility : IGlobalPackagesFolderUtility
     {
+        private static readonly Uri s_deprecatedLicenseUrl = new Uri("https://aka.ms/deprecateLicenseUrl");
+        private const string NugetLicenseUrl = "https://www.nuget.org/packages/{0}/{1}/License";
+
         private readonly string _globalPackagesFolder;
 
         public GlobalPackagesFolderUtility(ISettings settings)
@@ -21,7 +24,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
             _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(settings);
         }
 
-        public IWrappedPackageMetadata? GetPackage(PackageIdentity identity)
+        public IWrappedPackageMetadata? GetPackage(PackageIdentity identity, DeprecatedLicenseAction licenseFileAction)
         {
             DownloadResourceResult cachedPackage = OriginalGlobalPackagesFolderUtility.GetPackage(new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString()!)), _globalPackagesFolder);
             if (cachedPackage == null)
@@ -37,7 +40,15 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
                 return null;
             }
 
-            return new WrappedPackageMetadata(manifest.Metadata);
+            Uri? licenseUrl = null;
+
+            if (licenseFileAction == DeprecatedLicenseAction.Link && manifest.Metadata.LicenseUrl != null
+                                                                  && manifest.Metadata.LicenseUrl.Equals(s_deprecatedLicenseUrl))
+            {
+                licenseUrl = new Uri(string.Format(NugetLicenseUrl, manifest.Metadata.Id, manifest.Metadata.Version));
+            }
+
+            return new WrappedPackageMetadata(manifest.Metadata, licenseUrl);
         }
     }
 }

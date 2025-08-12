@@ -38,6 +38,8 @@ namespace NuGetUtility.PackageInformationReader
 
         public string? Authors => CustomPackageInformation?.Authors;
 
+        public bool HasNugetLicenseLink => false;
+
         public LicenseMetadata? LicenseMetadata { get; } = null;
     }
 }

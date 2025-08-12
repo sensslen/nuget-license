@@ -75,6 +75,11 @@ namespace NuGetUtility
                 "When set, the application downloads all licenses given using a license URL to the specified folder.")]
         public string? DownloadLicenseInformation { get; } = null;
 
+        [Option(LongName = "deprecated-license",
+            ShortName = "dl",
+            Description = "This parameter allows you to choose how to handle deprecated license URLs.")]
+        public DeprecatedLicenseAction DeprecatedLicenseAction { get; } = DeprecatedLicenseAction.Ignore;
+
         [Option(LongName = "output",
             ShortName = "o",
             Description = "This parameter allows to choose between tabular and json output.")]
@@ -180,7 +185,7 @@ namespace NuGetUtility
 #endif
         }
 
-        private static IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformations(
+        private IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformations(
             ProjectWithReferencedPackages projectWithReferences,
             IEnumerable<CustomPackageInformation> overridePackageInformation,
             CancellationToken cancellation)
@@ -192,7 +197,7 @@ namespace NuGetUtility
             var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
             var informationReader = new PackageInformationReader.PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
 
-            return informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project, projectWithReferences.ReferencedPackages), cancellation);
+            return informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project, projectWithReferences.ReferencedPackages), DeprecatedLicenseAction, cancellation);
         }
 
         private IOutputFormatter GetOutputFormatter()

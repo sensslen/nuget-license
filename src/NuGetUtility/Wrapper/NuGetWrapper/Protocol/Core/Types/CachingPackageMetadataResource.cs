@@ -65,6 +65,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 
             public string? Authors => _searchMetadata.Authors;
 
+            public bool HasNugetLicenseLink => false;
+
             public LicenseMetadata? LicenseMetadata { get; }
         }
     }

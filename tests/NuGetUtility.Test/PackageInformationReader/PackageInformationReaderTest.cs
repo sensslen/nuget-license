@@ -29,7 +29,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             _repositories = Array.Empty<ISourceRepository>();
             _globalPackagesFolderUtility = Substitute.For<IGlobalPackagesFolderUtility>();
 
-            _globalPackagesFolderUtility.GetPackage(Arg.Any<PackageIdentity>()).Returns(default(IPackageMetadata?));
+            _globalPackagesFolderUtility.GetPackage(Arg.Any<PackageIdentity>(), Arg.Any<DeprecatedLicenseAction>()).Returns(default(IPackageMetadata?));
 
             _sourceRepositoryProvider.GetRepositories()
                 .Returns(_ =>
@@ -83,7 +83,7 @@ namespace NuGetUtility.Test.PackageInformationReader
         {
             string project = _fixture.Create<string>();
             var packageSearchRequest = new ProjectWithReferencedPackages(project, searchedPackages);
-            ReferencedPackageWithContext[] result = (await _uut!.GetPackageInfo(packageSearchRequest, CancellationToken.None).Synchronize())
+            ReferencedPackageWithContext[] result = (await _uut!.GetPackageInfo(packageSearchRequest, DeprecatedLicenseAction.Ignore, CancellationToken.None).Synchronize())
                 .ToArray();
             return (project, result);
         }
@@ -129,7 +129,7 @@ namespace NuGetUtility.Test.PackageInformationReader
                 mockedInfo.LicenseUrl.Returns(info.LicenseUrl);
                 mockedInfo.LicenseMetadata.Returns(new LicenseMetadata(LicenseType.Expression, info.License));
                 mockedInfo.LicenseUrl.Returns(info.LicenseUrl);
-                _globalPackagesFolderUtility.GetPackage(identity).Returns(mockedInfo);
+                _globalPackagesFolderUtility.GetPackage(identity, DeprecatedLicenseAction.Ignore).Returns(mockedInfo);
 
                 return identity;
             });

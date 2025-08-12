@@ -26,6 +26,7 @@ namespace NuGetUtility.PackageInformationReader
 
         public async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfo(
             ProjectWithReferencedPackages projectWithReferencedPackages,
+            DeprecatedLicenseAction deprecatedLicenseAction,
             [EnumeratorCancellation] CancellationToken cancellation)
         {
             foreach (PackageIdentity package in projectWithReferencedPackages.ReferencedPackages)
@@ -36,7 +37,7 @@ namespace NuGetUtility.PackageInformationReader
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
                     continue;
                 }
-                result = TryGetPackageInformationFromGlobalPackageFolder(package);
+                result = TryGetPackageInformationFromGlobalPackageFolder(package, deprecatedLicenseAction);
                 if (result.Success)
                 {
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
@@ -52,9 +53,9 @@ namespace NuGetUtility.PackageInformationReader
                 yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, new PackageMetadata(package));
             }
         }
-        private PackageSearchResult TryGetPackageInformationFromGlobalPackageFolder(PackageIdentity package)
+        private PackageSearchResult TryGetPackageInformationFromGlobalPackageFolder(PackageIdentity package, DeprecatedLicenseAction deprecatedLicenseAction)
         {
-            IPackageMetadata? metadata = _globalPackagesFolderUtility.GetPackage(package);
+            IPackageMetadata? metadata = _globalPackagesFolderUtility.GetPackage(package, deprecatedLicenseAction);
             if (metadata != null)
             {
                 return new PackageSearchResult(metadata);

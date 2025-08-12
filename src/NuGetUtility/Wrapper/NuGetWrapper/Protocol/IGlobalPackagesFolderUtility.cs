@@ -8,6 +8,6 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 {
     public interface IGlobalPackagesFolderUtility
     {
-        IPackageMetadata? GetPackage(PackageIdentity identity);
+        IPackageMetadata? GetPackage(PackageIdentity identity, DeprecatedLicenseAction licenseFileAction);
     }
 }

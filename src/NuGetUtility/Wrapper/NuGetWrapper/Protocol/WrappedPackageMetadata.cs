@@ -11,6 +11,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
     internal class WrappedPackageMetadata : IWrappedPackageMetadata
     {
         private readonly ManifestMetadata _metadata;
+        private readonly Uri? _licenseUrl;
 
         public WrappedPackageMetadata(ManifestMetadata metadata)
         {
@@ -19,11 +20,16 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
             _metadata = metadata;
         }
 
+        public WrappedPackageMetadata(ManifestMetadata manifestMetadata, Uri? licenseUrl) :  this(manifestMetadata)
+        {
+            _licenseUrl = licenseUrl;
+        }
+
         public PackageIdentity Identity { get; }
 
         public string? Title => _metadata.Title;
 
-        public Uri? LicenseUrl => _metadata.LicenseUrl;
+        public Uri? LicenseUrl => _licenseUrl ?? _metadata.LicenseUrl;
 
         public string? ProjectUrl => _metadata.ProjectUrl?.ToString();
 
@@ -34,6 +40,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
         public string? Copyright => _metadata.Copyright;
 
         public string? Authors => string.Join(",", _metadata.Authors); // https://learn.microsoft.com/en-us/nuget/reference/nuspec#authors
+
+        public bool HasNugetLicenseLink => _licenseUrl != null;
 
         public Packaging.LicenseMetadata? LicenseMetadata { get; }
     }

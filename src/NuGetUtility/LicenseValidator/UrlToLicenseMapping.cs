@@ -33,6 +33,7 @@ namespace NuGetUtility.LicenseValidator
                 new KeyValuePair<Uri, string>(new Uri("https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"), Mit),
                 new KeyValuePair<Uri, string>(new Uri("https://go.microsoft.com/fwlink/?linkid=868514"), Mit),
                 new KeyValuePair<Uri, string>(new Uri("http://go.microsoft.com/fwlink/?linkid=833178"), Mit),
+                new KeyValuePair<Uri, string>(new Uri("http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"), Gpl20),
                 new KeyValuePair<Uri, string>(new Uri("https://raw.githubusercontent.com/AArnott/Validation/8377954d86/LICENSE.txt"), MsPl),
                 new KeyValuePair<Uri, string>(new Uri("https://github.com/Microsoft/dotnet/blob/master/LICENSE"), Mit)
             }

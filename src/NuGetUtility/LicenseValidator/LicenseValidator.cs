@@ -151,6 +151,18 @@ namespace NuGetUtility.LicenseValidator
                     }
 
                     break;
+                case LicenseType.File:
+                    if (info.HasNugetLicenseLink)
+                    {
+                        AddOrUpdateLicense(result,
+                            info,
+                            LicenseInformationOrigin.Url);
+                    }
+                    else
+                    {
+                        goto default;
+                    }
+                    break;
                 default:
                     AddOrUpdateLicense(result,
                         info,
