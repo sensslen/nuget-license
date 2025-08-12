@@ -7,13 +7,20 @@ using OpenQA.Selenium.Chrome;
 
 namespace NuGetUtility.Test.LicenseValidator
 {
-    [TestFixture]
-    [NonParallelizable]
+    public static class UrlToLicenseMappingTestSource
+    {
+        public static IEnumerable<KeyValuePair<Uri, string>> GetDefaultMappings()
+        {
+            return UrlToLicenseMapping.Default;
+        }
+    }
+
     public class UrlToLicenseMappingTest
     {
         private const int RETRY_COUNT = 3;
-        [TestCaseSource(typeof(UrlToLicenseMapping), nameof(UrlToLicenseMapping.Default))]
-        [NonParallelizable]
+        [Test]
+        [MethodDataSource(typeof(UrlToLicenseMappingTestSource), nameof(UrlToLicenseMappingTestSource.GetDefaultMappings))]
+        [NotInParallel(nameof(License_Should_Be_Available_And_Match_Expected_License))]
         public async Task License_Should_Be_Available_And_Match_Expected_License(KeyValuePair<Uri, string> mappedValue)
         {
             int retryCount = 0;
@@ -34,10 +41,10 @@ namespace NuGetUtility.Test.LicenseValidator
 
                 int retryTimeout = (int)(baseDelayMs * Math.Pow(10, retryCount)) + Random.Shared.Next(1000, 3000);
                 retryCount++;
-                await TestContext.Out.WriteLineAsync($"Failed to check license. Retry count: {retryCount}\n\n");
-                await TestContext.Out.WriteLineAsync($"Error:");
-                await TestContext.Out.WriteLineAsync(licenseResult.Error);
-                await TestContext.Out.WriteLineAsync($"\n\nRetrying after {retryTimeout}ms\n\n");
+                Console.WriteLine($"Failed to check license. Retry count: {retryCount}\n\n");
+                Console.WriteLine($"Error:");
+                Console.WriteLine(licenseResult.Error);
+                Console.WriteLine($"\n\nRetrying after {retryTimeout}ms\n\n");
                 await Task.Delay(retryTimeout);
             }
         }
