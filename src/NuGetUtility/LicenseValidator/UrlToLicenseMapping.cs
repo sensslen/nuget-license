@@ -1,6 +1,6 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
-
+using System.Diagnostics.CodeAnalysis;
 using System.Collections.Immutable;
 
 namespace NuGetUtility.LicenseValidator
@@ -13,6 +13,7 @@ namespace NuGetUtility.LicenseValidator
         private const string MsPl = "MS-PL";
         private const string Bsd30 = "BSD-3-Clause";
 
+        [SuppressMessage("Major Code Smell", "S1075:URIs should not be hardcoded", Justification = "License mapping requires hardcoded URIs.")]
         public static IImmutableDictionary<Uri, string> Default { get; } = ImmutableDictionary.CreateRange(
             new[]
             {
