@@ -3,7 +3,7 @@
 
 namespace NuGetUtility.Output.Table
 {
-    internal static class TablePrinterExtensions
+    public static class TablePrinterExtensions
     {
         public static TablePrinter Create(Stream stream, params string[] headings)
         {

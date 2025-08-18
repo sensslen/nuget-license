@@ -27,6 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\NuGetUtility\NuGetUtility.csproj" />
+    <ProjectReference Include="..\..\src\NuGetLicense\NuGetLicense.csproj" />
   </ItemGroup>
 </Project>

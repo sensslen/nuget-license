@@ -1,17 +1,16 @@
 ﻿// Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
-using NuGetUtility.LicenseValidator;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
-namespace NuGetUtility.Test.LicenseValidator
+namespace NuGetUtility.Test.UrlToLicenseMapping
 {
     public static class UrlToLicenseMappingTestSource
     {
         public static IEnumerable<KeyValuePair<Uri, string>> GetDefaultMappings()
         {
-            return UrlToLicenseMapping.Default;
+            return NuGetLicense.LicenseValidator.UrlToLicenseMapping.Default;
         }
     }
 
@@ -70,7 +69,7 @@ namespace NuGetUtility.Test.LicenseValidator
 
         private static Task<CompareResult> CompareLicense(string received, string verified, IReadOnlyDictionary<string, object> context)
         {
-            return Task.FromResult(new CompareResult((!string.IsNullOrWhiteSpace(verified)) && received.Contains(verified)));
+            return Task.FromResult(new CompareResult(!string.IsNullOrWhiteSpace(verified) && received.Contains(verified)));
         }
 
         private sealed class DisposableWebDriver : IDisposable

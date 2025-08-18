@@ -62,7 +62,7 @@ namespace NuGetUtility.PackageInformationReader
             return new PackageSearchResult();
         }
 
-        private async Task<PackageSearchResult> TryGetPackageInformationFromRepositories(
+        private static async Task<PackageSearchResult> TryGetPackageInformationFromRepositories(
             ISourceRepository[] cachedRepositories,
             PackageIdentity package,
             CancellationToken cancellation)

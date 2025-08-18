@@ -12,7 +12,6 @@ namespace NuGetUtility.Test.Architecture.Rules
         {
             Types.That()
                 .DoNotResideInNamespace($"{AssemblyNames.NuGetUtility}.{nameof(Wrapper)}.{nameof(Wrapper.NuGetWrapper)}")
-                .And().DoNotResideInNamespace($"{AssemblyNames.NuGetUtility}.{nameof(Program)}")
                 .ShouldNot().HaveDependencyOn(nameof(NuGet))
                 .Assert($"Only the {nameof(Wrapper.NuGetWrapper)} should have dependencies to {nameof(NuGet)}.");
         }

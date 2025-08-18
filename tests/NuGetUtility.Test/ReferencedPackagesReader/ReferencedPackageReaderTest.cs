@@ -5,7 +5,7 @@ using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using NSubstitute;
 using NuGetUtility.ReferencedPackagesReader;
-using NuGetUtility.Test.Helper.ShuffelledEnumerable;
+using NuGetUtility.Test.Extensions.Helper.ShuffelledEnumerable;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
