@@ -1,7 +1,7 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
-using System.Diagnostics.CodeAnalysis;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NuGetUtility.LicenseValidator
 {
