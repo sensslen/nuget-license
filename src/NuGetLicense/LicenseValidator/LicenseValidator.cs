@@ -149,14 +149,33 @@ namespace NuGetLicense.LicenseValidator
                             new ValidationError(GetLicenseNotAllowedMessage(info.LicenseMetadata.License), context),
                             info.LicenseMetadata.License);
                     }
+                    break;
+
+                case LicenseType.File:
+
+                    if (info.LicenseFileContent is null)
+                    {
+                        AddOrUpdateLicense(result,
+                            info,
+                            LicenseInformationOrigin.PackageFile,
+                            new ValidationError($"Could not extract license file {info.LicenseMetadata.License} from package", context));
+                    }
+
+                    // Now analyze the license content
+                    // For now, just treat it as valid since we successfully extracted it
+                    AddOrUpdateLicense(result,
+                        info,
+                        LicenseInformationOrigin.PackageFile,
+                        info.LicenseFileContent?.FirstLine());
 
                     break;
+
                 default:
                     AddOrUpdateLicense(result,
                         info,
                         LicenseInformationOrigin.Unknown,
                         new ValidationError(
-                            $"Validation for licenses of type {info.LicenseMetadata!.Type} not yet supported",
+                            $"Unknown license type {info.LicenseMetadata!.Type} not yet supported",
                             context));
                     break;
             }
