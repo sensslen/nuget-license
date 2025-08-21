@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NuGetUtility\NuGetUtility.csproj" />
+    <ProjectReference Include="..\NuGetLicense\NuGetLicense.csproj" />
   </ItemGroup>
 
 </Project>

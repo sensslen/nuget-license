@@ -11,7 +11,7 @@ namespace NuGetLicenseFramework
         public static async Task Main(string[] args)
         {
             var lifetime = new AppLifetime();
-            int returnCode = await CommandLineApplication.ExecuteAsync<NuGetUtility.Program>(args, lifetime.Token);
+            int returnCode = await CommandLineApplication.ExecuteAsync<NuGetLicense.Program>(args, lifetime.Token);
             lifetime.Done(returnCode);
         }
     }

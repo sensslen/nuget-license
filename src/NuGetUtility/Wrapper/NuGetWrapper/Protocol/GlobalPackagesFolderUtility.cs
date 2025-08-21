@@ -12,7 +12,7 @@ using PackageIdentity = NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core.Package
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 {
-    internal class GlobalPackagesFolderUtility : IGlobalPackagesFolderUtility
+    public class GlobalPackagesFolderUtility : IGlobalPackagesFolderUtility
     {
         private readonly string _globalPackagesFolder;
 

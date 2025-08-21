@@ -3,7 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace NuGetUtility.Test.LicenseValidator
+namespace NuGetUtility.Test.UrlToLicenseMapping
 {
     public readonly struct Result<T>
     {

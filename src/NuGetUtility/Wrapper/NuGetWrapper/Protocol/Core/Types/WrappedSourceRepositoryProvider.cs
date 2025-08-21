@@ -5,7 +5,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
-    internal sealed class WrappedSourceRepositoryProvider : IWrappedSourceRepositoryProvider, IDisposable
+    public sealed class WrappedSourceRepositoryProvider : IWrappedSourceRepositoryProvider, IDisposable
     {
         private readonly IDisposableSourceRepository[] _repositories;
 

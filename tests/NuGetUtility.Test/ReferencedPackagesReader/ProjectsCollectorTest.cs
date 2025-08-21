@@ -4,7 +4,7 @@
 using AutoFixture;
 using NSubstitute;
 using NuGetUtility.ReferencedPackagesReader;
-using NuGetUtility.Test.Helper.ShuffelledEnumerable;
+using NuGetUtility.Test.Extensions.Helper.ShuffelledEnumerable;
 using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
 
 namespace NuGetUtility.Test.ReferencedPackagesReader

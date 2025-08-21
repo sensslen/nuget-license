@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net8.0;net9.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+
+    <Configurations>Debug;Release;TestWindows</Configurations>
+
+    <Platforms>AnyCPU</Platforms>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="  '$(TargetFramework)' == 'net472' ">
+    <LangVersion>10.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="5.0.0-preview0012" />
+    <PackageReference Include="AutoFixture.AutoNSubstitute" Version="5.0.0-preview0012" />
+    <PackageReference Include="AutoFixture.NUnit4" Version="5.0.0-preview0012" />
+    <PackageReference Include="NSubstitute" Version="5.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\NuGetUtility\NuGetUtility.csproj" />
+  </ItemGroup>
+</Project>

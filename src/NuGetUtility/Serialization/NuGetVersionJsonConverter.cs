@@ -7,7 +7,7 @@ using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Serialization
 {
-    internal class NuGetVersionJsonConverter : JsonConverter<INuGetVersion>
+    public class NuGetVersionJsonConverter : JsonConverter<INuGetVersion>
     {
         public override INuGetVersion? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
