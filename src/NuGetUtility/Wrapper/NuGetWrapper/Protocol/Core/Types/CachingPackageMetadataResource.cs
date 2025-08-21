@@ -66,6 +66,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             public string? Authors => _searchMetadata.Authors;
 
             public LicenseMetadata? LicenseMetadata { get; }
+
+            public string? LicenseFileContent { get; set; } = null;
         }
     }
 }

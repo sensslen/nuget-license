@@ -1,7 +1,9 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.IO.Compression;
 using System.Runtime.CompilerServices;
+using System.Text;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
@@ -33,21 +35,39 @@ namespace NuGetUtility.PackageInformationReader
                 PackageSearchResult result = TryGetPackageInfoFromCustomInformation(package);
                 if (result.Success)
                 {
+                    if (result.Metadata is { LicenseMetadata.Type: LicenseType.File })
+                    {
+                        await ReadLicenseFromFileAsync(result.Metadata);
+                    }
+
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
                     continue;
                 }
+
                 result = TryGetPackageInformationFromGlobalPackageFolder(package);
                 if (result.Success)
                 {
+                    if (result.Metadata is { LicenseMetadata.Type: LicenseType.File })
+                    {
+                        await ReadLicenseFromFileAsync(result.Metadata);
+                    }
+
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
                     continue;
                 }
+
                 result = await TryGetPackageInformationFromRepositories(_repositories, package, cancellation);
                 if (result.Success)
                 {
+                    if (result.Metadata is { LicenseMetadata.Type: LicenseType.File })
+                    {
+                        await ReadLicenseFromFileAsync(result.Metadata);
+                    }
+
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
                     continue;
                 }
+
                 // simply return input - validation will fail later, as the required fields are missing
                 yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, new PackageMetadata(package));
             }
@@ -125,6 +145,55 @@ namespace NuGetUtility.PackageInformationReader
             {
                 Success = false;
             }
+        }
+
+        private static async Task ReadLicenseFromFileAsync(IPackageMetadata metadata)
+        {
+            string? licenseFilePath = metadata.LicenseMetadata?.License;
+
+            // Get the package file path - this depends on your package source
+            string packageFilePath = GetPackageFilePath(metadata.Identity);
+
+            if (!File.Exists(packageFilePath))
+            {
+                return;
+            }
+
+            try
+            {
+                using var fileStream = new FileStream(packageFilePath, FileMode.Open, FileAccess.Read);
+                using var archive = new ZipArchive(fileStream, ZipArchiveMode.Read);
+
+                if (licenseFilePath != null)
+                {
+                    ZipArchiveEntry? licenseEntry = archive.GetEntry(licenseFilePath);
+                    if (licenseEntry == null)
+                    {
+                        return;
+                    }
+
+                    using Stream entryStream = licenseEntry.Open();
+                    using var reader = new StreamReader(entryStream, Encoding.UTF8);
+
+                    // Read the license file into the metadata
+                    metadata.LicenseFileContent = await reader.ReadToEndAsync();
+                }
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+
+        private static string GetPackageFilePath(PackageIdentity identity)
+        {
+            string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string versionString = identity.Version.ToString() ?? "unknown";
+
+            return Path.Combine(userProfile, ".nuget", "packages",
+                identity.Id.ToLowerInvariant(),
+                versionString.ToLowerInvariant(),
+                $"{identity.Id.ToLowerInvariant()}.{versionString.ToLowerInvariant()}.nupkg");
         }
     }
 }

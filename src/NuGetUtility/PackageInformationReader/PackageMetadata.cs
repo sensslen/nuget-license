@@ -39,5 +39,7 @@ namespace NuGetUtility.PackageInformationReader
         public string? Authors => CustomPackageInformation?.Authors;
 
         public LicenseMetadata? LicenseMetadata { get; } = null;
+
+        public string? LicenseFileContent { get; set; } = null;
     }
 }
