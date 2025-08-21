@@ -1,7 +1,7 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
-
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NuGetUtility.LicenseValidator
 {
@@ -11,7 +11,9 @@ namespace NuGetUtility.LicenseValidator
         private const string Gpl20 = "GPL-2.0";
         private const string Mit = "MIT";
         private const string MsPl = "MS-PL";
+        private const string Bsd30 = "BSD-3-Clause";
 
+        [SuppressMessage("Major Code Smell", "S1075:URIs should not be hardcoded", Justification = "License mapping requires hardcoded URIs.")]
         public static IImmutableDictionary<Uri, string> Default { get; } = ImmutableDictionary.CreateRange(
             new[]
             {
@@ -34,7 +36,10 @@ namespace NuGetUtility.LicenseValidator
                 new KeyValuePair<Uri, string>(new Uri("https://go.microsoft.com/fwlink/?linkid=868514"), Mit),
                 new KeyValuePair<Uri, string>(new Uri("http://go.microsoft.com/fwlink/?linkid=833178"), Mit),
                 new KeyValuePair<Uri, string>(new Uri("https://raw.githubusercontent.com/AArnott/Validation/8377954d86/LICENSE.txt"), MsPl),
-                new KeyValuePair<Uri, string>(new Uri("https://github.com/Microsoft/dotnet/blob/master/LICENSE"), Mit)
+                new KeyValuePair<Uri, string>(new Uri("https://github.com/Microsoft/dotnet/blob/master/LICENSE"), Mit),
+                new KeyValuePair<Uri, string>(new Uri("https://opensource.org/licenses/MIT"), Mit),
+                new KeyValuePair<Uri, string>(new Uri("https://opensource.org/license/apache-2-0"), Apache20),
+                new KeyValuePair<Uri, string>(new Uri("https://opensource.org/license/bsd-3-clause"), Bsd30)
             }
         );
     }
