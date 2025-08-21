@@ -24,13 +24,13 @@ jobs:
         with:
           prefix: 'v'
 
-      - uses: nuget/setup-nuget@v2
+      - uses: nuget/setup-nuget@v2.0.1
       - run: nuget restore NuGetUtility.sln
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      - uses: browser-actions/setup-chrome@latest
+      - uses: browser-actions/setup-chrome@v2.1.0
 
       - name: build
         run: msbuild -t:rebuild -property:Configuration=Release
@@ -85,10 +85,12 @@ jobs:
       - name: publish nuget package to nuget.org
         id: publish_nuget
         shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_KEY }}
         run: |
-          $files = Get-ChildItem -Path ${{ steps.artifacts_path.outputs.path }}/* -Include *.nupkg -Recurse
-          foreach ($f in $files){
-            $fullPath = $F.FullName
-            echo "sending $fullPath"
-            dotnet nuget push "$fullPath" -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_KEY }} --skip-duplicate
+          $files = Get-ChildItem -Path "${{ steps.artifacts_path.outputs.path }}" -Include *.nupkg -Recurse
+          foreach ($f in $files) {
+            $fullPath = $f.FullName
+            Write-Host "sending package: $fullPath"
+            dotnet nuget push --source 'https://api.nuget.org/v3/index.json' --api-key "$env:NUGET_API_KEY" --skip-duplicate "$fullPath"
           }

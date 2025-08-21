@@ -55,7 +55,7 @@ jobs:
         with:
           dotnet-version: 9.0.x
       
-      - uses: browser-actions/setup-chrome@latest
+      - uses: browser-actions/setup-chrome@v2.1.0
       
       - name: restore
         run: dotnet restore
@@ -88,7 +88,7 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - uses: nuget/setup-nuget@v2
+      - uses: nuget/setup-nuget@v2.0.1
       - run: nuget restore NuGetUtility.sln
 
       - name: Add msbuild to PATH
