@@ -5,7 +5,6 @@ using System.Collections.Immutable;
 using AutoFixture;
 using NSubstitute;
 using NuGetLicense.LicenseValidator;
-using NuGetUtility.LicenseValidator;
 using NuGetUtility.LicenseValidator.FileLicense;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Test.Extensions.Helper.AsyncEnumerableExtension;
