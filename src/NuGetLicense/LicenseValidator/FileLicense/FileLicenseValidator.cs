@@ -19,14 +19,13 @@ namespace NuGetUtility.LicenseValidator.FileLicense
 
             var results = new List<MatchResult>();
 
-            foreach (var licence in FileLicenseMap.Map)
+            foreach (KeyValuePair<string, string> licence in FileLicenseMap.Map)
             {
                 int score = Fuzz.TokenDifferenceRatio(licenseText, licence.Value);
                 results.Add(new MatchResult(score, licence.Key));
             }
 
-            var winner = results.Where(x => x.Score >= fuzzyThreshold).OrderByDescending(x => x.Score).FirstOrDefault();
-
+            MatchResult? winner = results.Where(x => x.Score >= fuzzyThreshold).OrderByDescending(x => x.Score).FirstOrDefault();
             return winner?.Type;
         }
     }
