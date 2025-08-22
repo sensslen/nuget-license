@@ -48,7 +48,7 @@
       }
     ],
     "LicenseUrl": "Try to back up the AI card, maybe it will back up the cross-platform card!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Principal Assurance Representative",
@@ -76,7 +76,7 @@
         "Context": "https://dusty.net"
       }
     ],
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Future Data Manager",

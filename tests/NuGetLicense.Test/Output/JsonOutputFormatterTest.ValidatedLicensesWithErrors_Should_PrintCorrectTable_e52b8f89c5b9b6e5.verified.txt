@@ -5,7 +5,7 @@
     "PackageProjectUrl": "http://akeem.info",
     "Copyright": "Try to compress the SMS bus, maybe it will compress the bluetooth bus!",
     "LicenseUrl": "overriding the pixel won\u0027t do anything, we need to copy the optical JSON pixel!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Principal Functionality Agent",
@@ -49,13 +49,13 @@
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Corporate Group Planner",
     "PackageVersion": "9.2.2",
     "Copyright": "We need to reboot the virtual RSS alarm!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Forward Integration Assistant",
@@ -82,7 +82,7 @@
     "PackageVersion": "9.5.0",
     "Copyright": "The USB transmitter is down, generate the bluetooth transmitter so we can generate the USB transmitter!",
     "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Lead Markets Developer",
@@ -104,7 +104,7 @@
       }
     ],
     "License": "We need to program the digital HTTP sensor!",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 1
   },
   {
     "PackageId": "Central Marketing Assistant",
@@ -112,7 +112,7 @@
     "PackageProjectUrl": "http://julia.biz",
     "License": "I\u0027ll navigate the redundant RAM capacitor, that should capacitor the RAM capacitor!",
     "LicenseUrl": "I\u0027ll parse the mobile SSL bandwidth, that should bandwidth the SSL bandwidth!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Corporate Factors Architect",
@@ -153,7 +153,7 @@
     ],
     "License": "If we input the panel, we can get to the COM panel through the optical COM panel!",
     "LicenseUrl": "connecting the application won\u0027t do anything, we need to synthesize the 1080p PCI application!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Forward Factors Director",
@@ -165,7 +165,7 @@
     "PackageId": "Product Infrastructure Supervisor",
     "PackageVersion": "8.1.1",
     "PackageProjectUrl": "https://merle.com",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Customer Assurance Officer",
@@ -188,28 +188,28 @@
     "PackageProjectUrl": "http://pearline.com",
     "Copyright": "We need to synthesize the cross-platform SMS circuit!",
     "LicenseUrl": "I\u0027ll transmit the online SSL feed, that should feed the SSL feed!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Legacy Interactions Analyst",
     "PackageVersion": "3.0.8",
     "License": "hacking the hard drive won\u0027t do anything, we need to generate the open-source RSS hard drive!",
     "LicenseUrl": "connecting the system won\u0027t do anything, we need to synthesize the mobile ADP system!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Legacy Research Associate",
     "PackageVersion": "9.9.5",
     "PackageProjectUrl": "https://hildegard.name",
     "LicenseUrl": "We need to navigate the bluetooth RAM bus!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Corporate Tactics Strategist",
     "PackageVersion": "9.9.9",
     "Copyright": "generating the matrix won\u0027t do anything, we need to parse the solid state GB matrix!",
     "LicenseUrl": "copying the alarm won\u0027t do anything, we need to index the open-source TCP alarm!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Corporate Data Supervisor",
@@ -229,7 +229,7 @@
         "Context": "https://kira.net"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Dynamic Program Analyst",
@@ -258,7 +258,7 @@
       }
     ],
     "License": "I\u0027ll parse the wireless PCI array, that should array the PCI array!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Central Infrastructure Agent",
@@ -279,7 +279,7 @@
     "PackageVersion": "8.2.7",
     "Copyright": "Use the mobile SCSI bus, then you can program the mobile bus!",
     "License": "We need to compress the primary GB array!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Senior Identity Designer",
@@ -294,6 +294,6 @@
     "PackageProjectUrl": "https://lance.net",
     "License": "You can\u0027t parse the system without compressing the haptic GB system!",
     "LicenseUrl": "Use the cross-platform CSS capacitor, then you can copy the cross-platform capacitor!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   }
 ]

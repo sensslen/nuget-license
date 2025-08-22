@@ -31,12 +31,6 @@
     "LicenseInformationOrigin": 0
   },
   {
-    "PackageId": "Dynamic Functionality Agent",
-    "PackageVersion": "5.9.5",
-    "PackageProjectUrl": "http://annabelle.net",
-    "LicenseInformationOrigin": 2
-  },
-  {
     "PackageId": "Central Integration Analyst",
     "PackageVersion": "0.4.0",
     "PackageProjectUrl": "https://laverne.name",
@@ -51,7 +45,7 @@
   {
     "PackageId": "Global Security Liaison",
     "PackageVersion": "8.1.2",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 1
   },
   {
     "PackageId": "Legacy Metrics Planner",
@@ -125,6 +119,13 @@
     "LicenseInformationOrigin": 0
   },
   {
+    "PackageId": "Regional Solutions Supervisor",
+    "PackageVersion": "1.8.2",
+    "PackageProjectUrl": "https://lance.net",
+    "License": "You can\u0027t parse the system without compressing the haptic GB system!",
+    "LicenseInformationOrigin": 4
+  },
+  {
     "PackageId": "Forward Functionality Analyst",
     "PackageVersion": "4.5.1",
     "PackageProjectUrl": "http://orie.name",
@@ -141,7 +142,7 @@
     "PackageId": "District Branding Analyst",
     "PackageVersion": "1.9.5",
     "PackageProjectUrl": "https://paula.net",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Customer Directives Director",
@@ -206,7 +207,7 @@
     "PackageVersion": "6.3.7",
     "PackageProjectUrl": "https://jayne.name",
     "License": "The CSS microchip is down, back up the bluetooth microchip so we can back up the CSS microchip!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Chief Assurance Associate",
@@ -224,7 +225,7 @@
   {
     "PackageId": "Regional Security Architect",
     "PackageVersion": "2.2.5",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Global Usability Representative",

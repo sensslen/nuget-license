@@ -5,7 +5,7 @@
     "Copyright": "The USB transmitter is down, generate the bluetooth transmitter so we can generate the USB transmitter!",
     "Authors": "Rochelle Ondricka,Rochelle Ondricka,Rochelle Ondricka,Rochelle Ondricka,Rochelle Ondricka",
     "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Principal Functionality Agent",
@@ -85,7 +85,7 @@
       }
     ],
     "LicenseUrl": "Try to back up the AI card, maybe it will back up the cross-platform card!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Future Data Manager",
@@ -156,6 +156,6 @@
         "Context": "https://dusty.net"
       }
     ],
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   }
 ]

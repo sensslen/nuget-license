@@ -97,29 +97,31 @@
     "LicenseInformationOrigin": 0
   },
   {
-    "PackageId": "Investor Tactics Strategist",
-    "PackageVersion": "1.6.5",
-    "PackageProjectUrl": "http://arch.biz",
-    "Authors": "Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer",
+    "PackageId": "Principal Assurance Representative",
+    "PackageVersion": "3.8.2",
+    "Authors": "Patsy Erdman,Patsy Erdman,Patsy Erdman,Patsy Erdman",
     "ValidationErrors": [
       {
-        "Error": "Rosendo",
-        "Context": "https://pierce.name"
+        "Error": "Jadon",
+        "Context": "https://amelia.biz"
       },
       {
-        "Error": "Braeden",
-        "Context": "http://ayana.org"
+        "Error": "Toni",
+        "Context": "http://angie.name"
       },
       {
-        "Error": "Avery",
-        "Context": "http://jarret.biz"
+        "Error": "Ardella",
+        "Context": "http://melissa.net"
       },
       {
-        "Error": "Clarissa",
-        "Context": "https://audreanne.name"
+        "Error": "Sandra",
+        "Context": "http://pearline.org"
+      },
+      {
+        "Error": "Noble",
+        "Context": "https://dusty.net"
       }
     ],
-    "LicenseUrl": "Try to back up the AI card, maybe it will back up the cross-platform card!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 4
   }
 ]

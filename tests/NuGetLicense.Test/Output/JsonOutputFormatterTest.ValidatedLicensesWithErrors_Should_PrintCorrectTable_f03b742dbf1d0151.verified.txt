@@ -40,7 +40,7 @@
         "Context": "http://erica.org"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Global Response Associate",
@@ -115,7 +115,7 @@
         "Context": "http://daisha.biz"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Lead Intranet Officer",
@@ -314,7 +314,7 @@
         "Context": "https://zackery.info"
       }
     ],
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Corporate Tactics Analyst",
@@ -350,7 +350,7 @@
       }
     ],
     "License": "If we synthesize the bus, we can get to the SDD bus through the 1080p SDD bus!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Global Optimization Representative",
@@ -397,7 +397,7 @@
         "Context": "http://zane.name"
       }
     ],
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Direct Intranet Facilitator",
@@ -613,7 +613,7 @@
         "Context": "https://hazel.net"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Legacy Optimization Orchestrator",
@@ -672,6 +672,6 @@
         "Context": "https://verlie.com"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   }
 ]
