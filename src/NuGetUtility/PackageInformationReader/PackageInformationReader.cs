@@ -181,7 +181,7 @@ namespace NuGetUtility.PackageInformationReader
             }
             catch (Exception)
             {
-                // ignored
+                    // ignored
             }
         }
 

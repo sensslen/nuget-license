@@ -21,16 +21,5 @@ namespace NuGetUtility.Extensions
                 TimeSpan.FromMilliseconds(100)
             ).IsMatch(str);
         }
-
-        public static string FirstLine(this string str)
-        {
-            if (string.IsNullOrEmpty(str))
-                return string.Empty;
-
-            ReadOnlySpan<char> span = str.AsSpan();
-            int newlineIndex = span.IndexOfAny('\r', '\n');
-
-            return newlineIndex == -1 ? str : span[..newlineIndex].ToString();
-        }
     }
 }

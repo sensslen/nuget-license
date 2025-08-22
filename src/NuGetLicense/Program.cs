@@ -8,7 +8,6 @@ using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGetLicense.LicenseValidator;
-using NuGetLicense.LicenseValidator.FileLicense;
 using NuGetLicense.Output;
 using NuGetLicense.Output.Json;
 using NuGetLicense.Output.Table;
