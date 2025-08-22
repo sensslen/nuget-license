@@ -550,7 +550,7 @@ namespace NuGetLicense.Test.LicenseValidator
 
         [Test]
         public async Task ValidatingLicensesWithNotSupportedLicenseMetadata_Should_GiveCorrectResult(
-            [EnumValuesExcept(LicenseType.Expression, LicenseType.Overwrite)] LicenseType licenseType)
+            [EnumValuesExcept(LicenseType.Expression, LicenseType.Overwrite, LicenseType.File)] LicenseType licenseType)
         {
             var fixture = new Fixture();
             fixture.Customizations.Add(new NuGetVersionBuilder());
