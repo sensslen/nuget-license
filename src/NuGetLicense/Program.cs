@@ -135,7 +135,7 @@ namespace NuGetLicense
             var projectCollector = new ProjectsCollector(solutionPersistance);
             var msBuild = new MsBuildAbstraction();
             var projectReader = new ReferencedPackageReader(msBuild, new LockFileFactory(), GetPackagesConfigReader());
-            var fileLicenseValidator = new FileLicenseValidator();
+            var fileLicenseValidator = new FileLicenseMatcher();
 
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicenses,
