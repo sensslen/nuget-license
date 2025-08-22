@@ -166,12 +166,12 @@ namespace NuGetLicense.LicenseValidator
                             new ValidationError($"Could not extract license file {info.LicenseMetadata.License} from package", context));
                     }
 
-                    // Now analyze the license content
-                    var licenseType = _fileLicenseValidator.Validate(info.LicenseFileContent);
+                    // Analyze the license content
+                    string? licenseType = _fileLicenseValidator.Validate(info.LicenseFileContent);
                     AddOrUpdateLicense(result,
                         info,
                         LicenseInformationOrigin.PackageFile,
-                        licenseType.ToSpdx()
+                        licenseType
                         );
 
                     break;
