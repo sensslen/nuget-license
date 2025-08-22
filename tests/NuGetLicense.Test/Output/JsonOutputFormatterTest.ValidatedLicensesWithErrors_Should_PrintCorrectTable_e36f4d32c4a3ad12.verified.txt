@@ -26,7 +26,7 @@
   {
     "PackageId": "Regional Security Architect",
     "PackageVersion": "2.2.5",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Direct Intranet Facilitator",
@@ -116,7 +116,7 @@
     "PackageVersion": "6.3.7",
     "PackageProjectUrl": "https://jayne.name",
     "License": "The CSS microchip is down, back up the bluetooth microchip so we can back up the CSS microchip!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "National Solutions Coordinator",

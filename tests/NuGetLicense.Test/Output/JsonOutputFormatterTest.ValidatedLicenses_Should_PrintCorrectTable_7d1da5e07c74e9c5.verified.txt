@@ -12,7 +12,7 @@
     "PackageProjectUrl": "http://antonette.net",
     "Copyright": "If we parse the transmitter, we can get to the IB transmitter through the back-end IB transmitter!",
     "Authors": "",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "National Research Developer",
@@ -20,5 +20,12 @@
     "PackageProjectUrl": "https://rodrigo.biz",
     "Authors": "Nina Donnelly,Nina Donnelly",
     "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Global Implementation Strategist",
+    "PackageVersion": "5.9.8",
+    "PackageProjectUrl": "https://enos.info",
+    "Authors": "Colleen Schroeder,Colleen Schroeder",
+    "LicenseInformationOrigin": 4
   }
 ]

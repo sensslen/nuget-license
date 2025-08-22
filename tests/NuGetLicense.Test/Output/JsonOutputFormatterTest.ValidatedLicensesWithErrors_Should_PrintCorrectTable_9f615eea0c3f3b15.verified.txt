@@ -4,7 +4,7 @@
     "PackageVersion": "1.4.6",
     "PackageProjectUrl": "http://cameron.info",
     "License": "We need to program the haptic IB panel!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Principal Functionality Agent",
@@ -37,7 +37,7 @@
     "PackageProjectUrl": "http://myrtice.com",
     "Authors": "Matt Mills,Matt Mills",
     "LicenseUrl": "I\u0027ll calculate the 1080p HDD system, that should system the HDD system!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Investor Tactics Strategist",
@@ -63,7 +63,7 @@
       }
     ],
     "LicenseUrl": "Try to back up the AI card, maybe it will back up the cross-platform card!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Principal Assurance Representative",
@@ -91,7 +91,7 @@
         "Context": "https://dusty.net"
       }
     ],
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Future Data Manager",
@@ -142,7 +142,7 @@
     "Copyright": "The USB transmitter is down, generate the bluetooth transmitter so we can generate the USB transmitter!",
     "Authors": "Rochelle Ondricka,Rochelle Ondricka,Rochelle Ondricka,Rochelle Ondricka,Rochelle Ondricka",
     "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Corporate Intranet Associate",

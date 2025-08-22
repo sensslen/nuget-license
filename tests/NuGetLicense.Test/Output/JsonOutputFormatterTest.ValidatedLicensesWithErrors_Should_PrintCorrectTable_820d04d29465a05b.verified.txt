@@ -41,13 +41,13 @@
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 1
   },
   {
     "PackageId": "National Directives Analyst",
     "PackageVersion": "8.2.7",
     "License": "We need to compress the primary GB array!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Future Data Architect",
@@ -73,13 +73,13 @@
     "PackageVersion": "5.4.1",
     "PackageProjectUrl": "http://hyman.org",
     "License": "Use the cross-platform CSS capacitor, then you can copy the cross-platform capacitor!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "District Mobility Administrator",
     "PackageVersion": "3.2.3",
     "Copyright": "You can\u0027t compress the transmitter without overriding the auxiliary TCP transmitter!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Product Infrastructure Supervisor",
@@ -100,14 +100,14 @@
     "PackageProjectUrl": "https://malcolm.net",
     "Copyright": "Use the primary GB driver, then you can generate the primary driver!",
     "License": "Try to reboot the THX hard drive, maybe it will reboot the open-source hard drive!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "District Optimization Manager",
     "PackageVersion": "4.0.4",
     "Copyright": "We need to quantify the wireless HTTP array!",
     "License": "Use the bluetooth HDD driver, then you can parse the bluetooth driver!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Product Paradigm Orchestrator",
@@ -128,13 +128,13 @@
     "PackageProjectUrl": "https://maximilian.org",
     "Copyright": "I\u0027ll transmit the online SSL feed, that should feed the SSL feed!",
     "License": "The PNG protocol is down, index the digital protocol so we can index the PNG protocol!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Legacy Metrics Planner",
     "PackageVersion": "9.5.0",
     "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Customer Interactions Representative",
@@ -148,20 +148,20 @@
     "PackageVersion": "9.5.7",
     "PackageProjectUrl": "http://maddison.biz",
     "License": "We need to navigate the bluetooth RAM bus!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Future Optimization Architect",
     "PackageVersion": "5.1.5",
     "License": "Use the auxiliary RAM alarm, then you can generate the auxiliary alarm!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "International Data Representative",
     "PackageVersion": "3.5.7",
     "PackageProjectUrl": "http://dakota.com",
     "License": "Try to synthesize the COM port, maybe it will synthesize the haptic port!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "International Mobility Technician",

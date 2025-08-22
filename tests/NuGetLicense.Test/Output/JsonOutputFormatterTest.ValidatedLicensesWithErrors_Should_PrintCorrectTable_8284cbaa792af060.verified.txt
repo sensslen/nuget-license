@@ -49,7 +49,7 @@
         "Context": "https://zackery.info"
       }
     ],
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "National Solutions Coordinator",
@@ -129,7 +129,7 @@
         "Context": "http://zane.name"
       }
     ],
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Lead Intranet Officer",
@@ -171,7 +171,7 @@
         "Context": "https://verlie.com"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Human Usability Specialist",
@@ -361,7 +361,7 @@
         "Context": "http://erica.org"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Direct Accounts Associate",
@@ -405,7 +405,7 @@
         "Context": "https://hazel.net"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Regional Accounts Technician",
@@ -588,7 +588,7 @@
       }
     ],
     "License": "If we synthesize the bus, we can get to the SDD bus through the 1080p SDD bus!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Legacy Creative Liaison",
@@ -627,7 +627,7 @@
         "Context": "http://daisha.biz"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Direct Intranet Facilitator",

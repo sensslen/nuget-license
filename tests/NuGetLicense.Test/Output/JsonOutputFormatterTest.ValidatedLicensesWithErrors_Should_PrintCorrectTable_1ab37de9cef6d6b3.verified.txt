@@ -73,7 +73,7 @@
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 1
   },
   {
     "PackageId": "Principal Metrics Facilitator",
@@ -118,7 +118,7 @@
       }
     ],
     "License": "You can\u0027t synthesize the system without calculating the 1080p ADP system!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Future Integration Analyst",
@@ -206,6 +206,6 @@
       }
     ],
     "LicenseUrl": "Try to back up the AI card, maybe it will back up the cross-platform card!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   }
 ]

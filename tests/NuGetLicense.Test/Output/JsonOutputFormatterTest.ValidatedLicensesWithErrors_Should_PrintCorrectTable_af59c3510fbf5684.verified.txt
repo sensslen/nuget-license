@@ -1,31 +1,5 @@
 ﻿[
   {
-    "PackageId": "Investor Tactics Strategist",
-    "PackageVersion": "1.6.5",
-    "PackageProjectUrl": "http://arch.biz",
-    "Authors": "Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer",
-    "ValidationErrors": [
-      {
-        "Error": "Rosendo",
-        "Context": "https://pierce.name"
-      },
-      {
-        "Error": "Braeden",
-        "Context": "http://ayana.org"
-      },
-      {
-        "Error": "Avery",
-        "Context": "http://jarret.biz"
-      },
-      {
-        "Error": "Clarissa",
-        "Context": "https://audreanne.name"
-      }
-    ],
-    "LicenseUrl": "Try to back up the AI card, maybe it will back up the cross-platform card!",
-    "LicenseInformationOrigin": 2
-  },
-  {
     "PackageId": "Principal Functionality Agent",
     "PackageVersion": "1.5.3",
     "Authors": "Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson",
