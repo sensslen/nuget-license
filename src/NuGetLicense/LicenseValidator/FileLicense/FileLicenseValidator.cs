@@ -21,7 +21,7 @@ namespace NuGetUtility.LicenseValidator.FileLicense
 
             foreach (var licence in FileLicenseMap.Map)
             {
-                int score = Fuzz.TokenSetRatio(licenseText, licence.Value);
+                int score = Fuzz.TokenDifferenceRatio(licenseText, licence.Value);
                 results.Add(new MatchResult(score, licence.Key));
             }
 
