@@ -11,7 +11,7 @@ namespace NuGetLicense.Test.LicenseValidator;
 internal class FileValidatorTests
 {
     private FileLicenseMatcher _fileMatcher = null!;
-    private static readonly string[] LicenseKeys = FileLicenseMap.Map.Keys.ToArray();
+    private static readonly string[] s_licenseKeys = FileLicenseMap.Map.Keys.ToArray();
 
     [OneTimeSetUp]
     public void OneTimeSetUp()
@@ -33,7 +33,7 @@ internal class FileValidatorTests
     }
 
     [Test]
-    [TestCaseSource(nameof(LicenseKeys))]
+    [TestCaseSource(nameof(s_licenseKeys))]
     public void ValidatingContentWithLicense_Should_ReturnLicense(string expected)
     {
         // Arrange

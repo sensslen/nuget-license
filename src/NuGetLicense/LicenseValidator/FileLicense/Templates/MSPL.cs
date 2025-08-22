@@ -5,7 +5,7 @@ namespace NuGetLicense.LicenseValidator.FileLicense.Templates;
 
 internal static partial class LicenseTemplate
 {
-    internal static string Mspl = """
+    internal const string Mspl = """
                                   This license governs use of the accompanying software. If you use the software, you accept this license. If you do not accept the license, do not use the software.
 
                                   1. Definitions
