@@ -1300,7 +1300,7 @@ namespace NuGetLicense.Test.LicenseValidator
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
-            var expected = new[]
+            LicenseValidationResult[] expected = new[]
             {
                 new LicenseValidationResult(packageId,
                     packageVersion,
