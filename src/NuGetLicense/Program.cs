@@ -8,13 +8,13 @@ using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGetLicense.LicenseValidator;
+using NuGetLicense.LicenseValidator.FileLicense;
 using NuGetLicense.Output;
 using NuGetLicense.Output.Json;
 using NuGetLicense.Output.Table;
 using NuGetUtility;
 using NuGetUtility.Extension;
 using NuGetUtility.Extensions;
-using NuGetUtility.LicenseValidator.FileLicense;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.ProjectFiltering;
 using NuGetUtility.ReferencedPackagesReader;
@@ -135,12 +135,10 @@ namespace NuGetLicense
             var projectCollector = new ProjectsCollector(solutionPersistance);
             var msBuild = new MsBuildAbstraction();
             var projectReader = new ReferencedPackageReader(msBuild, new LockFileFactory(), GetPackagesConfigReader());
-            var fileLicenseValidator = new FileLicenseMatcher();
 
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicenses,
                 urlLicenseFileDownloader,
-                fileLicenseValidator,
                 ignoredPackages);
 
             string[] excludedProjects = GetExcludedProjects();

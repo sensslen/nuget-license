@@ -3,8 +3,8 @@
 
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using NuGetLicense.LicenseValidator.FileLicense;
 using NuGetUtility.Extensions;
-using NuGetUtility.LicenseValidator.FileLicense;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
@@ -21,18 +21,15 @@ namespace NuGetLicense.LicenseValidator
         private readonly IFileDownloader _fileDownloader;
         private readonly string[] _ignoredPackages;
         private readonly IImmutableDictionary<Uri, string> _licenseMapping;
-        private readonly FileLicenseMatcher _fileLicenseMatcher;
 
         public LicenseValidator(IImmutableDictionary<Uri, string> licenseMapping,
             IEnumerable<string> allowedLicenses,
             IFileDownloader fileDownloader,
-            FileLicenseMatcher fileLicenseMatcher,
             string[] ignoredPackages)
         {
             _licenseMapping = licenseMapping;
             _allowedLicenses = allowedLicenses;
             _fileDownloader = fileDownloader;
-            _fileLicenseMatcher = fileLicenseMatcher;
             _ignoredPackages = ignoredPackages;
         }
 
