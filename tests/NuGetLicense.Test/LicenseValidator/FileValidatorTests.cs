@@ -10,13 +10,13 @@ namespace NuGetLicense.Test.LicenseValidator;
 [TestFixture]
 internal class FileValidatorTests
 {
-    private FileLicenseValidator _fileValidator = null!;
+    private FileLicenseMatcher _fileMatcher = null!;
     private static readonly string[] LicenseKeys = FileLicenseMap.Map.Keys.ToArray();
 
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        _fileValidator = new FileLicenseValidator();
+        _fileMatcher = new FileLicenseMatcher();
     }
 
     [Test]
@@ -26,7 +26,7 @@ internal class FileValidatorTests
         string content = string.Empty;
 
         // Act
-        string? result = _fileValidator.Validate(content);
+        string? result = FileLicenseMatcher.FindBestMatch(content);
 
         // Assert
         Assert.That(result, Is.Null, "Expected null result for empty content");
@@ -40,7 +40,7 @@ internal class FileValidatorTests
         string content = FileLicenseMap.Map[expected];
 
         // Act
-        string? result = _fileValidator.Validate(content);
+        string? result = FileLicenseMatcher.FindBestMatch(content);
 
         // Assert
         Assert.That(result, Is.Not.Null, "Expected non-null result for content with license");

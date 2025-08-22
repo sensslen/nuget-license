@@ -8,9 +8,9 @@ public record MatchResult(int Score, string Type);
 
 namespace NuGetUtility.LicenseValidator.FileLicense
 {
-    public class FileLicenseValidator
+    public class FileLicenseMatcher
     {
-        public string? Validate(string licenseText, int fuzzyThreshold = 90)
+        public static string? FindBestMatch(string licenseText, int fuzzyThreshold = 90)
         {
             if (string.IsNullOrWhiteSpace(licenseText))
             {

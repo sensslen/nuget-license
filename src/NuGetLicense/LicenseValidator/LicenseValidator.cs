@@ -21,18 +21,18 @@ namespace NuGetLicense.LicenseValidator
         private readonly IFileDownloader _fileDownloader;
         private readonly string[] _ignoredPackages;
         private readonly IImmutableDictionary<Uri, string> _licenseMapping;
-        private readonly FileLicenseValidator _fileLicenseValidator;
+        private readonly FileLicenseMatcher _fileLicenseMatcher;
 
         public LicenseValidator(IImmutableDictionary<Uri, string> licenseMapping,
             IEnumerable<string> allowedLicenses,
             IFileDownloader fileDownloader,
-            FileLicenseValidator fileLicenseValidator,
+            FileLicenseMatcher fileLicenseMatcher,
             string[] ignoredPackages)
         {
             _licenseMapping = licenseMapping;
             _allowedLicenses = allowedLicenses;
             _fileDownloader = fileDownloader;
-            _fileLicenseValidator = fileLicenseValidator;
+            _fileLicenseMatcher = fileLicenseMatcher;
             _ignoredPackages = ignoredPackages;
         }
 
@@ -167,7 +167,7 @@ namespace NuGetLicense.LicenseValidator
                     }
 
                     // Analyze the license content
-                    string? licenseType = _fileLicenseValidator.Validate(info.LicenseFileContent);
+                    string? licenseType = FileLicenseMatcher.FindBestMatch(info.LicenseFileContent);
                     AddOrUpdateLicense(result,
                         info,
                         LicenseInformationOrigin.PackageFile,
