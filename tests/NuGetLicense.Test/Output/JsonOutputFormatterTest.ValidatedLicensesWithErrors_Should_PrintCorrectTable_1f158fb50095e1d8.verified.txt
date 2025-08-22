@@ -4,7 +4,7 @@
     "PackageVersion": "1.4.6",
     "PackageProjectUrl": "http://cameron.info",
     "License": "We need to program the haptic IB panel!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Principal Functionality Agent",
@@ -32,38 +32,32 @@
     "LicenseInformationOrigin": 0
   },
   {
-    "PackageId": "Chief Functionality Planner",
-    "PackageVersion": "5.1.2",
-    "PackageProjectUrl": "http://myrtice.com",
-    "Authors": "Matt Mills,Matt Mills",
-    "LicenseUrl": "I\u0027ll calculate the 1080p HDD system, that should system the HDD system!",
-    "LicenseInformationOrigin": 2
-  },
-  {
-    "PackageId": "Investor Tactics Strategist",
-    "PackageVersion": "1.6.5",
-    "PackageProjectUrl": "http://arch.biz",
-    "Authors": "Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer",
+    "PackageId": "Principal Assurance Representative",
+    "PackageVersion": "3.8.2",
+    "Authors": "Patsy Erdman,Patsy Erdman,Patsy Erdman,Patsy Erdman",
     "ValidationErrors": [
       {
-        "Error": "Rosendo",
-        "Context": "https://pierce.name"
+        "Error": "Jadon",
+        "Context": "https://amelia.biz"
       },
       {
-        "Error": "Braeden",
-        "Context": "http://ayana.org"
+        "Error": "Toni",
+        "Context": "http://angie.name"
       },
       {
-        "Error": "Avery",
-        "Context": "http://jarret.biz"
+        "Error": "Ardella",
+        "Context": "http://melissa.net"
       },
       {
-        "Error": "Clarissa",
-        "Context": "https://audreanne.name"
+        "Error": "Sandra",
+        "Context": "http://pearline.org"
+      },
+      {
+        "Error": "Noble",
+        "Context": "https://dusty.net"
       }
     ],
-    "LicenseUrl": "Try to back up the AI card, maybe it will back up the cross-platform card!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Future Data Manager",
@@ -107,14 +101,6 @@
       }
     ],
     "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Legacy Metrics Planner",
-    "PackageVersion": "9.5.0",
-    "Copyright": "The USB transmitter is down, generate the bluetooth transmitter so we can generate the USB transmitter!",
-    "Authors": "Rochelle Ondricka,Rochelle Ondricka,Rochelle Ondricka,Rochelle Ondricka,Rochelle Ondricka",
-    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
-    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Corporate Intranet Associate",

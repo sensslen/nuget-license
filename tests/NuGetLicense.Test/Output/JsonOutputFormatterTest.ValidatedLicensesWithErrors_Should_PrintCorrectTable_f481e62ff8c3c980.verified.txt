@@ -4,7 +4,7 @@
     "PackageVersion": "5.4.1",
     "PackageProjectUrl": "http://hyman.org",
     "License": "Use the cross-platform CSS capacitor, then you can copy the cross-platform capacitor!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Principal Functionality Agent",
@@ -40,13 +40,13 @@
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 1
   },
   {
     "PackageId": "District Mobility Administrator",
     "PackageVersion": "3.2.3",
     "LicenseUrl": "You can\u0027t compress the transmitter without overriding the auxiliary TCP transmitter!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "District Integration Manager",
@@ -140,13 +140,13 @@
       }
     ],
     "License": "You can\u0027t synthesize the system without calculating the 1080p ADP system!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Legacy Metrics Planner",
     "PackageVersion": "9.5.0",
     "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "International Mobility Technician",

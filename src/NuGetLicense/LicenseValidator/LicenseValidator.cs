@@ -3,6 +3,7 @@
 
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using NuGetLicense.LicenseValidator.FileLicense;
 using NuGetUtility.Extensions;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
@@ -10,6 +11,7 @@ using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 using Tethys.SPDX.ExpressionParser;
+using LicenseType = NuGetUtility.Wrapper.NuGetWrapper.Packaging.LicenseType;
 
 namespace NuGetLicense.LicenseValidator
 {
@@ -149,14 +151,26 @@ namespace NuGetLicense.LicenseValidator
                             new ValidationError(GetLicenseNotAllowedMessage(info.LicenseMetadata.License), context),
                             info.LicenseMetadata.License);
                     }
+                    break;
+
+                case LicenseType.File:
+
+                    // Analyze the license content
+                    string? licenseType = FileLicenseMatcher.FindBestMatch(info.LicenseFileContent);
+                    AddOrUpdateLicense(result,
+                        info,
+                        LicenseInformationOrigin.PackageFile,
+                        licenseType
+                        );
 
                     break;
+
                 default:
                     AddOrUpdateLicense(result,
                         info,
                         LicenseInformationOrigin.Unknown,
                         new ValidationError(
-                            $"Validation for licenses of type {info.LicenseMetadata!.Type} not yet supported",
+                            $"Unknown license type {info.LicenseMetadata!.Type} not yet supported",
                             context));
                     break;
             }
