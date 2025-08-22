@@ -67,7 +67,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 
             public LicenseMetadata? LicenseMetadata { get; }
 
-            public string? LicenseFileContent { get; set; } = null;
+            public string LicenseFileContent { get; set; } = string.Empty;
         }
     }
 }

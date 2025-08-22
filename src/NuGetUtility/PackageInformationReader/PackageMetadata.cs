@@ -40,6 +40,6 @@ namespace NuGetUtility.PackageInformationReader
 
         public LicenseMetadata? LicenseMetadata { get; } = null;
 
-        public string? LicenseFileContent { get; set; } = null;
+        public string LicenseFileContent { get; set; } = string.Empty;
     }
 }

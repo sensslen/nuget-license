@@ -4,12 +4,14 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using NuGetUtility.Extensions;
+using NuGetUtility.LicenseValidator.FileLicense;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 using Tethys.SPDX.ExpressionParser;
+using LicenseType = NuGetUtility.Wrapper.NuGetWrapper.Packaging.LicenseType;
 
 namespace NuGetLicense.LicenseValidator
 {
@@ -19,15 +21,18 @@ namespace NuGetLicense.LicenseValidator
         private readonly IFileDownloader _fileDownloader;
         private readonly string[] _ignoredPackages;
         private readonly IImmutableDictionary<Uri, string> _licenseMapping;
+        private readonly FileLicenseValidator _fileLicenseValidator;
 
         public LicenseValidator(IImmutableDictionary<Uri, string> licenseMapping,
             IEnumerable<string> allowedLicenses,
             IFileDownloader fileDownloader,
+            FileLicenseValidator fileLicenseValidator,
             string[] ignoredPackages)
         {
             _licenseMapping = licenseMapping;
             _allowedLicenses = allowedLicenses;
             _fileDownloader = fileDownloader;
+            _fileLicenseValidator = fileLicenseValidator;
             _ignoredPackages = ignoredPackages;
         }
 
@@ -153,7 +158,7 @@ namespace NuGetLicense.LicenseValidator
 
                 case LicenseType.File:
 
-                    if (info.LicenseFileContent is null)
+                    if (info.LicenseFileContent == string.Empty)
                     {
                         AddOrUpdateLicense(result,
                             info,
@@ -162,11 +167,12 @@ namespace NuGetLicense.LicenseValidator
                     }
 
                     // Now analyze the license content
-                    // For now, just treat it as valid since we successfully extracted it
+                    var licenseType = _fileLicenseValidator.Validate(info.LicenseFileContent);
                     AddOrUpdateLicense(result,
                         info,
                         LicenseInformationOrigin.PackageFile,
-                        info.LicenseFileContent?.FirstLine());
+                        licenseType.ToSpdx()
+                        );
 
                     break;
 
