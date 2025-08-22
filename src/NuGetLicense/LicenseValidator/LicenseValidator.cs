@@ -155,14 +155,6 @@ namespace NuGetLicense.LicenseValidator
 
                 case LicenseType.File:
 
-                    if (info.LicenseFileContent == string.Empty)
-                    {
-                        AddOrUpdateLicense(result,
-                            info,
-                            LicenseInformationOrigin.PackageFile,
-                            new ValidationError($"Could not extract license file {info.LicenseMetadata.License} from package", context));
-                    }
-
                     // Analyze the license content
                     string? licenseType = FileLicenseMatcher.FindBestMatch(info.LicenseFileContent);
                     AddOrUpdateLicense(result,
