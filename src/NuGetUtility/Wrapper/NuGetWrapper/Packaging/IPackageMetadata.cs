@@ -16,6 +16,6 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Packaging
         string? Copyright { get; }
         string? Authors { get; }
         LicenseMetadata? LicenseMetadata { get; }
-        string? LicenseFileContent { get; set; }
+        string LicenseFileContent { get; set; }
     }
 }

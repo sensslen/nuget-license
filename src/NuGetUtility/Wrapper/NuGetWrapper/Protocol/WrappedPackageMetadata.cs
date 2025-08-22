@@ -37,6 +37,6 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 
         public Packaging.LicenseMetadata? LicenseMetadata { get; }
 
-        public string? LicenseFileContent { get; set; } = null;
+        public string LicenseFileContent { get; set; } = string.Empty;
     }
 }
