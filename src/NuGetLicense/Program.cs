@@ -25,6 +25,8 @@ using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
+using System.IO.Abstractions;
+using NuGetUtility.Wrapper.ZipArchiveWrapper;
 
 #if !NET
 using System.Net.Http;
@@ -193,11 +195,19 @@ namespace NuGetLicense
             ISettings settings = Settings.LoadDefaultSettings(projectWithReferences.Project);
             var sourceProvider = new PackageSourceProvider(settings);
 
+            var fs = new FileSystem();
+            var zipArchive = new ZipArchiveWrapper();
+            string profilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var licenseFileWrapper = new PackageLicenseFileReader(fs, zipArchive, profilePath);
+
             using var sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
             var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
-            var informationReader = new PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
+            var informationReader = new PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility,
+                overridePackageInformation, licenseFileWrapper);
 
-            return informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project, projectWithReferences.ReferencedPackages), cancellation);
+            return informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project,
+                    projectWithReferences.ReferencedPackages),
+                cancellation);
         }
 
         private IOutputFormatter GetOutputFormatter()

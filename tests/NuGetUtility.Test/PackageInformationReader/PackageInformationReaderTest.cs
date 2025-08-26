@@ -1,6 +1,7 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.IO.Abstractions;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using NSubstitute;
@@ -12,6 +13,7 @@ using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
+using NuGetUtility.Wrapper.ZipArchiveWrapper;
 
 namespace NuGetUtility.Test.PackageInformationReader
 {
@@ -56,7 +58,8 @@ namespace NuGetUtility.Test.PackageInformationReader
         private void SetupUut()
         {
             TearDown();
-            _uut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation);
+            var licenseFileWrapper = new PackageLicenseFileReader(new FileSystem(), new ZipArchiveWrapper(), Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+            _uut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation, licenseFileWrapper);
         }
 
         private NuGetUtility.PackageInformationReader.PackageInformationReader _uut = null!;
