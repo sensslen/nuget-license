@@ -138,5 +138,17 @@ namespace NuGetUtility.Test.PackageInformationReader
             // Act & Assert
             Assert.DoesNotThrowAsync(async () => await _uut.ReadLicenseFromFileAsync(_packageMetadata));
         }
+
+        [Test]
+        public void ReadLicenseFromFileAsync_WithNoOpPackageLicenseFileReader_CompletesSuccessfully()
+        {
+            // Arrange
+            var noOpReader = new NoOpPackageLicenseFileReader();
+            _packageMetadata.LicenseMetadata.Returns(new LicenseMetadata(LicenseType.File, "LICENSE.txt"));
+
+            // Act & Assert
+            Assert.DoesNotThrowAsync(async () => await noOpReader.ReadLicenseFromFileAsync(_packageMetadata));
+            Assert.That(_packageMetadata.LicenseFileContent, Is.Null.Or.Empty);
+        }
     }
 }
