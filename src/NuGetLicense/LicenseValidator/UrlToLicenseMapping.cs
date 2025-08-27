@@ -8,6 +8,7 @@ namespace NuGetLicense.LicenseValidator
     public static class UrlToLicenseMapping
     {
         [SuppressMessage("Major Code Smell", "S1075:URIs should not be hardcoded", Justification = "License mapping requires hardcoded URIs.")]
+        [SuppressMessage("Critical Security Hotspot", "S5332:Using http protocol is insecure", Justification = "Legacy license URLs require HTTP for compatibility with existing package metadata.")]
         public static IImmutableDictionary<Uri, string> Default { get; } = ImmutableDictionary.CreateRange(
             new[]
             {
