@@ -2,7 +2,6 @@
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.IO.Abstractions;
-using System.IO.Compression;
 using System.Text;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
