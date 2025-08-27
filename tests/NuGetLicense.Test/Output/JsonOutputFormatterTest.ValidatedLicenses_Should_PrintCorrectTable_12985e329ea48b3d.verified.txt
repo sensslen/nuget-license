@@ -1,26 +1,10 @@
 ﻿[
   {
-    "PackageId": "Legacy Metrics Planner",
-    "PackageVersion": "9.5.0",
-    "Copyright": "The USB transmitter is down, generate the bluetooth transmitter so we can generate the USB transmitter!",
-    "Authors": "Rochelle Ondricka,Rochelle Ondricka,Rochelle Ondricka,Rochelle Ondricka,Rochelle Ondricka",
-    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
-    "LicenseInformationOrigin": 2
-  },
-  {
     "PackageId": "Lead Configuration Liaison",
     "PackageVersion": "1.8.9",
     "PackageProjectUrl": "http://esther.biz",
     "LicenseUrl": "connecting the transmitter won\u0027t do anything, we need to program the cross-platform XSS transmitter!",
     "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Chief Functionality Planner",
-    "PackageVersion": "5.1.2",
-    "PackageProjectUrl": "http://myrtice.com",
-    "Authors": "Matt Mills,Matt Mills",
-    "LicenseUrl": "I\u0027ll calculate the 1080p HDD system, that should system the HDD system!",
-    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Corporate Intranet Associate",
@@ -34,7 +18,13 @@
     "PackageVersion": "1.4.6",
     "PackageProjectUrl": "http://cameron.info",
     "License": "We need to program the haptic IB panel!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Corporate Optimization Agent",
+    "PackageVersion": "2.7.0",
+    "PackageProjectUrl": "http://bryce.com",
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Customer Interactions Representative",
@@ -56,14 +46,14 @@
     "Authors": "Doyle Osinski,Doyle Osinski,Doyle Osinski,Doyle Osinski",
     "License": "backing up the system won\u0027t do anything, we need to parse the neural CSS system!",
     "LicenseUrl": "We need to transmit the back-end RSS transmitter!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Global Usability Manager",
     "PackageVersion": "9.1.0",
     "PackageProjectUrl": "http://vella.com",
     "LicenseUrl": "Try to back up the THX interface, maybe it will back up the auxiliary interface!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Internal Factors Facilitator",
@@ -72,12 +62,6 @@
     "Authors": "Mable Kris,Mable Kris,Mable Kris,Mable Kris,Mable Kris",
     "LicenseUrl": "Try to copy the PNG sensor, maybe it will copy the 1080p sensor!",
     "LicenseInformationOrigin": 1
-  },
-  {
-    "PackageId": "Human Accountability Developer",
-    "PackageVersion": "6.9.0",
-    "License": "If we program the circuit, we can get to the SAS circuit through the back-end SAS circuit!",
-    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Future Accounts Designer",
@@ -93,7 +77,7 @@
     "Authors": "Julius Bernhard,Julius Bernhard,Julius Bernhard,Julius Bernhard",
     "License": "You can\u0027t transmit the application without connecting the open-source SDD application!",
     "LicenseUrl": "The AI hard drive is down, back up the 1080p hard drive so we can back up the AI hard drive!",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 1
   },
   {
     "PackageId": "Dynamic Configuration Assistant",
@@ -109,7 +93,7 @@
     "PackageProjectUrl": "https://octavia.name",
     "Copyright": "parsing the card won\u0027t do anything, we need to synthesize the online SQL card!",
     "Authors": "Stella Barton,Stella Barton",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Global Configuration Consultant",
@@ -126,11 +110,6 @@
     "Authors": "Misty Nikolaus,Misty Nikolaus,Misty Nikolaus,Misty Nikolaus,Misty Nikolaus,Misty Nikolaus,Misty Nikolaus",
     "License": "generating the firewall won\u0027t do anything, we need to program the online JSON firewall!",
     "LicenseUrl": "We need to calculate the cross-platform SMTP matrix!",
-    "LicenseInformationOrigin": 1
-  },
-  {
-    "PackageId": "Customer Metrics Analyst",
-    "PackageVersion": "6.7.1",
     "LicenseInformationOrigin": 2
   },
   {

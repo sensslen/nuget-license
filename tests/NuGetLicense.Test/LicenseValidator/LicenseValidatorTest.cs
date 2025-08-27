@@ -3,8 +3,10 @@
 
 using System.Collections.Immutable;
 using AutoFixture;
+using AutoFixture.Kernel;
 using NSubstitute;
 using NuGetLicense.LicenseValidator;
+using NuGetLicense.LicenseValidator.FileLicense;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Test.Extensions.Helper.AsyncEnumerableExtension;
 using NuGetUtility.Test.Extensions.Helper.AutoFixture.NuGet.Versioning;
@@ -14,6 +16,7 @@ using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
+using LicenseType = NuGetUtility.Wrapper.NuGetWrapper.Packaging.LicenseType;
 
 namespace NuGetLicense.Test.LicenseValidator
 {
@@ -531,7 +534,7 @@ namespace NuGetLicense.Test.LicenseValidator
 
         [Test]
         public async Task ValidatingLicensesWithNotSupportedLicenseMetadata_Should_GiveCorrectResult(
-            [EnumValuesExcept(LicenseType.Expression, LicenseType.Overwrite)] LicenseType licenseType)
+            [EnumValuesExcept(LicenseType.Expression, LicenseType.Overwrite, LicenseType.File)] LicenseType licenseType)
         {
             var fixture = new Fixture();
             fixture.Customizations.Add(new NuGetVersionBuilder());
@@ -1232,6 +1235,57 @@ namespace NuGetLicense.Test.LicenseValidator
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
-    }
 
+        private IPackageMetadata SetupPackageWithFileLicense(string packageId,
+            INuGetVersion packageVersion,
+            string fileLicenseContent)
+        {
+            IPackageMetadata packageInfo = SetupPackage(packageId, packageVersion);
+            packageInfo.LicenseMetadata.Returns(new LicenseMetadata(LicenseType.File, "LICENSE"));
+            packageInfo.LicenseFileContent.Returns(fileLicenseContent);
+            return packageInfo;
+        }
+
+        [Test]
+        [TestCase(License.Apache2)]
+        [TestCase(License.Bsd2)]
+        [TestCase(License.Bsd3)]
+        [TestCase(License.Gpl2)]
+        [TestCase(License.Gpl3)]
+        [TestCase(License.Mit)]
+        [TestCase(License.Mspl)]
+        public async Task ValidatingLicensesWithFileLicense_Should_GiveCorrectResult(string licenseType)
+        {
+            var fixture = new Fixture();
+            fixture.Customizations.Add(new NuGetVersionBuilder());
+
+            string packageId = fixture.Create<string>();
+            INuGetVersion packageVersion = fixture.Create<INuGetVersion>();
+
+            _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
+                Array.Empty<string>(),
+                _fileDownloader,
+                _ignoredLicenses);
+
+            string fileLicenseContent = FileLicenseMap.Map[licenseType];
+            IPackageMetadata package = SetupPackageWithFileLicense(packageId, packageVersion, fileLicenseContent);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+
+            LicenseValidationResult[] expected = new[]
+            {
+                new LicenseValidationResult(packageId,
+                    packageVersion,
+                    _projectUrl.ToString(),
+                    licenseType,
+                    null,
+                    null,
+                    null,
+                    LicenseInformationOrigin.PackageFile)
+            };
+
+            Assert.That(result, Is.EquivalentTo(expected)
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+    }
 }

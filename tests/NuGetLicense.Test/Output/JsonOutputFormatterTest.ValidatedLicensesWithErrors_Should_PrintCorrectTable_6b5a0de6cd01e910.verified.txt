@@ -1,5 +1,11 @@
 ﻿[
   {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
+    "LicenseInformationOrigin": 4
+  },
+  {
     "PackageId": "Principal Functionality Agent",
     "PackageVersion": "1.5.3",
     "ValidationErrors": [
@@ -33,6 +39,6 @@
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 1
   }
 ]

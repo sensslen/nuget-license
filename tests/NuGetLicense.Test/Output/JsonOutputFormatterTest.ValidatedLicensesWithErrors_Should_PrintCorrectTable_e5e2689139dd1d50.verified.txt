@@ -41,7 +41,7 @@
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Corporate Data Supervisor",
@@ -61,7 +61,7 @@
         "Context": "https://kira.net"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Corporate Factors Architect",
@@ -102,6 +102,6 @@
       }
     ],
     "License": "If we input the panel, we can get to the COM panel through the optical COM panel!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   }
 ]
