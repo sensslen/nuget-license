@@ -26,7 +26,7 @@ public sealed class PackageLicenseFileReader(IFileSystem fileSystem, IZipArchive
 
         try
         {
-            using FileSystemStream fileStream = fileSystem.FileStream.New(packageFilePath, FileMode.Open, FileAccess.Read); ;
+            using FileSystemStream fileStream = fileSystem.FileStream.New(packageFilePath, FileMode.Open, FileAccess.Read);
             using IZipArchive archive = zipArchive.Open(fileStream);
 
             if (licenseFilePath != null)
