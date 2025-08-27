@@ -9,6 +9,15 @@ using NuGetUtility.Wrapper.ZipArchiveWrapper;
 
 namespace NuGetUtility.PackageInformationReader;
 
+public sealed class NoOpPackageLicenseFileReader : IPackageLicenseFileReader
+{
+    public Task ReadLicenseFromFileAsync(IPackageMetadata metadata)
+    {
+        // No operation performed
+        return Task.CompletedTask;
+    }
+}
+
 public sealed class PackageLicenseFileReader(IFileSystem fileSystem, IZipArchiveWrapper zipArchive, string profilePath)
     : IPackageLicenseFileReader
 {

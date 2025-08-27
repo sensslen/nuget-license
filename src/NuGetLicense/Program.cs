@@ -116,6 +116,11 @@ namespace NuGetLicense
             Description = "The destination file to put the valiation output to. If omitted, the output is printed to the console.")]
         public string? DestinationFile { get; } = null;
 
+        [Option(LongName = "check-nuget-file-license",
+            ShortName = "cnfl",
+            Description = "Experimental Feature: If set, the license file included in the nuget package (if any) is included in the validation.")]
+        public bool IncludeNugetFileLicense { get; } = false;
+
         private static string GetVersion()
             => typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
 
@@ -187,7 +192,7 @@ namespace NuGetLicense
 #endif
         }
 
-        private static IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformations(
+        private IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformations(
             ProjectWithReferencedPackages projectWithReferences,
             IEnumerable<CustomPackageInformation> overridePackageInformation,
             CancellationToken cancellation)
@@ -198,7 +203,9 @@ namespace NuGetLicense
             var fs = new FileSystem();
             var zipArchive = new ZipArchiveWrapper();
             string profilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            var licenseFileWrapper = new PackageLicenseFileReader(fs, zipArchive, profilePath);
+            IPackageLicenseFileReader licenseFileWrapper = IncludeNugetFileLicense
+                ? new PackageLicenseFileReader(fs, zipArchive, profilePath)
+                : new NoOpPackageLicenseFileReader();
 
             using var sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
             var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
