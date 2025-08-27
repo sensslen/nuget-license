@@ -36,36 +36,24 @@ namespace NuGetUtility.PackageInformationReader
                 PackageSearchResult result = TryGetPackageInfoFromCustomInformation(package);
                 if (result.Success)
                 {
-                    if (result.Metadata is { LicenseMetadata.Type: LicenseType.File })
-                    {
-                        await _packageLicenseFileReader.ReadLicenseFromFileAsync(result.Metadata);
-                    }
-
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
+                    yield return await new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
+                        result.Metadata!).WithFileLicenseExtractedAsync(_packageLicenseFileReader);
                     continue;
                 }
 
                 result = TryGetPackageInformationFromGlobalPackageFolder(package);
                 if (result.Success)
                 {
-                    if (result.Metadata is { LicenseMetadata.Type: LicenseType.File })
-                    {
-                        await _packageLicenseFileReader.ReadLicenseFromFileAsync(result.Metadata);
-                    }
-
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
+                    yield return await new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
+                        result.Metadata!).WithFileLicenseExtractedAsync(_packageLicenseFileReader);
                     continue;
                 }
 
                 result = await TryGetPackageInformationFromRepositories(_repositories, package, cancellation);
                 if (result.Success)
                 {
-                    if (result.Metadata is { LicenseMetadata.Type: LicenseType.File })
-                    {
-                        await _packageLicenseFileReader.ReadLicenseFromFileAsync(result.Metadata);
-                    }
-
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
+                    yield return await new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
+                        result.Metadata!).WithFileLicenseExtractedAsync(_packageLicenseFileReader);
                     continue;
                 }
 
@@ -73,6 +61,7 @@ namespace NuGetUtility.PackageInformationReader
                 yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, new PackageMetadata(package));
             }
         }
+
         private PackageSearchResult TryGetPackageInformationFromGlobalPackageFolder(PackageIdentity package)
         {
             IPackageMetadata? metadata = _globalPackagesFolderUtility.GetPackage(package);
