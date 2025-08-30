@@ -10,6 +10,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
         private readonly SourceCacheContext _cacheContext = new SourceCacheContext();
         private readonly SourceRepository _sourceRepository;
         private IPackageMetadataResource? _packageMetadataResource;
+        private IFindPackageByIdResource? _findPackageByIdResource;
 
         public CachingDisposableSourceRepository(SourceRepository repo)
         {
@@ -33,6 +34,19 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
                 await _sourceRepository.GetResourceAsync<PackageMetadataResource>(),
                 _cacheContext);
             return _packageMetadataResource;
+        }
+
+        public async Task<IFindPackageByIdResource?> GetPackageArchiveReaderAsync()
+        {
+            if (_findPackageByIdResource != null)
+            {
+                return _findPackageByIdResource;
+            }
+
+            _findPackageByIdResource = new CachingFindPackageByIdResource(
+                await _sourceRepository.GetResourceAsync<FindPackageByIdResource>(),
+                _cacheContext);
+            return _findPackageByIdResource;
         }
     }
 }

@@ -114,6 +114,11 @@ namespace NuGetLicense
             Description = "The destination file to put the valiation output to. If omitted, the output is printed to the console.")]
         public string? DestinationFile { get; } = null;
 
+        [Option(LongName = "check-nuget-file-license",
+            ShortName = "fl",
+            Description = "If set, the license files are also validated by fuzzy matching against a known set of licenses. Note that in rare cases this can lead to falsly identifying licenses.")]
+        public bool IncludeNugetFileLicense { get; } = false;
+
         private static string GetVersion()
             => typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
 
