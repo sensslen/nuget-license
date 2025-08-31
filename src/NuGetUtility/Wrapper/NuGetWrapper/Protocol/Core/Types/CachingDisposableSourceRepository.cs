@@ -23,7 +23,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             _cacheContext.Dispose();
         }
 
-        public async Task<IPackageMetadataResource?> GetPackageMetadataResourceAsync()
+        public async Task<IPackageMetadataResource?> GetPackageMetadataResourceAsync(CancellationToken token)
         {
             if (_packageMetadataResource != null)
             {
@@ -31,12 +31,12 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             }
 
             _packageMetadataResource = new CachingPackageMetadataResource(
-                await _sourceRepository.GetResourceAsync<PackageMetadataResource>(),
+                await _sourceRepository.GetResourceAsync<PackageMetadataResource>(token),
                 _cacheContext);
             return _packageMetadataResource;
         }
 
-        public async Task<IFindPackageByIdResource?> GetPackageArchiveReaderAsync()
+        public async Task<IFindPackageByIdResource?> GetPackageArchiveReaderAsync(CancellationToken token)
         {
             if (_findPackageByIdResource != null)
             {
@@ -44,7 +44,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             }
 
             _findPackageByIdResource = new CachingFindPackageByIdResource(
-                await _sourceRepository.GetResourceAsync<FindPackageByIdResource>(),
+                await _sourceRepository.GetResourceAsync<FindPackageByIdResource>(token),
                 _cacheContext);
             return _findPackageByIdResource;
         }

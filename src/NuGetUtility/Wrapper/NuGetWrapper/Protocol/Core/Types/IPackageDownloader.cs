@@ -5,6 +5,6 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
     public interface IPackageDownloader
     {
-        Task ReadAsync(string filePath, Stream destination, CancellationToken cancellationToken);
+        Task<string> ReadAsync(string path, CancellationToken cancellationToken);
     }
 }

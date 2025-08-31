@@ -10,7 +10,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
     internal class CachingFindPackageByIdResource(FindPackageByIdResource findPackageByIdResource, SourceCacheContext cacheContext) : IFindPackageByIdResource
     {
-        public async Task<IPackageDownloader?> TryGetPackageArchiveReader(PackageIdentity identity, CancellationToken cancellationToken)
+        public async Task<IPackageDownloader?> TryGetPackageDownloader(PackageIdentity identity, CancellationToken cancellationToken)
         {
             try
             {

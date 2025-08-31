@@ -7,6 +7,6 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
     public interface IFindPackageByIdResource
     {
-        Task<IPackageDownloader?> TryGetPackageArchiveReader(PackageIdentity identity, CancellationToken cancellationToken);
+        Task<IPackageDownloader?> TryGetPackageDownloader(PackageIdentity identity, CancellationToken cancellationToken);
     }
 }

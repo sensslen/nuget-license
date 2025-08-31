@@ -37,7 +37,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public async Task GetProjects_Should_ReturnProjectsAsListDirectly(string projectFile)
         {
             IEnumerable<string> result = await _uut.GetProjectsAsync(projectFile);
-            Assert.That(result, Is.EqualTo(new[] { Path.GetFullPath(projectFile) }));
+            Assert.That(result, Is.EqualTo([Path.GetFullPath(projectFile)]));
             await _solutionPersistanceWrapper.DidNotReceive().GetProjectsFromSolutionAsync(Arg.Any<string>());
         }
 

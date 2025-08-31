@@ -5,12 +5,11 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
     internal class WrappedPackageDownloader(NuGet.Packaging.IPackageDownloader downloader) : IPackageDownloader
     {
-        private const int BUFFER_SIZE = 81920;
-
-        public async Task ReadAsync(string filePath, Stream destination, CancellationToken cancellationToken)
+        public async Task<string> ReadAsync(string path, CancellationToken cancellationToken)
         {
-            using Stream stream = await downloader.CoreReader.GetStreamAsync(filePath, cancellationToken);
-            await stream.CopyToAsync(destination, BUFFER_SIZE, cancellationToken);
+            using Stream stream = await downloader.CoreReader.GetStreamAsync(path, cancellationToken);
+            using var reader = new StreamReader(stream);
+            return await reader.ReadToEndAsync();
         }
     }
 }

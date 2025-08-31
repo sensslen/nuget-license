@@ -3,6 +3,7 @@
 
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using NuGetLicense.LicenseValidator.FileLicenses;
 using NuGetUtility.Extensions;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
@@ -17,17 +18,20 @@ namespace NuGetLicense.LicenseValidator
     {
         private readonly IEnumerable<string> _allowedLicenses;
         private readonly IFileDownloader _fileDownloader;
+        private readonly IFileLicenseMatcher _fileLicenseMatcher;
         private readonly string[] _ignoredPackages;
         private readonly IImmutableDictionary<Uri, string> _licenseMapping;
 
         public LicenseValidator(IImmutableDictionary<Uri, string> licenseMapping,
             IEnumerable<string> allowedLicenses,
             IFileDownloader fileDownloader,
+            IFileLicenseMatcher fileLicenseMatcher,
             string[] ignoredPackages)
         {
             _licenseMapping = licenseMapping;
             _allowedLicenses = allowedLicenses;
             _fileDownloader = fileDownloader;
+            _fileLicenseMatcher = fileLicenseMatcher;
             _ignoredPackages = ignoredPackages;
         }
 
@@ -131,34 +135,59 @@ namespace NuGetLicense.LicenseValidator
             {
                 case LicenseType.Expression:
                 case LicenseType.Overwrite:
-                    string licenseId = info.LicenseMetadata!.License;
-                    SpdxExpression? licenseExpression = SpdxExpressionParser.Parse(licenseId, _ => true, _ => true);
-                    if (IsValidLicenseExpression(licenseExpression))
                     {
-                        await DownloadLicenseAsync(GetLicenseUrl(licenseId), info.Identity, context, token);
-                        AddOrUpdateLicense(result,
-                            info,
-                            ToLicenseOrigin(info.LicenseMetadata.Type),
-                            info.LicenseMetadata.License);
+                        string licenseId = info.LicenseMetadata!.License;
+                        SpdxExpression? licenseExpression = SpdxExpressionParser.Parse(licenseId, _ => true, _ => true);
+                        if (IsValidLicenseExpression(licenseExpression))
+                        {
+                            await DownloadLicenseAsync(GetLicenseUrl(licenseId), info.Identity, context, token);
+                            AddOrUpdateLicense(result,
+                                info,
+                                ToLicenseOrigin(info.LicenseMetadata.Type),
+                                info.LicenseMetadata.License);
+                        }
+                        else
+                        {
+                            AddOrUpdateLicense(result,
+                                info,
+                                ToLicenseOrigin(info.LicenseMetadata.Type),
+                                new ValidationError(GetLicenseNotAllowedMessage(info.LicenseMetadata.License), context),
+                                info.LicenseMetadata.License);
+                        }
+                        break;
                     }
-                    else
+                case LicenseType.File:
                     {
-                        AddOrUpdateLicense(result,
-                            info,
-                            ToLicenseOrigin(info.LicenseMetadata.Type),
-                            new ValidationError(GetLicenseNotAllowedMessage(info.LicenseMetadata.License), context),
-                            info.LicenseMetadata.License);
+                        string? matchedLicense = _fileLicenseMatcher.Match(info.LicenseMetadata.License);
+                        SpdxExpression? licenseExpression = matchedLicense is null ? null : SpdxExpressionParser.Parse(matchedLicense, _ => true, _ => true);
+                        if (IsValidLicenseExpression(licenseExpression))
+                        {
+                            await StoreLicenseAsync(info.LicenseMetadata.License, info.Identity, token);
+                            AddOrUpdateLicense(result,
+                                info,
+                                LicenseInformationOrigin.File,
+                                matchedLicense);
+                        }
+                        else
+                        {
+                            AddOrUpdateLicense(result,
+                                info,
+                                LicenseInformationOrigin.File,
+                                new ValidationError("Cannot determine license from license file", context),
+                                info.LicenseMetadata.License);
+                        }
+                        break;
                     }
-
-                    break;
                 default:
-                    AddOrUpdateLicense(result,
-                        info,
-                        LicenseInformationOrigin.Unknown,
-                        new ValidationError(
-                            $"Validation for licenses of type {info.LicenseMetadata!.Type} not yet supported",
-                            context));
-                    break;
+                    {
+                        AddOrUpdateLicense(result,
+                            info,
+                            LicenseInformationOrigin.Unknown,
+                            new ValidationError(
+                                $"Validation for licenses of type {info.LicenseMetadata!.Type} not yet supported",
+                                context));
+                        break;
+                    }
             }
         }
 
@@ -248,6 +277,12 @@ namespace NuGetLicense.LicenseValidator
             }
         }
 
+        private async Task StoreLicenseAsync(string licenseText, PackageIdentity identity, CancellationToken token)
+        {
+            await _fileDownloader.StoreFileAsync(licenseText,
+                $"{identity.Id}__{identity.Version}",
+                token);
+        }
 
         private bool IsLicenseValid(string licenseId)
         {
