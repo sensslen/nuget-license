@@ -18,11 +18,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FuzzySharp" Version="2.0.2" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
     <PackageReference Include="Microsoft.Build.Locator" Version="1.9.1" />
     <PackageReference Include="Microsoft.VisualStudio.SolutionPersistence" Version="1.0.52" />
     <PackageReference Include="NuGet.Commands" Version="6.14.0" />
     <PackageReference Include="NuGet.Packaging" Version="6.14.0" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="22.0.15" />
     <PackageReference Include="Tethys.SPDX.ExpressionParser" Version="2.1.3" />
   </ItemGroup>
 

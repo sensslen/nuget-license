@@ -30,6 +30,11 @@ namespace NuGetLicense.LicenseValidator
         /// <summary>
         /// The license for this package was given by a custom override
         /// </summary>
-        Overwrite
+        Overwrite,
+
+        /// <summary>
+        /// The license for this package was provided by a file in the package
+        /// </summary>
+        PackageFile
     }
 }
