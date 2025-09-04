@@ -25,10 +25,7 @@ using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
-using NuGetLicense.LicenseValidator.FileLicenses;
-using NuGetLicense.LicenseValidator.FileLicense;
-
-
+using SPDXLicenseMatcher;
 
 #if !NET
 using System.Net.Http;
@@ -146,7 +143,7 @@ namespace NuGetLicense
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicenses,
                 licenseDownloader,
-                new FileLicenseMatcher(FileLicenseMap.Map),
+                new LicenseMatcher(),
                 ignoredPackages);
 
             string[] excludedProjects = GetExcludedProjects();

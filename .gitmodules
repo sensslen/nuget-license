@@ -1,0 +1,3 @@
+[submodule "spdxLicenseSpec"]
+	path = spdxLicenseSpec
+	url = https://github.com/spdx/license-list-XML
