@@ -108,7 +108,7 @@ namespace SpdxLicenseMatcher.Generator
                     string cleanedText = Regex.Replace(textNode.Value, @"\s+", " ").Trim();
                     if (!string.IsNullOrEmpty(cleanedText))
                     {
-                        patternBuilder.Append(Regex.Escape(cleanedText));
+                        patternBuilder.Append(Regex.Escape(cleanedText).Replace("/", "\\/"));
                         patternBuilder.Append(@"\s+");
                     }
                 }
