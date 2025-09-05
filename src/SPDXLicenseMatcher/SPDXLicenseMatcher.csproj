@@ -20,7 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="..\..\spdxLicenseSpec\src\**\*" Link="licenses\\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <AdditionalFiles Include="..\..\spdxLicenseSpec\src\**\*" Link="licenses\\%(RecursiveDir)%(Filename)%(Extension)" />
+    <AdditionalFiles Remove="..\..\spdxLicenseSpec\src\AGPL-1.0-only.xml" />
+    <AdditionalFiles Remove="..\..\spdxLicenseSpec\src\AGPL-3.0-only.xml" />
   </ItemGroup>
 
 </Project>
