@@ -132,11 +132,19 @@ namespace SpdxLicenseMatcher.Generator
                             patternBuilder.Append(@"\s+");
                             break;
 
+                        case "copyrightText":
+                            patternBuilder.Append(@".*");
+                            break;
+
+                        case "titleText":
+                            patternBuilder.Append(@"(");
+                            BuildPatternRecursive(childElement, patternBuilder, ns);
+                            patternBuilder.Append(@")*");
+                            break;
+
                         case "p":
                         case "list":
                         case "item":
-                        case "titleText":
-                        case "copyrightText":
                         default:
                             BuildPatternRecursive(childElement, patternBuilder, ns);
                             break;
