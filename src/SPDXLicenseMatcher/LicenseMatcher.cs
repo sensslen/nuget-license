@@ -5,16 +5,6 @@ namespace SPDXLicenseMatcher
 {
     public class LicenseMatcher : ILicenseMatcher
     {
-        public string? Match(string licenseText)
-        {
-            foreach ((string SpdxId, System.Text.RegularExpressions.Regex Matcher) in SpdxLicenseMatcher.AllLicenseMatchers)
-            {
-                if (Matcher.IsMatch(licenseText))
-                {
-                    return SpdxId;
-                }
-            }
-            return null;
-        }
+        public string? Match(string licenseText) => throw new System.NotImplementedException();
     }
 }

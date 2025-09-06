@@ -1,18 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>12</LangVersion>
+    <TargetFrameworks>net472;net8.0;net9.0</TargetFrameworks>
     <Nullable>enable</Nullable>
 
     <Configurations>Debug;Release;TestWindows</Configurations>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\sourceGen\SPDXMatcherGenerator\SPDXMatcherGenerator.csproj" OutputItemType="Analyzer" TreatWarningAsError="true" ReferenceOutputAssembly="false" />
-  </ItemGroup>
+  <PropertyGroup Condition="  '$(TargetFramework)' == 'net472' ">
+    <LangVersion>12.0</LangVersion>
+  </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="IKVM.Maven.Sdk" Version="1.9.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="PolySharp" Version="1.15.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -20,9 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="..\..\spdxLicenseSpec\src\**\*" Link="licenses\\%(RecursiveDir)%(Filename)%(Extension)" />
-    <AdditionalFiles Remove="..\..\spdxLicenseSpec\src\AGPL-1.0-only.xml" />
-    <AdditionalFiles Remove="..\..\spdxLicenseSpec\src\AGPL-3.0-only.xml" />
+    <MavenReference Include="org.spdx:java-spdx-library" Version="2.0.0" />
   </ItemGroup>
 
 </Project>

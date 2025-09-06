@@ -5,7 +5,6 @@ using System.Collections.Immutable;
 using AutoFixture;
 using NSubstitute;
 using NuGetLicense.LicenseValidator;
-using NuGetLicense.LicenseValidator.FileLicenses;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Test.Extensions.Helper.AsyncEnumerableExtension;
 using NuGetUtility.Test.Extensions.Helper.AutoFixture.NuGet.Versioning;
@@ -15,6 +14,7 @@ using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
+using SPDXLicenseMatcher;
 
 namespace NuGetLicense.Test.LicenseValidator
 {
@@ -26,7 +26,7 @@ namespace NuGetLicense.Test.LicenseValidator
         {
             var fixture = new Fixture();
             _fileDownloader = Substitute.For<IFileDownloader>();
-            _fileLicenseMatcher = Substitute.For<IFileLicenseMatcher>();
+            _licenseMatcher = Substitute.For<ILicenseMatcher>();
             _licenseMapping = ImmutableDictionary.CreateRange(fixture.Create<Dictionary<Uri, string>>());
             _allowedLicenses = fixture.CreateMany<string>();
             _context = fixture.Create<string>();
@@ -37,7 +37,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 _allowedLicenses,
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
         }
 
@@ -55,7 +55,7 @@ namespace NuGetLicense.Test.LicenseValidator
         private Uri _projectUrl = null!;
         private string[] _ignoredLicenses = null!;
         private CancellationTokenSource _token = null!;
-        private IFileLicenseMatcher _fileLicenseMatcher = null!;
+        private ILicenseMatcher _licenseMatcher = null!;
 
         [Test]
         public async Task ValidatingEmptyList_Should_ReturnEmptyValidatedLicenses()
@@ -128,7 +128,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses.Append(packageId).ToArray());
 
             IPackageMetadata package = SetupPackage(packageId, packageVersion);
@@ -160,7 +160,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses.Append(packageId.Substring(1)).ToArray());
 
             IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, license);
@@ -194,7 +194,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses.Append($"*{packageId.Substring(Math.Min(matchedCharacters, packageId.Length))}").ToArray());
 
             IPackageMetadata package = SetupPackage(packageId, packageVersion);
@@ -228,7 +228,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses.Append($"{packageId.Substring(0, remainingCharacters)}*").ToArray());
 
             IPackageMetadata package = SetupPackage(packageId, packageVersion);
@@ -263,7 +263,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses.Append($"{packageId.Substring(0, wildcardMatchStartIndex)}*{packageId.Substring(wildcardMatchEndIndex)}").ToArray());
 
             IPackageMetadata package = SetupPackage(packageId, packageVersion);
@@ -294,7 +294,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses.Append($"*{packageId.Substring(2, 5)}*{packageId.Substring(10, 2)}*").ToArray());
 
             IPackageMetadata package = SetupPackage(packageId, packageVersion);
@@ -326,7 +326,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
 
             IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, license);
@@ -359,7 +359,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
 
             string expression = $"{license1} OR {license2}";
@@ -393,7 +393,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
 
             string expression = $"{license1} AND {license2}";
@@ -427,7 +427,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
 
             string expression = $"{license1} AND {license2}";
@@ -451,7 +451,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
 
             IPackageMetadata package = SetupPackageWithOverwriteLicenseInformation(packageId, packageVersion, license);
@@ -491,7 +491,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
 
             KeyValuePair<Uri, string> mappingLicense = _licenseMapping.Shuffle(34561).First();
@@ -524,7 +524,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
 
             IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, licenseUrl);
@@ -559,7 +559,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
 
             IPackageMetadata package = SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, licenseType);
@@ -595,7 +595,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
 
             IPackageMetadata package = SetupPackage(packageId, packageVersion);
@@ -960,7 +960,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 _allowedLicenses.Append(urlMatch.Value),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
             IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
 
@@ -1025,7 +1025,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping.Add(orLicenseUri, licenseExpression),
                 _allowedLicenses.Append(firstLicense),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
             IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, orLicenseUri);
 
@@ -1059,7 +1059,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping.Add(orLicenseUri, licenseExpression),
                 _allowedLicenses.Append(firstLicense).Append(secondLicense),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
             IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, orLicenseUri);
 
@@ -1092,7 +1092,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping.Add(orLicenseUri, licenseExpression),
                 _allowedLicenses,
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
             IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, orLicenseUri);
 
@@ -1131,7 +1131,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping.Add(orLicenseUri, licenseExpression),
                 _allowedLicenses.Append(firstLicense),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
             IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, orLicenseUri);
 
@@ -1170,7 +1170,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping.Add(orLicenseUri, licenseExpression),
                 _allowedLicenses.Append(secondLicense),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses);
             IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, orLicenseUri);
 
@@ -1206,7 +1206,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses.Append(packageId).ToArray());
 
             IPackageMetadata package = SetupPackageWithCopyright(packageId, packageVersion, copyright);
@@ -1238,7 +1238,7 @@ namespace NuGetLicense.Test.LicenseValidator
             _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 Array.Empty<string>(),
                 _fileDownloader,
-                _fileLicenseMatcher,
+                _licenseMatcher,
                 _ignoredLicenses.Append(packageId).ToArray());
 
             IPackageMetadata package = SetupPackageWithAuthors(packageId, packageVersion, authors);
