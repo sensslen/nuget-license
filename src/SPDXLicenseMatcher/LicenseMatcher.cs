@@ -15,9 +15,10 @@ namespace SPDXLicenseMatcher
 
         private static IEnumerable<string> MatchingStandardLicenseIds(string licenseText)
         {
+            string cleanedLicense = LicenseTextHelper.RemoveLineSeparators(RemoveCommentChars(licenseText));
             foreach (KeyValuePair<string, Spdx.Licenses.ILicense> license in Spdx.Licenses.SpdxLicenseStore.Licenses)
             {
-                if (!IsTextStandardLicense(license.Value, licenseText).IsDifferenceFound)
+                if (!IsTextStandardLicense(license.Value, cleanedLicense).IsDifferenceFound)
                 {
                     yield return license.Key;
                 }
@@ -26,7 +27,6 @@ namespace SPDXLicenseMatcher
 
         public static CompareTemplateOutputHandler.DifferenceDescription IsTextStandardLicense(Spdx.Licenses.ILicense license, string compareText)
         {
-
             string licenseTemplate = license.StandardLicenseTemplate;
             if (string.IsNullOrWhiteSpace(licenseTemplate))
             {
@@ -35,7 +35,7 @@ namespace SPDXLicenseMatcher
             CompareTemplateOutputHandler compareTemplateOutputHandler;
             try
             {
-                compareTemplateOutputHandler = new CompareTemplateOutputHandler(LicenseTextHelper.RemoveLineSeparators(RemoveCommentChars(compareText)));
+                compareTemplateOutputHandler = new CompareTemplateOutputHandler(compareText);
             }
             catch (IOException e1)
             {
