@@ -12,18 +12,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IKVM.Maven.Sdk" Version="1.9.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="PolySharp" Version="1.15.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Sensslen.SPDX.Licenses.Net" Version="3.27.2" />
   </ItemGroup>
-
-  <ItemGroup>
-    <MavenReference Include="org.spdx:java-spdx-library" Version="2.0.0" />
-  </ItemGroup>
-
 </Project>
