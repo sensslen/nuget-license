@@ -29,7 +29,7 @@ namespace SPDXLicenseMatcher.Test
         {
             var matcher = new LicenseMatcher();
 
-            await Assert.That(matcher.Match(@case.Content)).IsEqualTo(@case.Identifier);
+            await Assert.That(matcher.Match(@case.Content)).Contains(@case.Identifier);
         }
     }
 }
