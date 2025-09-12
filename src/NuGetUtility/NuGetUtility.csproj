@@ -39,8 +39,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <PackageReference Include="System.IO.Hashing" Version="9.0.8" />
-    <PackageReference Include="System.Collections.Immutable" Version="9.0.8" />
+    <PackageReference Include="System.IO.Hashing" Version="9.0.9" />
+    <PackageReference Include="System.Collections.Immutable" Version="9.0.9" />
     <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.14.*" />
     <PackageReference Include="PolySharp" Version="1.15.*">
       <PrivateAssets>all</PrivateAssets>
