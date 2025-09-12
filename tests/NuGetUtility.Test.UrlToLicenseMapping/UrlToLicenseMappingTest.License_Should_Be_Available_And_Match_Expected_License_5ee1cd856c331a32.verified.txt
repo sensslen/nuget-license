@@ -1,5 +1,5 @@
 ﻿
-APACHE LICENSE, VERSION 2.0
+Apache License, Version 2.0
 Text version: https://www.apache.org/licenses/LICENSE-2.0.txt
 SPDX short identifier: Apache-2.0
 OSI Approved License: https://opensource.org/licenses/Apache-2.0
@@ -34,7 +34,7 @@ You may add Your own copyright statement to Your modifications and may provide a
 8. Limitation of Liability. In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law (such as deliberate and grossly negligent acts) or agreed to in writing, shall any Contributor be liable to You for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising as a result of this License or out of the use or inability to use the Work (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses), even if such Contributor has been advised of the possibility of such damages.
 9. Accepting Warranty or Additional Liability. While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.
 END OF TERMS AND CONDITIONS
-HOW TO APPLY THE APACHE LICENSE TO YOUR WORK
+How To Apply The Apache License To Your Work
 Include a copy of the Apache License, typically in a file called LICENSE, in your work, and consider also including a NOTICE file that references the License.
 To apply the Apache License to specific files in your work, attach the following boilerplate declaration, replacing the fields enclosed by brackets "[]" with your own identifying information. (Don't include the brackets!) Enclose the text in the appropriate comment syntax for the file format. We also recommend that you include a file or class name and description of purpose on the same "printed page" as the copyright notice for easier identification within third-party archives.
 Copyright [yyyy] [name of copyright owner]
