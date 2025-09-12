@@ -28,7 +28,6 @@ namespace SPDXLicenseMatcher.JavaPort
         private static readonly IImmutableSet<string> s_pUNCTUATION = ImmutableHashSet.Create(".", ",", "?", "\"", "'", "(", ")", ";", ":", "/", "[", "]", "<", ">");
         // most of these are comments for common programming languages (C style, Java, Ruby, Python)
         private static readonly IImmutableSet<string> s_sKIPPABLE_TOKENS = ImmutableHashSet.Create("//", "/*", "*/", "/**", "#", "##", "*", "**", "\"\"\"", "/", "=begin", "=end");
-        private static readonly string s_dASHES_REGEX = "[\\u2010\\u2011\\u2012\\u2013\\u2014\\u2015\\uFE58\\uFF0D\\-]{1,2}";
         private static readonly Regex s_sPACE_PATTERN = new Regex("[\\u202F\\u2007\\u2060\\u2009]", RegexOptions.Compiled);
         private static readonly Regex s_cOMMA_PATTERN = new Regex("[\\uFF0C\\uFE10\\uFE50]", RegexOptions.Compiled);
         private static readonly Regex s_pER_CENT_PATTERN = new Regex("per cent", RegexOptions.Compiled | RegexOptions.IgnoreCase);

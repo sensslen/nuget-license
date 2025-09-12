@@ -246,7 +246,7 @@ namespace SPDXLicenseMatcher.JavaPort
             CompareTemplateOutputHandler compareTemplateOutputHandler;
             try
             {
-                compareTemplateOutputHandler = new CompareTemplateOutputHandler(LicenseTextHelper.RemoveLineSeparators(RemoveCommentChars(compareText)));
+                compareTemplateOutputHandler = new CompareTemplateOutputHandler(RemoveCommentChars(compareText));
             }
             catch (IOException e1)
             {
