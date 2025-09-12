@@ -48,7 +48,7 @@ namespace SPDXLicenseMatcher.JavaPort
 
             // Capture any remaining text after the last rule.
             string remainingText = licenseTemplate.Substring(lastIndex);
-            if (!string.IsNullOrEmpty(remainingText))
+            if (!string.IsNullOrWhiteSpace(remainingText))
             {
                 templateOutputHandler.Text(remainingText);
             }
