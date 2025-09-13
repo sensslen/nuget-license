@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net472;net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -44,6 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Exclude="LicenseValidator/**/*.received.txt" />
+    <None Remove="LicenseValidator/**/*.received.txt" />
   </ItemGroup>
 </Project>

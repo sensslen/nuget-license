@@ -3,7 +3,7 @@
     "PackageId": "Legacy Metrics Planner",
     "PackageVersion": "9.5.0",
     "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Principal Functionality Agent",
@@ -39,7 +39,7 @@
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 1
   },
   {
     "PackageId": "Legacy Research Officer",
@@ -167,7 +167,7 @@
       }
     ],
     "License": "You can\u0027t synthesize the system without calculating the 1080p ADP system!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Investor Tactics Strategist",
@@ -212,6 +212,6 @@
       }
     ],
     "LicenseUrl": "Try to back up the AI card, maybe it will back up the cross-platform card!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   }
 ]

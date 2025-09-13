@@ -11,7 +11,7 @@
     "PackageVersion": "9.7.2",
     "Authors": "Gordon Kuhn,Gordon Kuhn,Gordon Kuhn,Gordon Kuhn,Gordon Kuhn,Gordon Kuhn,Gordon Kuhn",
     "LicenseUrl": "Try to generate the SAS matrix, maybe it will generate the cross-platform matrix!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "International Optimization Coordinator",
@@ -40,7 +40,7 @@
     "Authors": "Lloyd Carroll,Lloyd Carroll,Lloyd Carroll,Lloyd Carroll,Lloyd Carroll,Lloyd Carroll,Lloyd Carroll,Lloyd Carroll",
     "License": "parsing the hard drive won\u0027t do anything, we need to override the haptic PNG hard drive!",
     "LicenseUrl": "The HDD alarm is down, transmit the auxiliary alarm so we can transmit the HDD alarm!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "National Research Developer",
@@ -55,7 +55,7 @@
     "PackageProjectUrl": "http://antonette.net",
     "Authors": "",
     "LicenseUrl": "If we parse the transmitter, we can get to the IB transmitter through the back-end IB transmitter!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Central Integration Facilitator",
@@ -105,14 +105,14 @@
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Global Integration Planner",
     "PackageVersion": "9.1.4",
     "Authors": "Melissa Kuhlman,Melissa Kuhlman,Melissa Kuhlman,Melissa Kuhlman,Melissa Kuhlman",
     "License": "You can\u0027t override the capacitor without overriding the mobile XML capacitor!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Forward Creative Developer",
@@ -125,20 +125,20 @@
   {
     "PackageId": "International Tactics Administrator",
     "PackageVersion": "9.9.9",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Global Implementation Strategist",
     "PackageVersion": "5.9.8",
     "PackageProjectUrl": "https://enos.info",
     "Authors": "Colleen Schroeder,Colleen Schroeder",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Product Communications Producer",
     "PackageVersion": "8.0.6",
     "License": "Try to synthesize the PNG application, maybe it will synthesize the auxiliary application!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Corporate Factors Architect",
@@ -179,7 +179,7 @@
     ],
     "License": "If we input the panel, we can get to the COM panel through the optical COM panel!",
     "LicenseUrl": "connecting the application won\u0027t do anything, we need to synthesize the 1080p PCI application!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Corporate Assurance Executive",
@@ -220,7 +220,7 @@
         "Context": "https://kira.net"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Customer Assurance Officer",
@@ -235,7 +235,7 @@
     "Authors": "Rafael Altenwerth,Rafael Altenwerth,Rafael Altenwerth",
     "License": "Try to navigate the PCI driver, maybe it will navigate the mobile driver!",
     "LicenseUrl": "If we copy the monitor, we can get to the USB monitor through the haptic USB monitor!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Legacy Metrics Planner",

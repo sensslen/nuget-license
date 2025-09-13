@@ -1,5 +1,11 @@
 ﻿[
   {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
+    "LicenseInformationOrigin": 4
+  },
+  {
     "PackageId": "International Mobility Technician",
     "PackageVersion": "3.7.5",
     "PackageProjectUrl": "http://katelin.org",
@@ -13,9 +19,10 @@
     "LicenseInformationOrigin": 1
   },
   {
-    "PackageId": "District Mobility Administrator",
-    "PackageVersion": "3.2.3",
-    "Copyright": "You can\u0027t compress the transmitter without overriding the auxiliary TCP transmitter!",
-    "LicenseInformationOrigin": 2
+    "PackageId": "Investor Intranet Producer",
+    "PackageVersion": "5.4.1",
+    "PackageProjectUrl": "http://hyman.org",
+    "License": "Use the cross-platform CSS capacitor, then you can copy the cross-platform capacitor!",
+    "LicenseInformationOrigin": 4
   }
 ]

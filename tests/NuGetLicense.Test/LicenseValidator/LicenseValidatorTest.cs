@@ -8,7 +8,6 @@ using NuGetLicense.LicenseValidator;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Test.Extensions.Helper.AsyncEnumerableExtension;
 using NuGetUtility.Test.Extensions.Helper.AutoFixture.NuGet.Versioning;
-using NuGetUtility.Test.Extensions.Helper.NUnitExtension;
 using NuGetUtility.Test.Extensions.Helper.ShuffelledEnumerable;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
@@ -547,8 +546,7 @@ namespace NuGetLicense.Test.LicenseValidator
         }
 
         [Test]
-        public async Task ValidatingLicensesWithNotSupportedLicenseMetadata_Should_GiveCorrectResult(
-            [EnumValuesExcept(LicenseType.Expression, LicenseType.Overwrite)] LicenseType licenseType)
+        public async Task ValidatingLicensesWithFileLicenseMetadata_Should_GiveCorrectResult()
         {
             var fixture = new Fixture();
             fixture.Customizations.Add(new NuGetVersionBuilder());
@@ -562,7 +560,9 @@ namespace NuGetLicense.Test.LicenseValidator
                 _licenseMatcher,
                 _ignoredLicenses);
 
-            IPackageMetadata package = SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, licenseType);
+            string licenseId = fixture.Create<string>();
+            IPackageMetadata package = SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, LicenseType.File);
+            _licenseMatcher.Match(license).Returns(licenseId);
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
@@ -572,16 +572,12 @@ namespace NuGetLicense.Test.LicenseValidator
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
+                            licenseId,
                             null,
                             null,
                             null,
-                            null,
-                            LicenseInformationOrigin.Unknown,
-                            new List<ValidationError>
-                            {
-                                new ValidationError($"Validation for licenses of type {licenseType} not yet supported",
-                                    _context)
-                            })
+                            LicenseInformationOrigin.File,
+                            [])
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }

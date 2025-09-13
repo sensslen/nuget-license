@@ -91,6 +91,6 @@
       }
     ],
     "LicenseUrl": "Try to back up the AI card, maybe it will back up the cross-platform card!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   }
 ]
