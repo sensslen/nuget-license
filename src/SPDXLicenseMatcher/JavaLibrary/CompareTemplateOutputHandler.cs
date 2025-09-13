@@ -839,7 +839,8 @@ public class CompareTemplateOutputHandler : ILicenseTemplateOutputHandler
                         //This is the special case where there may be optional characters which are
                         //less than a token at the end of a compare
                         //Yes - this is a bit of a hack
-                        string compareToken = nextTextToken + instruction.getNextOptionalTextTokens()[0];
+                        IReadOnlyList<string> nextOptionalTextTokens = instruction.getNextOptionalTextTokens();
+                        string compareToken = nextTextToken + (nextOptionalTextTokens.Any() ? nextOptionalTextTokens[0] : 0);
                         if (LicenseTextHelper.tokensEquivalent(compareToken, nextMatchToken))
                         {
                             instruction.skipNextInstruction();
