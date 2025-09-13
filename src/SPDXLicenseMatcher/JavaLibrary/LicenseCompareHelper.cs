@@ -60,7 +60,7 @@ internal static class LicenseCompareHelper
 
     private static IImmutableDictionary<string, string> BuildLicenseMap()
     {
-        var builder = ImmutableDictionary.CreateBuilder<string, string>();
+        ImmutableDictionary<string, string>.Builder builder = ImmutableDictionary.CreateBuilder<string, string>();
         foreach (KeyValuePair<string, ILicense> license in SpdxLicenseStore.Licenses)
         {
             string licenseTemplate = license.Value.StandardLicenseTemplate;
