@@ -42,4 +42,8 @@
     <ProjectReference Include="..\..\src\NuGetLicense\NuGetLicense.csproj" />
     <ProjectReference Include="..\NuGetUtility.Test.Extensions\NuGetUtility.Test.Extensions.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Exclude="LicenseValidator/**/*.received.txt" />
+  </ItemGroup>
 </Project>
