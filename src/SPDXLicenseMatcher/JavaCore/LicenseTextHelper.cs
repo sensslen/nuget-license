@@ -357,25 +357,29 @@ public static class LicenseTextHelper
      * @param s String to normalize
      * @return String normalized for comparison
      */
+    private static readonly Regex s_singleQuotePattern = new Regex("[‘’‛‚`]", RegexOptions.Compiled);
+    private static readonly Regex s_doubleQuotePattern = new Regex("[“”‟„]", RegexOptions.Compiled);
+    private static readonly Regex s_dashPattern = new Regex("[—–]", RegexOptions.Compiled);
     public static string normalizeText(string s)
     {
         // First normalize single quotes, then normalize two single quotes to a double quote, normalize double quotes 
         // then normalize non-breaking spaces to spaces
-        string tmp = Regex.Replace(s, "[‘’‛‚`]", "'");   // Take care of single quotes first
-        tmp = Regex.Replace(tmp, "http://", "https://"); // Normalize the http protocol scheme
-        tmp = Regex.Replace(tmp, "''", "\"");            // This way, we can change double single quotes to a single double quote
-        tmp = Regex.Replace(tmp, "[“”‟„]", "\"");        // Now we can normalize the double quotes
-        tmp = Regex.Replace(tmp, "\\u00A0", " ");        // replace non-breaking spaces with spaces since Java does not handle the former well
-        tmp = Regex.Replace(tmp, "[—–]", "-");           // replace em dash, en dash with simple dash
-        return Regex.Replace(tmp, "\\u2028", "\n");      // replace line separator with newline since Java does not handle the former well
+        string tmp = s_singleQuotePattern.Replace(s, "'");   // Take care of single quotes first
+        tmp = tmp.Replace("http://", "https://");         // Normalize the http protocol scheme
+        tmp = tmp.Replace("''", "\"");            // This way, we can change double single quotes to a single double quote
+        tmp = s_doubleQuotePattern.Replace(tmp, "\"");        // Now we can normalize the double quotes
+        tmp = tmp.Replace('\u00A0', ' ');        // replace non-breaking spaces with spaces since Java does not handle the former well
+        tmp = s_dashPattern.Replace(tmp, "-");           // replace em dash, en dash with simple dash
+        return tmp.Replace('\u2028', '\n');      // replace line separator with newline since Java does not handle the former well
     }
 
     /**
      * @param s Input string
      * @return s without any line separators (---, ***, ===)
      */
+    private static readonly Regex s_removeLineSeparatorsRegex = new Regex("[-=*]{3,}\\s*$", RegexOptions.Compiled);
     public static string removeLineSeparators(string s)
     {
-        return Regex.Replace(s, "[-=*]{3,}\\s*$", "");  // Remove ----, ***,  and ====
+        return s_removeLineSeparatorsRegex.Replace(s, "");  // Remove ----, ***,  and ====
     }
 }

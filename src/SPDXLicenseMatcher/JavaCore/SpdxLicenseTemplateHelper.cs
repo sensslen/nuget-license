@@ -17,17 +17,12 @@ namespace SPDXLicenseMatcher.JavaCore;
  * 
  * @author Gary O'Neall
  */
-public class SpdxLicenseTemplateHelper
+public static class SpdxLicenseTemplateHelper
 {
     private const string START_RULE = "<<";
     private const string END_RULE = ">>";
     public static readonly Regex RULE_PATTERN = new Regex(START_RULE + "\\s*(beginOptional|endOptional|var)", RegexOptions.Compiled);
     public static readonly Regex END_RULE_PATTERN = new Regex(END_RULE, RegexOptions.Compiled);
-
-    private SpdxLicenseTemplateHelper()
-    {
-        // Utility class - it should not be instantiated
-    }
 
     /**
 	 * Parses the license template calling the templateOutputHandler for any text
