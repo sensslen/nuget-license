@@ -147,7 +147,7 @@ jobs:
     strategy:
       matrix:
         framework: [net8.0, net9.0]
-        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression]
+        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense]
 
         include:
           - framework: net8.0
@@ -188,7 +188,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression]
+        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense]
 
     steps:
       - uses: actions/checkout@v5

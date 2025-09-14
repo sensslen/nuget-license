@@ -150,7 +150,6 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 #endif
 
-
         [TestCase("net9.0", false, "TinyCsvParser")]
         [TestCase("net8.0", false, "Microsoft.Extensions.Logging.Abstractions")]
         [TestCase("net8.0-browser", false, "Microsoft.Extensions.Logging.Abstractions")]
