@@ -29,7 +29,7 @@ public static class LicenseTextHelper
     private static readonly ImmutableHashSet<string> PUNCTUATION = [".", ",", "?", "\"", "'", "(", ")", ";", ":", "/", "[", "]", "<", ">"];
     // most of these are comments for common programming languages (C style, Java, Ruby, Python)
     private static readonly ImmutableHashSet<string> SKIPPABLE_TOKENS = ["//", "/*", "*/", "/**", "#", "##", "*", "**", "\"\"\"", "/", "=begin", "=end"];
-    const string DASHES_REGEX = "[\\u2010\\u2011\\u2012\\u2013\\u2014\\u2015\\uFE58\\uFF0D\\-]{1,2}";
+    static readonly Regex DASHES_REGEX = new Regex("[\\u2010\\u2011\\u2012\\u2013\\u2014\\u2015\\uFE58\\uFF0D\\-]{1,2}", RegexOptions.Compiled);
     static readonly Regex SPACE_PATTERN = new Regex("[\\u202F\\u2007\\u2060\\u2009]", RegexOptions.Compiled);
     static readonly Regex COMMA_PATTERN = new Regex("[\\uFF0C\\uFE10\\uFE50]");
     static readonly Regex PER_CENT_PATTERN = new Regex("per cent", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -300,8 +300,8 @@ public static class LicenseTextHelper
         }
         else
         {
-            string s1 = Regex.Replace(tokenA.Trim().ToLower(), DASHES_REGEX, "-");
-            string s2 = Regex.Replace(tokenB.Trim().ToLower(), DASHES_REGEX, "-");
+            string s1 = DASHES_REGEX.Replace(tokenA.Trim().ToLower(), "-");
+            string s2 = DASHES_REGEX.Replace(tokenB.Trim().ToLower(), "-");
             if (s1.Equals(s2))
             {
                 return true;
