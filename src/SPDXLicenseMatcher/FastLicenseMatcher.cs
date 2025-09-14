@@ -106,7 +106,7 @@ namespace SPDXLicenseMatcher
                 }
                 else if (rule.Type == LicenseTemplateRule.RuleType.END_OPTIONAL)
                 {
-                    var optionalInstruction = instructionStack.Pop();
+                    ParseInstruction optionalInstruction = instructionStack.Pop();
                     if (instructionStack.Count <= 0)
                     {
                         throw new LicenseTemplateRuleException(

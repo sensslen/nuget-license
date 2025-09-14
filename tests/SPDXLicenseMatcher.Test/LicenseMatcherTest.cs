@@ -32,15 +32,20 @@ namespace SPDXLicenseMatcher.Test
             }
         }
 
-        [Test]
-        [MethodDataSource(typeof(LicenseMatcherTestSource), nameof(LicenseMatcherTestSource.GetCases))]
-        [Skip("these tests run very slow")]
-        public async Task License_Matcher_Should_Pick_Correct_License(Case @case)
-        {
-            var matcher = new LicenseMatcher();
 
-            await Assert.That(matcher.Match(@case.Content)).Contains(@case.Identifier);
-        }
+#pragma warning disable S125 // Sections of code should not be commented out
+        /*
+                [Test]
+                [MethodDataSource(typeof(LicenseMatcherTestSource), nameof(LicenseMatcherTestSource.GetCases))]
+                [Skip("these tests run very slow")]
+                public async Task License_Matcher_Should_Pick_Correct_License(Case @case)
+                {
+                    var matcher = new LicenseMatcher();
+
+                    await Assert.That(matcher.Match(@case.Content)).Contains(@case.Identifier);
+                }
+                */
+#pragma warning restore S125 // Sections of code should not be commented out
 
         [Test]
         [MethodDataSource(typeof(LicenseMatcherTestSource), nameof(LicenseMatcherTestSource.GetCases))]

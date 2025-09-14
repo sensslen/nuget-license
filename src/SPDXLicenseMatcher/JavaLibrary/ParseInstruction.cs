@@ -16,7 +16,6 @@ public sealed class ParseInstruction
     public LicenseTemplateRule? Rule { get; set; }
     public string? _text { get; }
     public IReadOnlyList<string>? TokenizedText { get; }
-    IDictionary<int, LineColumn> TextLocations = new Dictionary<int, LineColumn>();
     private readonly List<ParseInstruction> _subInstructions;
     public IReadOnlyList<ParseInstruction> SubInstructions => _subInstructions;
     public ParseInstruction? Parent { get; set; }
@@ -42,7 +41,7 @@ public sealed class ParseInstruction
     {
         Rule = rule;
         _text = text;
-        TokenizedText = text is null ? null : LicenseTextHelper.tokenizeLicenseText(text, TextLocations);
+        TokenizedText = text is null ? null : LicenseTextHelper.tokenizeLicenseText(text, new Dictionary<int, LineColumn>());
         _subInstructions = [];
     }
 
