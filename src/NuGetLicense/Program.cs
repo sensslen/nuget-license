@@ -143,7 +143,7 @@ namespace NuGetLicense
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicenses,
                 licenseDownloader,
-                new LicenseMatcher(),
+                new FastLicenseMatcher(Spdx.Licenses.SpdxLicenseStore.Licenses),
                 ignoredPackages);
 
             string[] excludedProjects = GetExcludedProjects();
