@@ -7,6 +7,15 @@ namespace SPDXLicenseMatcher.Test
     {
         public record Case(string Identifier, string Content);
 
+        public class AllSpdxLicensesFastLicenseMatcher : ILicenseMatcher
+        {
+            private readonly FastLicenseMatcher _fastLicenseMatcher = new FastLicenseMatcher(Spdx.Licenses.SpdxLicenseStore.Licenses);
+            public string? Match(string licenseText) => _fastLicenseMatcher.Match(licenseText);
+        }
+
+        [ClassDataSource<AllSpdxLicensesFastLicenseMatcher>(Shared = SharedType.PerTestSession)]
+        public required AllSpdxLicensesFastLicenseMatcher FastlicenseMatcher { get; init; }
+
         public static class LicenseMatcherTestSource
         {
             private static readonly int s_prefixLength = "SPDXLicenseMatcher.Test.TestLicenses.".Length;
@@ -37,9 +46,7 @@ namespace SPDXLicenseMatcher.Test
         [MethodDataSource(typeof(LicenseMatcherTestSource), nameof(LicenseMatcherTestSource.GetCases))]
         public async Task Fast_License_Matcher_Should_Pick_Correct_License(Case @case)
         {
-            var matcher = new FastLicenseMatcher(Spdx.Licenses.SpdxLicenseStore.Licenses);
-
-            await Assert.That(matcher.Match(@case.Content)).Contains(@case.Identifier);
+            await Assert.That(FastlicenseMatcher.Match(@case.Content)).Contains(@case.Identifier);
         }
     }
 }

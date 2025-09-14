@@ -205,32 +205,6 @@ internal static class LicenseCompareHelper
     }
 
     /**
-     * Return the first license token found in the given text
-     * <p>
-     * The method normalizes the input text, removes comment characters,
-     * and splits it into tokens
-     * using {@link LicenseTextHelper#TOKEN_SPLIT_PATTERN}.
-     * It returns the first non-empty token found,
-     * or {@code null} if no such token exists.
-     * </p>
-     *
-     * @param text The license text to extract the first token from.
-     * @return The first non-empty token as a {@link String},
-     *         or {@code null} if none is found.
-     */
-    public static string? getFirstLicenseToken(string? text)
-    {
-        if (string.IsNullOrEmpty(text))
-        {
-            return null;
-        }
-        string textToTokenize = LicenseTextHelper.normalizeText(LicenseTextHelper.replaceMultWord(LicenseTextHelper.replaceSpaceComma(
-                LicenseTextHelper.removeLineSeparators(removeCommentChars(text!))))).ToLower();
-        MatchCollection m = LicenseTextHelper.TOKEN_SPLIT_PATTERN.Matches(textToTokenize);
-        return m.Cast<Match>().Select(m => m.Groups[1].Value.Trim()).FirstOrDefault(m => !string.IsNullOrEmpty(m));
-    }
-
-    /**
      * Check whether the given text contains only a single token
      * <p>
      * A single token string is a string that contains exactly one token,

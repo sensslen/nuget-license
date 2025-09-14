@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using SPDXLicenseMatcher.JavaCore;
 
@@ -15,7 +14,9 @@ public sealed class ParseInstruction
     private const int MIN_TOKENS_NORMAL_TEXT_SEARCH = 3; // Minimum number of tokens to match of normal text to match after a variable block to bound greedy regex var text
 
     public LicenseTemplateRule? Rule { get; set; }
-    public string? Text { get; set; }
+    public string? _text { get; }
+    public IReadOnlyList<string>? TokenizedText { get; }
+    IDictionary<int, LineColumn> TextLocations = new Dictionary<int, LineColumn>();
     private readonly List<ParseInstruction> _subInstructions;
     public IReadOnlyList<ParseInstruction> SubInstructions => _subInstructions;
     public ParseInstruction? Parent { get; set; }
@@ -40,7 +41,8 @@ public sealed class ParseInstruction
     public ParseInstruction(LicenseTemplateRule? rule, string? text)
     {
         Rule = rule;
-        Text = text;
+        _text = text;
+        TokenizedText = text is null ? null : LicenseTextHelper.tokenizeLicenseText(text, TextLocations);
         _subInstructions = [];
     }
 
@@ -59,16 +61,16 @@ public sealed class ParseInstruction
         {
             return Rule.ToString();
         }
-        else if (Text != null)
+        else if (_text != null)
         {
             string retval = "TEXT: '";
-            if (Text.Length > 10)
+            if (_text.Length > 10)
             {
-                retval = retval + Text.Substring(0, 10) + "...'";
+                retval = retval + _text.Substring(0, 10) + "...'";
             }
             else
             {
-                retval = retval + Text + "'";
+                retval = retval + _text + "'";
             }
             return retval;
         }
@@ -118,7 +120,7 @@ public sealed class ParseInstruction
         }
         foreach (ParseInstruction subInstr in _subInstructions)
         {
-            if (subInstr.Text == null)
+            if (subInstr.TokenizedText == null)
             {
                 return false;
             }
@@ -168,10 +170,9 @@ public sealed class ParseInstruction
         int nextToken = startToken;
         if (Rule == null)
         {
-            if (Text != null)
+            if (TokenizedText != null)
             {
-                IDictionary<int, LineColumn> textLocations = new Dictionary<int, LineColumn>();
-                IReadOnlyList<string> textTokens = LicenseTextHelper.tokenizeLicenseText(Text, textLocations);
+                IReadOnlyList<string> textTokens = TokenizedText;
                 if (SkipFirstTextToken)
                 {
                     textTokens = textTokens.Skip(1).ToArray();
@@ -182,7 +183,7 @@ public sealed class ParseInstruction
                     int errorLocation = -nextToken - 1;
                     tokenToLocation.TryGetValue(errorLocation, out LineColumn? errorLine);
                     differences.AddDifference(errorLine, LicenseTextHelper.getTokenAt(matchTokens, errorLocation),
-                                    "Normal text of license does not match", Text, null, getLastOptionalDifference());
+                                    "Normal text of license does not match", _text, null, getLastOptionalDifference());
                 }
                 if (_subInstructions.Any())
                 {
@@ -206,7 +207,7 @@ public sealed class ParseInstruction
         }
         else if (Rule.Type.Equals(LicenseTemplateRule.RuleType.BEGIN_OPTIONAL))
         {
-            if (Text != null)
+            if (TokenizedText != null)
             {
                 throw new LicenseParserException("License template parser error - can not have text associated with a begin optional rule");
             }
@@ -336,7 +337,7 @@ public sealed class ParseInstruction
             {
                 leadingOptionalSubInstructions.Add(i);
             }
-            else if (_subInstructions[i].Text != null && !string.IsNullOrWhiteSpace(_subInstructions[i].Text))
+            else if ((_subInstructions[i].TokenizedText?.Count ?? 0) > 0)
             {
                 firstNormalTextIndex = i;
             }
@@ -374,8 +375,7 @@ public sealed class ParseInstruction
             return retval;
         }
 
-        IDictionary<int, LineColumn> normalTextLocations = new Dictionary<int, LineColumn>();
-        IReadOnlyList<string> textTokens = LicenseTextHelper.tokenizeLicenseText(_subInstructions[firstNormalTextIndex].Text ?? string.Empty, normalTextLocations);
+        IReadOnlyList<string> textTokens = _subInstructions[firstNormalTextIndex].TokenizedText ?? [];
         if (textTokens.Count > MAX_NEXT_NORMAL_TEXT_SEARCH_LENGTH)
         {
             textTokens = textTokens.Take(MAX_NEXT_NORMAL_TEXT_SEARCH_LENGTH).ToArray();
@@ -407,7 +407,7 @@ public sealed class ParseInstruction
                 }
                 tokenToLocation.TryGetValue(nextMatchingStart, out LineColumn? nextMatchingLine);
                 differences.AddDifference(nextMatchingLine, "",
-                        "Unable to find the text '" + _subInstructions[firstNormalTextIndex].Text + "' following a " + ruleDesc,
+                        "Unable to find the text '" + _subInstructions[firstNormalTextIndex]._text + "' following a " + ruleDesc,
                                 null, Rule, getLastOptionalDifference());
             }
             else if (textTokens.Count >= MIN_TOKENS_NORMAL_TEXT_SEARCH)
@@ -570,8 +570,7 @@ public sealed class ParseInstruction
             {
                 return false;
             }
-            string? optionalText = nextInstruction.SubInstructions[0].Text;
-            return LicenseCompareHelper.isSingleTokenString(optionalText);
+            return (nextInstruction.SubInstructions[0].TokenizedText?.Count ?? 0) == 1;
         }
     }
 
@@ -632,13 +631,12 @@ public sealed class ParseInstruction
             {
                 return [];
             }
-            StringBuilder sb = new StringBuilder();
-            foreach (string text in nextInstruction.SubInstructions.Select(i => i.Text).Where(t => t is not null)!)
+            var tokens = new List<string>();
+            foreach (IReadOnlyList<string> t in nextInstruction.SubInstructions.Select(i => i.TokenizedText).Where(t => t is not null)!)
             {
-                sb.Append(text);
+                tokens.AddRange(t);
             }
-            IDictionary<int, LineColumn> temp = new Dictionary<int, LineColumn>();
-            return LicenseTextHelper.tokenizeLicenseText(sb.ToString(), temp);
+            return tokens;
         }
     }
 
@@ -696,7 +694,7 @@ public sealed class ParseInstruction
         {
             for (int i = nextOptionalIndex + 1; i < siblings.Count; i++)
             {
-                if (siblings[i].Text != null)
+                if (siblings[i].TokenizedText != null)
                 {
                     return siblings[i];
                 }

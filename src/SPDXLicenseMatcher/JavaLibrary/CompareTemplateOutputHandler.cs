@@ -141,7 +141,7 @@ public class CompareTemplateOutputHandler : ILicenseTemplateOutputHandler
                         else
                         {
                             ParseInstruction? nextNormal = instruction.getNextNormalTextInstruction();
-                            string? nextNormalText = LicenseCompareHelper.getFirstLicenseToken(nextNormal?.Text ?? string.Empty);
+                            string? nextNormalText = nextNormal?.TokenizedText?[0];
                             if (nextNormalText != null)
                             {
                                 compareToken = compareToken + nextNormalText;
