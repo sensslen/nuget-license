@@ -45,7 +45,7 @@
   {
     "PackageId": "Regional Security Architect",
     "PackageVersion": "2.2.5",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Forward Functionality Analyst",
@@ -106,18 +106,18 @@
       }
     ],
     "License": "If we synthesize the bus, we can get to the SDD bus through the 1080p SDD bus!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "District Branding Analyst",
     "PackageVersion": "1.9.5",
     "PackageProjectUrl": "https://paula.net",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Global Security Liaison",
     "PackageVersion": "8.1.2",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 1
   },
   {
     "PackageId": "Human Usability Specialist",
@@ -179,7 +179,7 @@
     "PackageVersion": "1.8.2",
     "PackageProjectUrl": "https://lance.net",
     "License": "You can\u0027t parse the system without compressing the haptic GB system!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Global Response Associate",
@@ -335,7 +335,7 @@
         "Context": "http://daisha.biz"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Direct Accounts Associate",
@@ -379,7 +379,7 @@
         "Context": "https://hazel.net"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Senior Brand Developer",
@@ -493,7 +493,7 @@
         "Context": "http://erica.org"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Global Optimization Representative",
@@ -540,7 +540,7 @@
         "Context": "http://zane.name"
       }
     ],
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Lead Markets Designer",
@@ -568,7 +568,7 @@
         "Context": "https://zackery.info"
       }
     ],
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Direct Intranet Facilitator",
@@ -667,14 +667,14 @@
     "PackageId": "Dynamic Functionality Agent",
     "PackageVersion": "5.9.5",
     "PackageProjectUrl": "http://annabelle.net",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Forward Quality Producer",
     "PackageVersion": "6.3.7",
     "PackageProjectUrl": "https://jayne.name",
     "License": "The CSS microchip is down, back up the bluetooth microchip so we can back up the CSS microchip!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "National Solutions Coordinator",
@@ -785,7 +785,7 @@
         "Context": "https://verlie.com"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Customer Operations Officer",

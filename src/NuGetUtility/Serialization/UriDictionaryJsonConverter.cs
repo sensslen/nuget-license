@@ -24,7 +24,7 @@ namespace NuGetUtility.Serialization
                 return false;
             }
 
-            if (typeToConvert.GenericTypeArguments.First() == typeof(string))
+            if (typeToConvert.GenericTypeArguments[0] == typeof(string))
             {
                 return false;
             }

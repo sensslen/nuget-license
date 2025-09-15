@@ -66,35 +66,7 @@
         "Context": "http://daisha.biz"
       }
     ],
-    "LicenseInformationOrigin": 4
-  },
-  {
-    "PackageId": "Lead Markets Designer",
-    "PackageVersion": "2.8.4",
-    "PackageProjectUrl": "https://amara.info",
-    "ValidationErrors": [
-      {
-        "Error": "Seamus",
-        "Context": "http://maybell.info"
-      },
-      {
-        "Error": "Monserrat",
-        "Context": "http://katrine.name"
-      },
-      {
-        "Error": "Abel",
-        "Context": "https://geovany.com"
-      },
-      {
-        "Error": "Diana",
-        "Context": "http://eula.name"
-      },
-      {
-        "Error": "Raphael",
-        "Context": "https://zackery.info"
-      }
-    ],
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Customer Program Technician",
@@ -276,42 +248,6 @@
     "LicenseInformationOrigin": 0
   },
   {
-    "PackageId": "Corporate Tactics Analyst",
-    "PackageVersion": "3.0.8",
-    "ValidationErrors": [
-      {
-        "Error": "Bill",
-        "Context": "http://jairo.net"
-      },
-      {
-        "Error": "Clemmie",
-        "Context": "http://shanny.net"
-      },
-      {
-        "Error": "Hildegard",
-        "Context": "http://conner.name"
-      },
-      {
-        "Error": "Isabella",
-        "Context": "https://kennith.com"
-      },
-      {
-        "Error": "Johanna",
-        "Context": "https://ara.org"
-      },
-      {
-        "Error": "Demarco",
-        "Context": "https://rae.biz"
-      },
-      {
-        "Error": "Viviane",
-        "Context": "http://christine.info"
-      }
-    ],
-    "License": "If we synthesize the bus, we can get to the SDD bus through the 1080p SDD bus!",
-    "LicenseInformationOrigin": 2
-  },
-  {
     "PackageId": "Human Usability Specialist",
     "PackageVersion": "3.2.8",
     "PackageProjectUrl": "http://micah.info",
@@ -408,7 +344,7 @@
         "Context": "https://hazel.net"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "National Accounts Liaison",
@@ -427,7 +363,7 @@
         "Context": "http://erica.org"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Regional Accounts Technician",
@@ -513,54 +449,7 @@
         "Context": "https://verlie.com"
       }
     ],
-    "LicenseInformationOrigin": 4
-  },
-  {
-    "PackageId": "Global Optimization Representative",
-    "PackageVersion": "8.2.6",
-    "ValidationErrors": [
-      {
-        "Error": "Brandi",
-        "Context": "https://aniyah.com"
-      },
-      {
-        "Error": "Tyson",
-        "Context": "https://bonita.org"
-      },
-      {
-        "Error": "Jazlyn",
-        "Context": "http://madonna.net"
-      },
-      {
-        "Error": "Deangelo",
-        "Context": "https://jess.info"
-      },
-      {
-        "Error": "Alvah",
-        "Context": "https://hans.net"
-      },
-      {
-        "Error": "Payton",
-        "Context": "http://shanna.name"
-      },
-      {
-        "Error": "Providenci",
-        "Context": "https://tyra.org"
-      },
-      {
-        "Error": "Flo",
-        "Context": "http://isidro.net"
-      },
-      {
-        "Error": "Dawn",
-        "Context": "https://anika.org"
-      },
-      {
-        "Error": "Silas",
-        "Context": "http://zane.name"
-      }
-    ],
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Legacy Optimization Orchestrator",

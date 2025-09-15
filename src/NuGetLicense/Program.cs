@@ -25,6 +25,7 @@ using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
+using SPDXLicenseMatcher;
 
 #if !NET
 using System.Net.Http;
@@ -114,6 +115,11 @@ namespace NuGetLicense
             Description = "The destination file to put the valiation output to. If omitted, the output is printed to the console.")]
         public string? DestinationFile { get; } = null;
 
+        [Option(LongName = "check-nuget-file-license",
+            ShortName = "fl",
+            Description = "If set, the license files are also validated by fuzzy matching against a known set of licenses. Note that in rare cases this can lead to falsly identifying licenses.")]
+        public bool IncludeNugetFileLicense { get; } = false;
+
         private static string GetVersion()
             => typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
 
@@ -127,7 +133,7 @@ namespace NuGetLicense
             IImmutableDictionary<Uri, string> licenseMappings = GetLicenseMappings();
             string[] allowedLicenses = GetAllowedLicenses();
             CustomPackageInformation[] overridePackageInformation = GetOverridePackageInformation();
-            IFileDownloader urlLicenseFileDownloader = GetFileDownloader(httpClient);
+            IFileDownloader? licenseDownloader = GetFileDownloader(httpClient);
             IOutputFormatter output = GetOutputFormatter();
 
             var solutionPersistance = new SolutionPersistanceWrapper();
@@ -136,7 +142,8 @@ namespace NuGetLicense
             var projectReader = new ReferencedPackageReader(msBuild, new LockFileFactory(), GetPackagesConfigReader());
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicenses,
-                urlLicenseFileDownloader,
+                licenseDownloader,
+                new FastLicenseMatcher(Spdx.Licenses.SpdxLicenseStore.Licenses),
                 ignoredPackages);
 
             string[] excludedProjects = GetExcludedProjects();
@@ -263,10 +270,7 @@ namespace NuGetLicense
                 return UrlToLicenseMapping.Default;
             }
 
-            var serializerOptions = new JsonSerializerOptions();
-            serializerOptions.Converters.Add(new UriDictionaryJsonConverter<string>());
-            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping),
-                serializerOptions)!;
+            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping))!;
 
             return UrlToLicenseMapping.Default.SetItems(userDictionary);
         }
@@ -293,14 +297,14 @@ namespace NuGetLicense
                 return JsonSerializer.Deserialize<string[]>(File.ReadAllText(ExcludedProjects))!;
             }
 
-            return new[] { ExcludedProjects };
+            return [ExcludedProjects];
         }
 
         private string[] GetInputFiles()
         {
             if (InputFile != null)
             {
-                return new[] { InputFile };
+                return [InputFile];
             }
 
             if (InputJsonFile != null)

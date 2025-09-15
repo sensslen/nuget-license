@@ -3,7 +3,7 @@
     "PackageId": "District Mobility Administrator",
     "PackageVersion": "3.2.3",
     "LicenseUrl": "You can\u0027t compress the transmitter without overriding the auxiliary TCP transmitter!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Principal Functionality Agent",
@@ -39,7 +39,7 @@
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 1
   },
   {
     "PackageId": "Chief Brand Associate",
@@ -63,7 +63,7 @@
         "Context": "http://serenity.biz"
       }
     ],
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Dynamic Program Associate",
@@ -82,7 +82,7 @@
         "Context": "http://laurel.biz"
       }
     ],
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Future Interactions Developer",
@@ -114,7 +114,7 @@
       }
     ],
     "License": "I\u0027ll input the multi-byte AI circuit, that should circuit the AI circuit!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "International Mobility Technician",
@@ -169,7 +169,7 @@
       }
     ],
     "License": "You can\u0027t parse the alarm without overriding the haptic SMTP alarm!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Legacy Research Officer",
@@ -260,7 +260,7 @@
       }
     ],
     "License": "You can\u0027t synthesize the system without calculating the 1080p ADP system!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Customer Group Consultant",
@@ -389,7 +389,7 @@
     ],
     "License": "Use the multi-byte SSL matrix, then you can input the multi-byte matrix!",
     "LicenseUrl": "The GB system is down, synthesize the auxiliary system so we can synthesize the GB system!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Internal Solutions Planner",
@@ -429,7 +429,7 @@
       }
     ],
     "LicenseUrl": "The COM application is down, quantify the auxiliary application so we can quantify the COM application!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Regional Interactions Strategist",
@@ -479,7 +479,7 @@
     "PackageVersion": "5.4.1",
     "PackageProjectUrl": "http://hyman.org",
     "License": "Use the cross-platform CSS capacitor, then you can copy the cross-platform capacitor!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Product Accountability Analyst",
@@ -521,7 +521,7 @@
     "PackageId": "Legacy Metrics Planner",
     "PackageVersion": "9.5.0",
     "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Future Integration Analyst",
@@ -609,7 +609,7 @@
       }
     ],
     "LicenseUrl": "Try to back up the AI card, maybe it will back up the cross-platform card!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Forward Directives Supervisor",
@@ -638,7 +638,7 @@
       }
     ],
     "LicenseUrl": "The SSL microchip is down, hack the optical microchip so we can hack the SSL microchip!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Legacy Accountability Director",
@@ -706,7 +706,7 @@
         "Context": "http://rashad.info"
       }
     ],
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Principal Brand Developer",
@@ -754,6 +754,6 @@
         "Context": "http://giuseppe.name"
       }
     ],
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   }
 ]

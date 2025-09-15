@@ -22,19 +22,19 @@ namespace NuGetLicense.Output.Table
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
         {
             var errorColumnDefinition = new ColumnDefinition("Error", license => license.ValidationErrors.Select(e => e.Error), license => license.ValidationErrors.Any());
-            ColumnDefinition[] columnDefinitions = new[]
-            {
+            ColumnDefinition[] columnDefinitions =
+            [
                 new ColumnDefinition("Package", license => license.PackageId, license => true, true),
                 new ColumnDefinition("Version", license => license.PackageVersion, license => true, true),
                 new ColumnDefinition("License Information Origin", license => license.LicenseInformationOrigin, license => true, true),
-                new ColumnDefinition("License Expression", license => license.License, license => license.License != null),
+                new ColumnDefinition("License Expression", license => license.License?.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries), license => license.License != null),
                 new ColumnDefinition("License Url", license => license.LicenseUrl, license => license.LicenseUrl != null),
                 new ColumnDefinition("Copyright", license => license.Copyright, license => license.Copyright != null),
                 new ColumnDefinition("Authors", license => license.Authors, license => license.Authors != null),
                 new ColumnDefinition("Package Project Url",license => license.PackageProjectUrl, license => license.PackageProjectUrl != null),
                 errorColumnDefinition,
                 new ColumnDefinition("Error Context", license => license.ValidationErrors.Select(e => e.Context), license => license.ValidationErrors.Any()),
-            };
+            ];
 
             foreach (LicenseValidationResult license in results)
             {

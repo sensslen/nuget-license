@@ -63,22 +63,31 @@ namespace NuGetUtility.PackageInformationReader
         }
 
         private static async Task<PackageSearchResult> TryGetPackageInformationFromRepositories(
-            ISourceRepository[] cachedRepositories,
+            ISourceRepository[] repositories,
             PackageIdentity package,
             CancellationToken cancellation)
         {
-            foreach (ISourceRepository repository in cachedRepositories)
+            foreach (ISourceRepository repository in repositories)
             {
-                IPackageMetadataResource? resource = await TryGetPackageMetadataResource(repository);
+                IPackageMetadataResource? resource = await TryGetPackageMetadataResource(repository, cancellation);
                 if (resource == null)
                 {
                     continue;
                 }
 
                 IPackageMetadata? updatedPackageMetadata = await resource.TryGetMetadataAsync(package, cancellation);
-
                 if (updatedPackageMetadata != null)
                 {
+                    if (updatedPackageMetadata.LicenseMetadata?.Type == LicenseType.File)
+                    {
+                        IPackageDownloader? downloader = await TryGetPackageDownloaderAsync(repository, package, cancellation);
+                        if (downloader != null)
+                        {
+                            return new PackageSearchResult(new LicenseAugmentedPackageMetadata(updatedPackageMetadata, await downloader.ReadAsync(updatedPackageMetadata.LicenseMetadata.License, cancellation)));
+                        }
+                        return new PackageSearchResult();
+                    }
+
                     return new PackageSearchResult(updatedPackageMetadata);
                 }
             }
@@ -98,11 +107,28 @@ namespace NuGetUtility.PackageInformationReader
             return new PackageSearchResult(new PackageMetadata(package, LicenseType.Overwrite, resolvedCustomInformation));
         }
 
-        private static async Task<IPackageMetadataResource?> TryGetPackageMetadataResource(ISourceRepository repository)
+        private static async Task<IPackageMetadataResource?> TryGetPackageMetadataResource(ISourceRepository repository, CancellationToken token)
         {
             try
             {
-                return await repository.GetPackageMetadataResourceAsync();
+                return await repository.GetPackageMetadataResourceAsync(token);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private static async Task<IPackageDownloader?> TryGetPackageDownloaderAsync(ISourceRepository repository, PackageIdentity package, CancellationToken token)
+        {
+            try
+            {
+                IFindPackageByIdResource? archiveReader = await repository.GetPackageArchiveReaderAsync(token);
+                if (archiveReader is null)
+                {
+                    return null;
+                }
+                return await archiveReader.TryGetPackageDownloader(package, token);
             }
             catch (Exception)
             {

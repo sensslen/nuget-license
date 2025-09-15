@@ -50,5 +50,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NuGetUtility\NuGetUtility.csproj" />
+    <ProjectReference Include="..\SPDXLicenseMatcher\SPDXLicenseMatcher.csproj" />
   </ItemGroup>
 </Project>

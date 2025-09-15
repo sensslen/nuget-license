@@ -1,5 +1,11 @@
 ﻿[
   {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
+    "LicenseInformationOrigin": 4
+  },
+  {
     "PackageId": "International Mobility Technician",
     "PackageVersion": "3.7.5",
     "PackageProjectUrl": "http://katelin.org",

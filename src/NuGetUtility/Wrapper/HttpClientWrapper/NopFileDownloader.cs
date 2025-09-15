@@ -5,9 +5,8 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
 {
     public class NopFileDownloader : IFileDownloader
     {
-        public Task DownloadFile(Uri url, string fileName, CancellationToken token)
-        {
-            return Task.CompletedTask;
-        }
+        public Task DownloadFile(Uri url, string fileNameStem, CancellationToken token) => Task.CompletedTask;
+
+        public Task StoreFileAsync(string licenseText, string fileNameStem, CancellationToken token) => Task.CompletedTask;
     }
 }

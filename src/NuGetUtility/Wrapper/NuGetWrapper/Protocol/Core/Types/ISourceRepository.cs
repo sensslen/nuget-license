@@ -5,6 +5,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
     public interface ISourceRepository
     {
-        Task<IPackageMetadataResource?> GetPackageMetadataResourceAsync();
+        Task<IPackageMetadataResource?> GetPackageMetadataResourceAsync(CancellationToken token);
+        Task<IFindPackageByIdResource?> GetPackageArchiveReaderAsync(CancellationToken token);
     }
 }

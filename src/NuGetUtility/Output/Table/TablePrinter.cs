@@ -44,13 +44,13 @@ namespace NuGetUtility.Output.Table
             _rows.Add(rowElements);
         }
 
-        private string[] GetLines(object? lines)
+        private static string[] GetLines(object? lines)
         {
             if (lines is IEnumerable<object> enumerable)
             {
                 return enumerable.Select(o => o.ToString() ?? string.Empty).ToArray();
             }
-            return new[] { lines?.ToString() ?? string.Empty };
+            return [lines?.ToString() ?? string.Empty];
         }
 
         public async Task Print()

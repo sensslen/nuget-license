@@ -37,7 +37,15 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
                 return null;
             }
 
-            return new WrappedPackageMetadata(manifest.Metadata);
+            var result = new WrappedPackageMetadata(manifest.Metadata);
+            if (result.LicenseMetadata?.Type == Packaging.LicenseType.File)
+            {
+                using Stream licenseStream = pkgStream.GetStream(manifest.Metadata.LicenseMetadata.License);
+                using var reader = new StreamReader(licenseStream);
+                return new LicenseAugmentedPackageMetadata(result, reader.ReadToEnd());
+            }
+
+            return result;
         }
     }
 }

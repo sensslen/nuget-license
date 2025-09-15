@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net472;net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -14,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="  '$(TargetFramework)' == 'net472' ">
-    <LangVersion>10.0</LangVersion>
+    <LangVersion>12.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,5 +40,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\NuGetLicense\NuGetLicense.csproj" />
     <ProjectReference Include="..\NuGetUtility.Test.Extensions\NuGetUtility.Test.Extensions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="LicenseValidator/**/*.received.txt" />
   </ItemGroup>
 </Project>

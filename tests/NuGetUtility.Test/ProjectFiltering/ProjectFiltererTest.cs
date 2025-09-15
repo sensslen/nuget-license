@@ -16,7 +16,7 @@ namespace NuGetUtility.Test.ProjectFiltering
         [Test]
         public void FilterProjects_ExcludesSharedProjects_WhenIncludeSharedProjectsIsFalse()
         {
-            string[] projects = new[] { "one.csproj", "two.shproj", "three.csproj", "four.SHPROJ" };
+            string[] projects = ["one.csproj", "two.shproj", "three.csproj", "four.SHPROJ"];
 
             string[] result = _filterer.FilterProjects(projects, false).ToArray();
 
@@ -30,7 +30,7 @@ namespace NuGetUtility.Test.ProjectFiltering
         [Test]
         public void FilterProjects_IncludesAllProjects_WhenIncludeSharedProjectsIsTrue()
         {
-            string[] projects = new[] { "one.csproj", "two.shproj", "three.csproj", "four.SHPROJ" };
+            string[] projects = ["one.csproj", "two.shproj", "three.csproj", "four.SHPROJ"];
 
             string[] result = _filterer.FilterProjects(projects, true).ToArray();
 

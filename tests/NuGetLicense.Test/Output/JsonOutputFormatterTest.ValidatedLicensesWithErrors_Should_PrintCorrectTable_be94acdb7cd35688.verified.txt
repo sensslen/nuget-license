@@ -45,7 +45,7 @@
         "Context": "http://erica.org"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Global Response Associate",
@@ -120,14 +120,14 @@
         "Context": "http://daisha.biz"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Forward Quality Producer",
     "PackageVersion": "6.3.7",
     "PackageProjectUrl": "https://jayne.name",
     "License": "The CSS microchip is down, back up the bluetooth microchip so we can back up the CSS microchip!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Lead Intranet Officer",
@@ -184,7 +184,7 @@
   {
     "PackageId": "Regional Security Architect",
     "PackageVersion": "2.2.5",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Regional Accounts Technician",
@@ -331,7 +331,7 @@
         "Context": "https://zackery.info"
       }
     ],
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Corporate Tactics Analyst",
@@ -367,7 +367,7 @@
       }
     ],
     "License": "If we synthesize the bus, we can get to the SDD bus through the 1080p SDD bus!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "District Mobility Administrator",
@@ -419,7 +419,7 @@
         "Context": "http://zane.name"
       }
     ],
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Legacy Metrics Planner",
@@ -641,7 +641,7 @@
         "Context": "https://hazel.net"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Legacy Optimization Orchestrator",
@@ -700,6 +700,6 @@
         "Context": "https://verlie.com"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   }
 ]

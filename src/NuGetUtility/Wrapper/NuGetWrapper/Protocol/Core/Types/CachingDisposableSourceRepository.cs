@@ -10,6 +10,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
         private readonly SourceCacheContext _cacheContext = new SourceCacheContext();
         private readonly SourceRepository _sourceRepository;
         private IPackageMetadataResource? _packageMetadataResource;
+        private IFindPackageByIdResource? _findPackageByIdResource;
 
         public CachingDisposableSourceRepository(SourceRepository repo)
         {
@@ -22,7 +23,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             _cacheContext.Dispose();
         }
 
-        public async Task<IPackageMetadataResource?> GetPackageMetadataResourceAsync()
+        public async Task<IPackageMetadataResource?> GetPackageMetadataResourceAsync(CancellationToken token)
         {
             if (_packageMetadataResource != null)
             {
@@ -30,9 +31,22 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             }
 
             _packageMetadataResource = new CachingPackageMetadataResource(
-                await _sourceRepository.GetResourceAsync<PackageMetadataResource>(),
+                await _sourceRepository.GetResourceAsync<PackageMetadataResource>(token),
                 _cacheContext);
             return _packageMetadataResource;
+        }
+
+        public async Task<IFindPackageByIdResource?> GetPackageArchiveReaderAsync(CancellationToken token)
+        {
+            if (_findPackageByIdResource != null)
+            {
+                return _findPackageByIdResource;
+            }
+
+            _findPackageByIdResource = new CachingFindPackageByIdResource(
+                await _sourceRepository.GetResourceAsync<FindPackageByIdResource>(token),
+                _cacheContext);
+            return _findPackageByIdResource;
         }
     }
 }

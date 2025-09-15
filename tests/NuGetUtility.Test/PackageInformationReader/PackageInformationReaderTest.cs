@@ -38,7 +38,7 @@ namespace NuGetUtility.Test.PackageInformationReader
                     _repositories = _fixture.CreateMany<ISourceRepository>().ToArray();
                     foreach (ISourceRepository repo in _repositories)
                     {
-                        repo.GetPackageMetadataResourceAsync().Returns(_ => Task.FromResult(default(IPackageMetadataResource?)));
+                        repo.GetPackageMetadataResourceAsync(default).Returns(_ => Task.FromResult(default(IPackageMetadataResource?)));
                     }
                     return _repositories;
                 });
@@ -139,7 +139,7 @@ namespace NuGetUtility.Test.PackageInformationReader
 
             foreach (ISourceRepository repo in _repositories)
             {
-                await repo.Received(0).GetPackageMetadataResourceAsync();
+                await repo.Received(0).GetPackageMetadataResourceAsync(default);
             }
         }
 
@@ -179,13 +179,13 @@ namespace NuGetUtility.Test.PackageInformationReader
             IPackageMetadataResource[] packageMetadataResources = sourceRepositoriesWithPackageMetadataResource.Select(r =>
                 {
                     IPackageMetadataResource metadataResource = Substitute.For<IPackageMetadataResource>();
-                    r.GetPackageMetadataResourceAsync().Returns(_ => Task.FromResult<IPackageMetadataResource?>(metadataResource));
+                    r.GetPackageMetadataResourceAsync(default).Returns(_ => Task.FromResult<IPackageMetadataResource?>(metadataResource));
                     return metadataResource;
                 })
                 .ToArray();
             foreach (ISourceRepository? repo in sourceRepositoriesWithFailingPackageMetadataResource)
             {
-                repo.When(m => m.GetPackageMetadataResourceAsync()).Do(_ => throw new Exception());
+                repo.When(m => m.GetPackageMetadataResourceAsync(default)).Do(_ => throw new Exception());
             }
 
             CustomPackageInformation[] searchedPackagesAsPackageInformation = _fixture.CreateMany<CustomPackageInformation>(20).ToArray();

@@ -41,7 +41,7 @@
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "District Program Associate",
@@ -116,7 +116,7 @@
     ],
     "License": "If we input the panel, we can get to the COM panel through the optical COM panel!",
     "LicenseUrl": "connecting the application won\u0027t do anything, we need to synthesize the 1080p PCI application!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Corporate Data Supervisor",
@@ -136,7 +136,7 @@
         "Context": "https://kira.net"
       }
     ],
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 5
   },
   {
     "PackageId": "Dynamic Program Analyst",

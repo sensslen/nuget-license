@@ -78,5 +78,16 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
 #endif
             return true;
         }
+
+        public Task StoreFileAsync(string licenseText, string fileNameStem, CancellationToken token)
+        {
+            string fileName = $"{fileNameStem}.txt";
+#if NETFRAMEWORK
+            File.WriteAllText(Path.Combine(_downloadDirectory, fileName), licenseText);
+            return Task.CompletedTask;
+#else
+            return File.WriteAllTextAsync(Path.Combine(_downloadDirectory, fileName), licenseText, token);
+#endif
+        }
     }
 }
