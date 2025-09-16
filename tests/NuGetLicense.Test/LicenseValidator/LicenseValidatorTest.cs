@@ -135,8 +135,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -145,7 +145,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Ignored)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -167,8 +167,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -177,7 +177,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Expression)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -201,8 +201,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -211,7 +211,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Ignored)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -235,8 +235,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -245,7 +245,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Ignored)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -270,8 +270,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -280,7 +280,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Ignored)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -301,8 +301,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -311,7 +311,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Ignored)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -333,8 +333,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -343,7 +343,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Expression)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -367,8 +367,8 @@ namespace NuGetLicense.Test.LicenseValidator
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -377,7 +377,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Expression)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -401,8 +401,8 @@ namespace NuGetLicense.Test.LicenseValidator
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -411,7 +411,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Expression)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -458,8 +458,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -468,7 +468,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Overwrite)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -499,8 +499,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -509,7 +509,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Url)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -531,8 +531,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -541,12 +541,12 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Url)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
         [Test]
-        public async Task ValidatingLicensesWithFileLicenseMetadata_Should_GiveCorrectResult()
+        public async Task ValidatingLicensesWithFileLicenseMetadata_Should_GiveCorrectResult_When_Matched()
         {
             var fixture = new Fixture();
             fixture.Customizations.Add(new NuGetVersionBuilder());
@@ -567,8 +567,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -578,7 +578,45 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             LicenseInformationOrigin.File,
                             [])
-                    })
+                    ])
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        public async Task ValidatingLicensesWithFileLicenseMetadata_Should_GiveCorrectResult_When_Not_Matched()
+        {
+            var fixture = new Fixture();
+            fixture.Customizations.Add(new NuGetVersionBuilder());
+            string packageId = fixture.Create<string>();
+            INuGetVersion packageVersion = fixture.Create<INuGetVersion>();
+            string license = fixture.Create<string>();
+
+            _uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
+                Array.Empty<string>(),
+                _fileDownloader,
+                _licenseMatcher,
+                _ignoredLicenses);
+
+            IPackageMetadata package = SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, LicenseType.File);
+            _licenseMatcher.Match(license).Returns(string.Empty);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+
+            Assert.That(result,
+                Is.EquivalentTo(
+                    [
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            license,
+                            null,
+                            null,
+                            null,
+                            LicenseInformationOrigin.File,
+                            [
+                                new ValidationError("Unable to determine license from the given license file", _context)
+                            ])
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -599,8 +637,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -614,7 +652,7 @@ namespace NuGetLicense.Test.LicenseValidator
                                 new ValidationError("No license information found",
                                     _context)
                             })
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -630,8 +668,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -645,7 +683,7 @@ namespace NuGetLicense.Test.LicenseValidator
                                 new ValidationError($"License \"{license}\" not found in list of supported licenses",
                                     _context)
                             })
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -668,8 +706,8 @@ namespace NuGetLicense.Test.LicenseValidator
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -683,7 +721,7 @@ namespace NuGetLicense.Test.LicenseValidator
                                 new ValidationError($"License \"{expression}\" not found in list of supported licenses",
                                     _context)
                             })
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -708,8 +746,8 @@ namespace NuGetLicense.Test.LicenseValidator
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -723,7 +761,7 @@ namespace NuGetLicense.Test.LicenseValidator
                                 new ValidationError($"License \"{expression}\" not found in list of supported licenses",
                                     _context)
                             })
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -739,8 +777,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -754,7 +792,7 @@ namespace NuGetLicense.Test.LicenseValidator
                                 new ValidationError($"License \"{license}\" not found in list of supported licenses",
                                     _context)
                             })
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -770,8 +808,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -780,7 +818,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Expression)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -797,8 +835,8 @@ namespace NuGetLicense.Test.LicenseValidator
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -807,7 +845,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Expression)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -825,8 +863,8 @@ namespace NuGetLicense.Test.LicenseValidator
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -835,7 +873,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Expression)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -851,8 +889,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -861,7 +899,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Overwrite)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -877,8 +915,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -892,7 +930,7 @@ namespace NuGetLicense.Test.LicenseValidator
                                 new ValidationError($"License \"{urlMatch.Value}\" not found in list of supported licenses",
                                     _context)
                             })
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -963,8 +1001,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -973,7 +1011,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Url)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -989,8 +1027,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -1004,7 +1042,7 @@ namespace NuGetLicense.Test.LicenseValidator
                                 new ValidationError($"Cannot determine License type for url {licenseUrl}",
                                     _context)
                             })
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -1028,8 +1066,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -1038,7 +1076,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Url)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -1062,8 +1100,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -1072,7 +1110,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             null,
                             LicenseInformationOrigin.Url)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
         [Test]
@@ -1095,8 +1133,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -1110,7 +1148,7 @@ namespace NuGetLicense.Test.LicenseValidator
                                 new ValidationError($"License \"{licenseExpression}\" not found in list of supported licenses",
                                     _context)
                             })
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -1134,8 +1172,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -1149,7 +1187,7 @@ namespace NuGetLicense.Test.LicenseValidator
                                 new ValidationError($"License \"{licenseExpression}\" not found in list of supported licenses",
                                     _context)
                             })
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -1173,8 +1211,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -1188,7 +1226,7 @@ namespace NuGetLicense.Test.LicenseValidator
                                 new ValidationError($"License \"{licenseExpression}\" not found in list of supported licenses",
                                     _context)
                             })
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -1210,8 +1248,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -1220,7 +1258,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             copyright,
                             null,
                             LicenseInformationOrigin.Ignored)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
@@ -1242,8 +1280,8 @@ namespace NuGetLicense.Test.LicenseValidator
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
 
             Assert.That(result,
-                Is.EquivalentTo(new[]
-                    {
+                Is.EquivalentTo(
+                    [
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
@@ -1252,7 +1290,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             null,
                             authors,
                             LicenseInformationOrigin.Ignored)
-                    })
+                    ])
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
     }

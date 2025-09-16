@@ -5,6 +5,6 @@ namespace SPDXLicenseMatcher
 {
     public interface ILicenseMatcher
     {
-        string? Match(string licenseText);
+        string Match(string licenseText);
     }
 }

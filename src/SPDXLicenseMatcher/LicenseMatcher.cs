@@ -11,6 +11,6 @@ namespace SPDXLicenseMatcher
     /// </summary>
     public class LicenseMatcher : ILicenseMatcher
     {
-        public string? Match(string licenseText) => string.Join(" OR ", LicenseCompareHelper.GetMatchingLicenses(licenseText));
+        public string Match(string licenseText) => string.Join(" OR ", LicenseCompareHelper.GetMatchingLicenses(licenseText));
     }
 }

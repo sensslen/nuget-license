@@ -158,8 +158,8 @@ namespace NuGetLicense.LicenseValidator
                     }
                 case LicenseType.File:
                     {
-                        string? matchedLicense = _fileLicenseMatcher.Match(info.LicenseMetadata.License);
-                        SpdxExpression? licenseExpression = matchedLicense is null ? null : SpdxExpressionParser.Parse(matchedLicense, _ => true, _ => true);
+                        string matchedLicense = _fileLicenseMatcher.Match(info.LicenseMetadata.License);
+                        SpdxExpression? licenseExpression = string.IsNullOrEmpty(matchedLicense) ? null : SpdxExpressionParser.Parse(matchedLicense, _ => true, _ => true);
                         if (IsValidLicenseExpression(licenseExpression))
                         {
                             await StoreLicenseAsync(info.LicenseMetadata.License, info.Identity, token);
@@ -173,7 +173,7 @@ namespace NuGetLicense.LicenseValidator
                             AddOrUpdateLicense(result,
                                 info,
                                 LicenseInformationOrigin.File,
-                                new ValidationError("Cannot determine license from license file", context),
+                                new ValidationError("Unable to determine license from the given license file", context),
                                 info.LicenseMetadata.License);
                         }
                         break;
