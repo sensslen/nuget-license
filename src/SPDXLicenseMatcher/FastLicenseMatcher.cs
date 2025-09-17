@@ -45,7 +45,7 @@ namespace SPDXLicenseMatcher
 
             _templateInstructions = builder.ToImmutable();
         }
-        public string? Match(string licenseText) => string.Join(" OR ", FindMatchingLicenses(licenseText));
+        public string Match(string licenseText) => string.Join(" OR ", FindMatchingLicenses(licenseText));
 
         public IEnumerable<string> FindMatchingLicenses(string licenseText)
         {

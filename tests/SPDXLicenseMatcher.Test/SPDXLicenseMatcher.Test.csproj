@@ -28,6 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="TestLicenses\*" />
+    <EmbeddedResource Include="SPDXLicenses\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="NonSpdxTestLicenses\*" />
   </ItemGroup>
 </Project>

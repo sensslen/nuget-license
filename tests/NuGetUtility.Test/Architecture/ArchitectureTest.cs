@@ -12,7 +12,7 @@ namespace NuGetUtility.Test.Architecture
 
         protected ArchitectureTest()
         {
-            Types = Types.InAssemblies(new[] { Assembly.Load(AssemblyNames.NuGetUtility) });
+            Types = Types.InAssemblies([Assembly.Load(AssemblyNames.NuGetUtility)]);
         }
 
         internal static class AssemblyNames
