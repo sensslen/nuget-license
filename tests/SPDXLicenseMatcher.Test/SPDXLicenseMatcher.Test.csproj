@@ -29,9 +29,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="SPDXLicenses\*" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="NonSpdxTestLicenses\*" />
+    <EmbeddedResource Include="RealLicenses\*" />
   </ItemGroup>
 </Project>
