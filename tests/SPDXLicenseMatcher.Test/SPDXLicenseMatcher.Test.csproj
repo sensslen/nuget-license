@@ -20,7 +20,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Verify.TUnit" Version="30.19.1" />
+    <PackageReference Include="Verify.TUnit" Version="30.20.1" />
   </ItemGroup>
 
   <ItemGroup>
