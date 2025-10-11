@@ -27,7 +27,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Verify.NUnit" Version="30.20.1" />
+    <PackageReference Include="Verify.NUnit" Version="31.0.1" />
     <PackageReference Include="Verify.ParametersHashing" Version="1.0.0" />
   </ItemGroup>
 
