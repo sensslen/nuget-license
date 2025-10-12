@@ -32,7 +32,6 @@ namespace SPDXLicenseMatcher
         private static readonly Regex BEGIN_OPTIONAL_COMMENT_PATTERN = new Regex("^\\s*<<beginOptional>>\\s*" + START_COMMENT_CHAR_PATTERN, RegexOptions.Compiled);
 #pragma warning restore IDE1006
 
-
         private readonly IImmutableDictionary<string, ParseInstruction> _templateInstructions;
 
         public FastLicenseMatcher(IDictionary<string, ILicense> licenses)
