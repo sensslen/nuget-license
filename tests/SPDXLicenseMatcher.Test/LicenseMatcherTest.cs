@@ -51,6 +51,23 @@ namespace SPDXLicenseMatcher.Test
             }
         }
 
+        public static class RealWorldLicenses
+        {
+            private const string PREFIX = "SPDXLicenseMatcher.Test.RealLicenses.";
+            private static readonly int s_prefixLength = PREFIX.Length;
+            public static IEnumerable<Func<Case>> GetCases()
+            {
+                var executingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
+                foreach (string name in executingAssembly.GetManifestResourceNames().Where(n => n.StartsWith(PREFIX)).Where(n => n.EndsWith("txt")))
+                {
+                    string fileName = name.Substring(s_prefixLength);
+                    string expectedIdentifier = fileName.Split("__")[0];
+                    using var reader = new StreamReader(executingAssembly.GetManifestResourceStream(name)!);
+                    yield return () => new Case(expectedIdentifier, reader.ReadToEnd());
+                }
+            }
+        }
+
 #pragma warning disable S125 // Sections of code should not be commented out
         /*
                 [Test]
@@ -77,6 +94,13 @@ namespace SPDXLicenseMatcher.Test
         public async Task Fast_License_Matcher_Should_Not_Pick_A_License(string licenseText)
         {
             await Assert.That(FastlicenseMatcher.Match(licenseText)).IsEmpty();
+        }
+
+        [Test]
+        [MethodDataSource(typeof(RealWorldLicenses), nameof(RealWorldLicenses.GetCases))]
+        public async Task Fast_License_Matcher_Should_Mattch_Real_World_Licenses(Case @case)
+        {
+            await Assert.That(FastlicenseMatcher.Match(@case.Content)).Contains(@case.Identifier);
         }
     }
 }
