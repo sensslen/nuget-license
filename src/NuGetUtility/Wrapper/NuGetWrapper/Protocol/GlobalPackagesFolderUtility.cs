@@ -21,9 +21,14 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
             _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(settings);
         }
 
+        protected virtual DownloadResourceResult? GetPackageFromOriginalUtility(PackageIdentity identity) =>
+            OriginalGlobalPackagesFolderUtility.GetPackage(
+                new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString()!)),
+                _globalPackagesFolder);
+
         public IWrappedPackageMetadata? GetPackage(PackageIdentity identity)
         {
-            DownloadResourceResult cachedPackage = OriginalGlobalPackagesFolderUtility.GetPackage(new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString()!)), _globalPackagesFolder);
+            DownloadResourceResult? cachedPackage = GetPackageFromOriginalUtility(identity);
             if (cachedPackage == null)
             {
                 return null;

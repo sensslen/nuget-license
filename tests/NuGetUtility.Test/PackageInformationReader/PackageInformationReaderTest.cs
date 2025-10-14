@@ -1,22 +1,33 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.Text;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using NSubstitute;
+using NuGet.Common;
+using NuGet.Configuration;
+using NuGet.Frameworks;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
+using NuGet.Packaging.Signing;
+using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Test.Extensions.Helper.AsyncEnumerableExtension;
 using NuGetUtility.Test.Extensions.Helper.AutoFixture.NuGet.Versioning;
 using NuGetUtility.Test.Extensions.Helper.ShuffelledEnumerable;
-using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
-using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
+using IPackageMetadata = NuGetUtility.Wrapper.NuGetWrapper.Packaging.IPackageMetadata;
+using LicenseMetadata = NuGetUtility.Wrapper.NuGetWrapper.Packaging.LicenseMetadata;
+using LicenseType = NuGetUtility.Wrapper.NuGetWrapper.Packaging.LicenseType;
+using PackageIdentity = NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core.PackageIdentity;
 
 namespace NuGetUtility.Test.PackageInformationReader
 {
     [TestFixture]
-    internal class PackageInformationReaderTest
+    public class PackageInformationReaderTest
     {
         [SetUp]
         public void SetUp()
@@ -143,6 +154,104 @@ namespace NuGetUtility.Test.PackageInformationReader
             }
         }
 
+        [Test]
+        public void GetPackageInfo_Should_ReadLicenseFromNormalizedPath_ForwardSlash()
+        {
+            string licenseUserPath = "license/LICENSE.txt";
+            string licenseSystemPath = "license/LICENSE.txt";
+
+            string licenseText = _fixture.Create<string>();
+            var manifestMetadata = new ManifestMetadata
+            {
+                Id = _fixture.Create<string>(),
+                Version = new NuGetVersion(_fixture.Create<int>(),_fixture.Create<int>(),_fixture.Create<int>()),
+                Authors = _fixture.Create<string[]>(),
+                Description = _fixture.Create<string>(),
+                LicenseMetadata = new NuGet.Packaging.LicenseMetadata(
+                    NuGet.Packaging.LicenseType.File,
+                    licenseUserPath,
+                    null,
+                    new List<string>(),
+                    _fixture.Create<Version>())
+            };
+            var packageReader = new TestPackageReader(licenseText, manifestMetadata);
+            packageReader.SetStreamPath(licenseSystemPath);
+
+            var utility = new TestGlobalPackagesFolderUtility(packageReader);
+            var result = utility.GetPackage(_fixture.Create<PackageIdentity>());
+
+            //Then
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result!.LicenseMetadata!.Type, Is.EqualTo(LicenseType.File));
+            Assert.That(result.LicenseMetadata.License, Is.EqualTo(licenseText));
+        }
+
+        [Test]
+        public void GetPackageInfo_Should_ReadLicenseFromNormalizedPath_NoSeparator()
+        {
+
+            string licenseUserPath = "LICENSE.txt";
+            string licenseSystemPath = "LICENSE.txt";
+
+            string licenseText = _fixture.Create<string>();
+            var manifestMetadata = new ManifestMetadata
+            {
+                Id = _fixture.Create<string>(),
+                Version = new NuGetVersion(_fixture.Create<int>(),_fixture.Create<int>(),_fixture.Create<int>()),
+                Authors = _fixture.Create<string[]>(),
+                Description = _fixture.Create<string>(),
+                LicenseMetadata = new NuGet.Packaging.LicenseMetadata(
+                    NuGet.Packaging.LicenseType.File,
+                    licenseUserPath,
+                    null,
+                    new List<string>(),
+                    _fixture.Create<Version>())
+            };
+            var packageReader = new TestPackageReader(licenseText, manifestMetadata);
+            packageReader.SetStreamPath(licenseSystemPath);
+
+            var utility = new TestGlobalPackagesFolderUtility(packageReader);
+            var result = utility.GetPackage(_fixture.Create<PackageIdentity>());
+
+            //Then
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result!.LicenseMetadata!.Type, Is.EqualTo(LicenseType.File));
+            Assert.That(result.LicenseMetadata.License, Is.EqualTo(licenseText));
+        }
+
+        [Test]
+        public void GetPackageInfo_Should_ReadLicenseFromNormalizedPath_Backslash()
+        {
+
+            string licenseUserPath = "license\\LICENSE.txt";
+            string licenseSystemPath = "license/LICENSE.txt";
+
+            string licenseText = _fixture.Create<string>();
+            var manifestMetadata = new ManifestMetadata
+            {
+                Id = _fixture.Create<string>(),
+                Version = new NuGetVersion(_fixture.Create<int>(),_fixture.Create<int>(),_fixture.Create<int>()),
+                Authors = _fixture.Create<string[]>(),
+                Description = _fixture.Create<string>(),
+                LicenseMetadata = new NuGet.Packaging.LicenseMetadata(
+                    NuGet.Packaging.LicenseType.File,
+                    licenseUserPath,
+                    null,
+                    new List<string>(),
+                    _fixture.Create<Version>())
+            };
+            var packageReader = new TestPackageReader(licenseText, manifestMetadata);
+            packageReader.SetStreamPath(licenseSystemPath);
+
+            var utility = new TestGlobalPackagesFolderUtility(packageReader);
+            var result = utility.GetPackage(_fixture.Create<PackageIdentity>());
+
+            //Then
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result!.LicenseMetadata!.Type, Is.EqualTo(LicenseType.File));
+            Assert.That(result.LicenseMetadata.License, Is.EqualTo(licenseText));
+        }
+
         private static void SetupPackagesForRepositories(IEnumerable<CustomPackageInformation> packages, IEnumerable<IPackageMetadataResource> packageMetadataResources)
         {
             foreach (CustomPackageInformation package in packages)
@@ -219,6 +328,68 @@ namespace NuGetUtility.Test.PackageInformationReader
                 Assert.That(result.PackageInfo.Summary, Is.Null);
                 Assert.That(result.PackageInfo.Title, Is.Null);
             }
+        }
+
+        private class TestGlobalPackagesFolderUtility(PackageReaderBase packageReader)
+            : GlobalPackagesFolderUtility(new NullSettings())
+        {
+            protected override DownloadResourceResult GetPackageFromOriginalUtility(PackageIdentity identity)
+            {
+                return new DownloadResourceResult(packageReader, "test repo");
+            }
+        }
+
+        private class TestPackageReader(string licenseText, ManifestMetadata metadata)
+            : PackageReaderBase(new FrameworkNameProvider(null, null))
+        {
+            private string? _path;
+
+            public void SetStreamPath(string path)
+            {
+                _path = path;
+            }
+            public override Stream GetNuspec()
+            {
+                var manifest = new Manifest(metadata);
+                var memoryStream = new MemoryStream();
+                manifest.Save(memoryStream);
+                memoryStream.Position = 0;
+                return memoryStream;
+            }
+
+            public override Stream? GetStream(string path)
+            {
+                if (_path != null && _path != path)
+                {
+                    return null;
+                }
+                var memoryStream = new MemoryStream();
+                memoryStream.Write(Encoding.UTF8.GetBytes(licenseText), 0, licenseText.Length);
+                memoryStream.Position = 0;
+                return memoryStream;
+            }
+
+            public override IEnumerable<string> GetFiles() => [];
+
+            public override IEnumerable<string> GetFiles(string folder) => [];
+
+            public override IEnumerable<string> CopyFiles(string destination, IEnumerable<string> packageFiles, ExtractPackageFileDelegate extractFile,
+                ILogger logger, CancellationToken token) => [];
+
+            protected override void Dispose(bool disposing){}
+
+            public override Task<PrimarySignature> GetPrimarySignatureAsync(CancellationToken token) => throw new NotImplementedException();
+
+            public override Task<bool> IsSignedAsync(CancellationToken token) => Task.FromResult(false);
+
+            public override Task<byte[]> GetArchiveHashAsync(HashAlgorithmName hashAlgorithm, CancellationToken token) => Task.FromResult<byte[]>([]);
+
+            public override bool CanVerifySignedPackages(SignedPackageVerifierSettings verifierSettings) => false;
+
+            public override string
+                GetContentHash(CancellationToken token, Func<string>? GetUnsignedPackageHash = null) => "";
+
+            public override Task ValidateIntegrityAsync(SignatureContent signatureContent, CancellationToken token) => Task.CompletedTask;
         }
     }
 }
