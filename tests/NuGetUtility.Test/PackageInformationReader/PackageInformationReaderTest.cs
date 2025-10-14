@@ -155,11 +155,11 @@ namespace NuGetUtility.Test.PackageInformationReader
         }
 
         [Test]
-        public void GetPackageInfo_Should_ReadLicenseFromNormalizedPath_ForwardSlash()
+        [TestCase("license/LICENSE.txt", "license\\LICENSE.txt")]
+        [TestCase("license/LICENSE.txt", "license/LICENSE.txt")]
+        [TestCase("LICENSE.txt", "LICENSE.txt")]
+        public void GetPackageInfo_Should_ReadLicenseFromNormalizedPath(string licenseSystemPath, string licenseManifestPath)
         {
-            string licenseUserPath = "license/LICENSE.txt";
-            string licenseSystemPath = "license/LICENSE.txt";
-
             string licenseText = _fixture.Create<string>();
             var manifestMetadata = new ManifestMetadata
             {
@@ -169,73 +169,7 @@ namespace NuGetUtility.Test.PackageInformationReader
                 Description = _fixture.Create<string>(),
                 LicenseMetadata = new NuGet.Packaging.LicenseMetadata(
                     NuGet.Packaging.LicenseType.File,
-                    licenseUserPath,
-                    null,
-                    new List<string>(),
-                    _fixture.Create<Version>())
-            };
-            var packageReader = new TestPackageReader(licenseText, manifestMetadata);
-            packageReader.SetStreamPath(licenseSystemPath);
-
-            var utility = new TestGlobalPackagesFolderUtility(packageReader);
-            var result = utility.GetPackage(_fixture.Create<PackageIdentity>());
-
-            //Then
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result!.LicenseMetadata!.Type, Is.EqualTo(LicenseType.File));
-            Assert.That(result.LicenseMetadata.License, Is.EqualTo(licenseText));
-        }
-
-        [Test]
-        public void GetPackageInfo_Should_ReadLicenseFromNormalizedPath_NoSeparator()
-        {
-
-            string licenseUserPath = "LICENSE.txt";
-            string licenseSystemPath = "LICENSE.txt";
-
-            string licenseText = _fixture.Create<string>();
-            var manifestMetadata = new ManifestMetadata
-            {
-                Id = _fixture.Create<string>(),
-                Version = new NuGetVersion(_fixture.Create<int>(),_fixture.Create<int>(),_fixture.Create<int>()),
-                Authors = _fixture.Create<string[]>(),
-                Description = _fixture.Create<string>(),
-                LicenseMetadata = new NuGet.Packaging.LicenseMetadata(
-                    NuGet.Packaging.LicenseType.File,
-                    licenseUserPath,
-                    null,
-                    new List<string>(),
-                    _fixture.Create<Version>())
-            };
-            var packageReader = new TestPackageReader(licenseText, manifestMetadata);
-            packageReader.SetStreamPath(licenseSystemPath);
-
-            var utility = new TestGlobalPackagesFolderUtility(packageReader);
-            var result = utility.GetPackage(_fixture.Create<PackageIdentity>());
-
-            //Then
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result!.LicenseMetadata!.Type, Is.EqualTo(LicenseType.File));
-            Assert.That(result.LicenseMetadata.License, Is.EqualTo(licenseText));
-        }
-
-        [Test]
-        public void GetPackageInfo_Should_ReadLicenseFromNormalizedPath_Backslash()
-        {
-
-            string licenseUserPath = "license\\LICENSE.txt";
-            string licenseSystemPath = "license/LICENSE.txt";
-
-            string licenseText = _fixture.Create<string>();
-            var manifestMetadata = new ManifestMetadata
-            {
-                Id = _fixture.Create<string>(),
-                Version = new NuGetVersion(_fixture.Create<int>(),_fixture.Create<int>(),_fixture.Create<int>()),
-                Authors = _fixture.Create<string[]>(),
-                Description = _fixture.Create<string>(),
-                LicenseMetadata = new NuGet.Packaging.LicenseMetadata(
-                    NuGet.Packaging.LicenseType.File,
-                    licenseUserPath,
+                    licenseManifestPath,
                     null,
                     new List<string>(),
                     _fixture.Create<Version>())
