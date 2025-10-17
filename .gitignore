@@ -397,3 +397,9 @@ coverage/**
 lcov.info
 launchSettings.json
 tests/**/*.received.*
+
+# Test build artifacts
+test_release/
+
+# Local NuGet packages for testing
+integration/LocalPackages/

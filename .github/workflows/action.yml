@@ -147,7 +147,7 @@ jobs:
     strategy:
       matrix:
         framework: [net8.0, net9.0]
-        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense]
+        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense, ProjectWithBackslashLicenseReference]
 
         include:
           - framework: net8.0
@@ -165,6 +165,17 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ matrix.dotnetVersion }}
+
+      - name: Setup NuGet
+        if: matrix.project == 'ProjectWithBackslashLicenseReference'
+        uses: nuget/setup-nuget@v2
+
+      - name: Build test package with backslash in license path
+        if: matrix.project == 'ProjectWithBackslashLicenseReference'
+        run: |
+          cd ./integration/TestPackageWithBackslashLicense
+          dotnet build -c Release
+          nuget pack TestPackageWithBackslashLicense.nuspec -OutputDirectory ../LocalPackages
 
       - name: restore
         run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
@@ -188,7 +199,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense]
+        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense, ProjectWithBackslashLicenseReference]
 
     steps:
       - uses: actions/checkout@v5
@@ -201,6 +212,14 @@ jobs:
           dotnet-version: 9.0.x
 
       - uses: nuget/setup-nuget@v2
+
+      - name: Build test package with backslash in license path
+        if: matrix.project == 'ProjectWithBackslashLicenseReference'
+        shell: pwsh
+        run: |
+          cd ./integration/TestPackageWithBackslashLicense
+          dotnet build -c Release
+          nuget pack TestPackageWithBackslashLicense.nuspec -OutputDirectory ../LocalPackages
       - run: nuget restore NuGetUtility.sln
 
       - name: Add msbuild to PATH
