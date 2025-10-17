@@ -15,7 +15,7 @@ NuGet packages can specify license files using paths in the `.nuspec` file. Whil
 
 ## How It's Built
 
-The package is intentionally built using a custom script (`create_package_with_backslash.sh` or `create_package_with_backslash.ps1`) that preserves backslashes in the license file path within the `.nuspec` file. This ensures the test accurately reflects edge cases that might be encountered in real-world scenarios.
+The package is built using `nuget pack` with a custom `.nuspec` file that specifies backslashes in the license file path. The `nuget pack` command preserves the backslashes in the metadata exactly as written in the nuspec file, ensuring the test accurately reflects edge cases that might be encountered in real-world scenarios.
 
 ## CI Testing
 
@@ -33,7 +33,7 @@ To test locally:
 # Build the test package
 cd integration/TestPackageWithBackslashLicense
 dotnet build -c Release
-../../.github/workflows/scripts/create_package_with_backslash.sh
+nuget pack TestPackageWithBackslashLicense.nuspec -OutputDirectory ../LocalPackages
 
 # Test with nuget-license
 cd ../..

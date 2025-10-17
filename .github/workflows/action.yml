@@ -166,13 +166,16 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
+      - name: Setup NuGet
+        if: matrix.project == 'ProjectWithBackslashLicenseReference'
+        uses: nuget/setup-nuget@v2
+
       - name: Build test package with backslash in license path
         if: matrix.project == 'ProjectWithBackslashLicenseReference'
         run: |
           cd ./integration/TestPackageWithBackslashLicense
           dotnet build -c Release
-          chmod +x ../../.github/workflows/scripts/create_package_with_backslash.sh
-          ../../.github/workflows/scripts/create_package_with_backslash.sh
+          nuget pack TestPackageWithBackslashLicense.nuspec -OutputDirectory ../LocalPackages
 
       - name: restore
         run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
@@ -208,15 +211,15 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
+      - uses: nuget/setup-nuget@v2
+
       - name: Build test package with backslash in license path
         if: matrix.project == 'ProjectWithBackslashLicenseReference'
         shell: pwsh
         run: |
           cd ./integration/TestPackageWithBackslashLicense
           dotnet build -c Release
-          ..\..\\.github\\workflows\\scripts\\create_package_with_backslash.ps1
-
-      - uses: nuget/setup-nuget@v2
+          nuget pack TestPackageWithBackslashLicense.nuspec -OutputDirectory ../LocalPackages
       - run: nuget restore NuGetUtility.sln
 
       - name: Add msbuild to PATH

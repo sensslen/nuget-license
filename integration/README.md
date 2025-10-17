@@ -29,7 +29,4 @@ All integration test projects are tested in the CI pipeline:
 
 ## Building Test Packages
 
-Some test packages require custom build scripts to preserve specific characteristics (like backslashes in paths). These scripts are located in `.github/workflows/scripts/`:
-
-- `create_package_with_backslash.sh` - For Linux/macOS
-- `create_package_with_backslash.ps1` - For Windows
+Test packages with special characteristics (like backslashes in license paths) use custom `.nuspec` files and are built with `nuget pack` to preserve those characteristics as specified in the nuspec metadata.

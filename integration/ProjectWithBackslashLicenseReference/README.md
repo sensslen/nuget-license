@@ -25,7 +25,7 @@ To test this project locally:
    ```bash
    cd ../TestPackageWithBackslashLicense
    dotnet build -c Release
-   ../../.github/workflows/scripts/create_package_with_backslash.sh
+   nuget pack TestPackageWithBackslashLicense.nuspec -OutputDirectory ../LocalPackages
    ```
 
 2. Restore this project:
