@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>TestPackageWithBackslashLicense</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Test</Authors>
+    <Company>Test</Company>
+    <Description>Test package with license file containing backslashes in path</Description>
+    <!-- Use backslash in license file path to test cross-platform handling -->
+    <PackageLicenseFile>licenses\MIT.txt</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Include the license file in the package with backslash path -->
+    <None Include="licenses\MIT.txt" Pack="true" PackagePath="licenses\MIT.txt" />
+  </ItemGroup>
+
+</Project>

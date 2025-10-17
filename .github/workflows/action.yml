@@ -147,7 +147,7 @@ jobs:
     strategy:
       matrix:
         framework: [net8.0, net9.0]
-        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense]
+        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense, ProjectWithBackslashLicenseReference]
 
         include:
           - framework: net8.0
@@ -165,6 +165,14 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ matrix.dotnetVersion }}
+
+      - name: Build test package with backslash in license path
+        if: matrix.project == 'ProjectWithBackslashLicenseReference'
+        run: |
+          cd ./integration/TestPackageWithBackslashLicense
+          dotnet build -c Release
+          chmod +x ../../.github/workflows/scripts/create_package_with_backslash.sh
+          ../../.github/workflows/scripts/create_package_with_backslash.sh
 
       - name: restore
         run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
@@ -188,7 +196,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense]
+        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense, ProjectWithBackslashLicenseReference]
 
     steps:
       - uses: actions/checkout@v5
@@ -199,6 +207,14 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 9.0.x
+
+      - name: Build test package with backslash in license path
+        if: matrix.project == 'ProjectWithBackslashLicenseReference'
+        shell: pwsh
+        run: |
+          cd ./integration/TestPackageWithBackslashLicense
+          dotnet build -c Release
+          ..\..\\.github\\workflows\\scripts\\create_package_with_backslash.ps1
 
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln
