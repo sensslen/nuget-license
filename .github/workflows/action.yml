@@ -107,7 +107,9 @@ jobs:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
       - uses: nuget/setup-nuget@v2.0.1
-      - run: nuget restore NuGetUtility.sln
+      
+      - name: restore
+        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -202,7 +204,9 @@ jobs:
           dotnet-version: 9.0.x
 
       - uses: nuget/setup-nuget@v2
-      - run: nuget restore NuGetUtility.sln
+      
+      - name: restore
+        run: dotnet restore NuGetUtility.sln -p:TargetFramework=net472
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -285,14 +289,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      # TODO: Change to 10.0.x once .NET 10 is released
       - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 9.0.x
 
       - uses: nuget/setup-nuget@v2
-      - run: nuget restore NuGetUtility.sln
+      
+      - name: restore
+        run: dotnet restore NuGetUtility.sln -p:TargetFramework=net472
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
