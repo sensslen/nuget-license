@@ -9,15 +9,11 @@
   <!-- Define target frameworks based on SDK availability -->
   <PropertyGroup Condition="'$(Net10SdkAvailable)' == 'true'">
     <MultiTargetFrameworksWithNet10>net472;net8.0;net9.0;net10.0</MultiTargetFrameworksWithNet10>
-    <MultiTargetFrameworksNet9Net10>net9.0;net10.0</MultiTargetFrameworksNet9Net10>
     <MultiTargetFrameworksNet8Net9Net10>net8.0;net9.0;net10.0</MultiTargetFrameworksNet8Net9Net10>
-    <MultiTargetFrameworksSpecial>net472;net9.0;net10.0;net8.0-browser</MultiTargetFrameworksSpecial>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Net10SdkAvailable)' != 'true'">
     <MultiTargetFrameworksWithNet10>net472;net8.0;net9.0</MultiTargetFrameworksWithNet10>
-    <MultiTargetFrameworksNet9Net10>net9.0</MultiTargetFrameworksNet9Net10>
     <MultiTargetFrameworksNet8Net9Net10>net8.0;net9.0</MultiTargetFrameworksNet8Net9Net10>
-    <MultiTargetFrameworksSpecial>net472;net9.0;net8.0-browser</MultiTargetFrameworksSpecial>
   </PropertyGroup>
 </Project>
