@@ -174,16 +174,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet
+      - name: Setup dotnet ${{ matrix.dotnetVersion }}
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: | 
-            8.0.x
-            9.0.x
-            10.0.x
+          dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln 
+        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
 
       - name: build
         run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.framework }} --no-restore
@@ -269,16 +266,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet
+      - name: Setup dotnet ${{ matrix.dotnetVersion }}
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: | 
-            8.0.x
-            9.0.x
-            10.0.x
+          dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln
+        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
 
       - uses: paulhatch/semantic-version@v5.4.0
         id: version
@@ -288,7 +282,7 @@ jobs:
           version_format: "${major}.${minor}.${patch}-test${increment}"
 
       - name: build
-        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release --no-restore -p:Version=${{ steps.version.outputs.version }}
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.framework }} --no-restore -p:Version=${{ steps.version.outputs.version }}
 
       - name: check app version
         shell: pwsh
