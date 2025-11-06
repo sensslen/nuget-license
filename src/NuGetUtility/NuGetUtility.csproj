@@ -34,11 +34,7 @@
     <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.11.*" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.14.*" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0' OR '$(TargetFramework)' == 'net10.0'">
     <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.14.*" />
   </ItemGroup>
 
