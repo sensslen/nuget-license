@@ -30,20 +30,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup dotnet 8.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 8.0.x
-
-      - name: Setup dotnet 9.0.x
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 9.0.x
-
-      - name: Setup dotnet 10.0.x
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.0.x
+        with:dotnet-version: | 
+          8.0.x
+          9.0.x
+          10.0.x
 
       - name: restore
         run: dotnet restore
@@ -64,10 +56,12 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v5
-      - name: Setup dotnet 9.0.x
+
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 9.0.x
+        with:dotnet-version: | 
+          9.0.x
+          10.0.x
          
       - name: restore
         run: dotnet restore
@@ -79,10 +73,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - name: Setup dotnet 9.0.x
+
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 9.0.x
+        with:dotnet-version: | 
+          9.0.x
+          10.0.x
       
       - uses: browser-actions/setup-chrome@v2.1.0
       
@@ -110,20 +106,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup dotnet 8.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 8.0.x
-
-      - name: Setup dotnet 9.0.x
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 9.0.x
-
-      - name: Setup dotnet 10.0.x
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.0.x
+        with:dotnet-version: | 
+          8.0.x
+          9.0.x
+          10.0.x
 
       - uses: nuget/setup-nuget@v2.0.1
       - run: nuget restore NuGetUtility.sln
@@ -147,10 +135,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v5
 
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 9.0.x
+        with:dotnet-version: | 
+          9.0.x
+          10.0.x
 
       - name: restore
         run: dotnet restore
@@ -180,16 +169,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+        with:dotnet-version: | 
+          8.0.x
+          9.0.x
+          10.0.x
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet restore NuGetUtility.sln 
 
       - name: build
-        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.framework }} --no-restore
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release --no-restore
 
       - name: check
         run: dotnet ./release/NuGetLicenseCore.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.framework }}
@@ -214,10 +205,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 9.0.x
+        with:dotnet-version: | 
+          9.0.x
+          10.0.x
 
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln
@@ -270,13 +262,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+        with:dotnet-version: | 
+          8.0.x
+          9.0.x
+          10.0.x
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet restore NuGetUtility.sln
 
       - uses: paulhatch/semantic-version@v5.4.0
         id: version
@@ -286,7 +280,7 @@ jobs:
           version_format: "${major}.${minor}.${patch}-test${increment}"
 
       - name: build
-        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.framework }} --no-restore -p:Version=${{ steps.version.outputs.version }}
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release --no-restore -p:Version=${{ steps.version.outputs.version }}
 
       - name: check app version
         shell: pwsh
@@ -303,10 +297,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 9.0.x
+        with:dotnet-version: | 
+          9.0.x
+          10.0.x
 
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln
