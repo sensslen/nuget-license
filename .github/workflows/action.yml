@@ -15,7 +15,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
 
-        framework: [net8.0, net9.0]
+        framework: [net8.0, net9.0, net10.0]
 
         include:
           - framework: net8.0
@@ -23,6 +23,9 @@ jobs:
 
           - framework: net9.0
             dotnetVersion: "9.0.x"
+
+          - framework: net10.0
+            dotnetVersion: "10.0.x"
 
     steps:
       - uses: actions/checkout@v5
@@ -36,6 +39,11 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 9.0.x
+
+      - name: Setup dotnet 10.0.x
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
 
       - name: restore
         run: dotnet restore
@@ -56,10 +64,10 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v5
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet 10.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
          
       - name: restore
         run: dotnet restore
@@ -71,10 +79,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet 10.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
       
       - uses: browser-actions/setup-chrome@v2.1.0
       
@@ -88,7 +96,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        framework: [net8.0, net472, net9.0]
+        framework: [net8.0, net472, net9.0, net10.0]
 
         include:
           - framework: net8.0
@@ -96,6 +104,9 @@ jobs:
 
           - framework: net9.0
             dotnetVersion: "9.0.x"
+
+          - framework: net10.0
+            dotnetVersion: "10.0.x"
     steps:
       - uses: actions/checkout@v5
 
@@ -108,6 +119,11 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 9.0.x
+
+      - name: Setup dotnet 10.0.x
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
 
       - uses: nuget/setup-nuget@v2.0.1
       - run: nuget restore NuGetUtility.sln
@@ -131,10 +147,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v5
 
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet 10.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
       - name: restore
         run: dotnet restore
@@ -146,7 +162,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        framework: [net8.0, net9.0]
+        framework: [net8.0, net9.0, net10.0]
         project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense]
 
         include:
@@ -155,6 +171,9 @@ jobs:
 
           - framework: net9.0
             dotnetVersion: "9.0.x"
+
+          - framework: net10.0
+            dotnetVersion: "10.0.x"
 
     steps:
       - uses: actions/checkout@v5
@@ -195,10 +214,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet 10.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln
@@ -234,7 +253,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        framework: [net8.0, net9.0]
+        framework: [net8.0, net9.0, net10.0]
 
         include:
           - framework:  net8.0
@@ -242,6 +261,9 @@ jobs:
 
           - framework:  net9.0
             dotnetVersion: "9.0.x"
+
+          - framework:  net10.0
+            dotnetVersion: "10.0.x"
 
     steps:
       - uses: actions/checkout@v5
@@ -281,10 +303,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet 10.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net472;net8.0;net9.0;net10.0</TargetFrameworks>
     <RepositoryType>git</RepositoryType>
     <Version>100.100.100</Version>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
@@ -35,6 +35,10 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.14.*" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.14.*" />
   </ItemGroup>
 
