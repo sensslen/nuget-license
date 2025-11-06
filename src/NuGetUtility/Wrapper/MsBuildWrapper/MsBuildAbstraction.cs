@@ -13,7 +13,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
         public MsBuildAbstraction()
         {
             RegisterMsBuildLocatorIfNeeded();
-            InitializeProjectCollection();
+            Projects = InitializeProjectCollection();
         }
 
         public IProject GetProject(string projectPath)
