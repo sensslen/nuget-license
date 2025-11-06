@@ -8,12 +8,11 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 {
     public class MsBuildAbstraction : IMsBuildAbstraction
     {
-        private ProjectCollection Projects { get; }
+        private ProjectCollection? _projects;
 
         public MsBuildAbstraction()
         {
             RegisterMsBuildLocatorIfNeeded();
-            Projects = InitializeProjectCollection();
         }
 
         public IProject GetProject(string projectPath)
@@ -25,7 +24,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             }
 #endif
 
-            Project project = Projects.LoadProject(projectPath);
+            Project project = GetProjectCollection().LoadProject(projectPath);
 
             return new ProjectWrapper(project);
         }
@@ -37,6 +36,11 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
                 MSBuildLocator.RegisterDefaults();
             }
         }
+
+        private static ProjectCollection GetProjectCollection()
+        {
+            return _projects ??= InitializeProjectCollection();
+        } 
 
         private static ProjectCollection InitializeProjectCollection()
         {
