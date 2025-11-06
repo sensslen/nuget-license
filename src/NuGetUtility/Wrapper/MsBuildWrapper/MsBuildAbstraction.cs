@@ -8,13 +8,12 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 {
     public class MsBuildAbstraction : IMsBuildAbstraction
     {
-        private ProjectCollection? _projects;
-
-        private ProjectCollection Projects => _projects ??= InitializeProjectCollection();
+        private ProjectCollection Projects { get; }
 
         public MsBuildAbstraction()
         {
             RegisterMsBuildLocatorIfNeeded();
+            InitializeProjectCollection();
         }
 
         public IProject GetProject(string projectPath)
