@@ -15,8 +15,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
 
-        # TODO: Add net10.0 to framework matrix once .NET 10 is released
-        framework: [net8.0, net9.0]
+        framework: [net8.0, net9.0, net10.0]
 
         include:
           - framework: net8.0
@@ -25,9 +24,8 @@ jobs:
           - framework: net9.0
             dotnetVersion: "9.0.x"
 
-          # Uncomment when .NET 10 is released:
-          # - framework: net10.0
-          #   dotnetVersion: "10.0.x"
+          - framework: net10.0
+            dotnetVersion: "10.0.x"
 
     steps:
       - uses: actions/checkout@v5
@@ -42,11 +40,10 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      # Uncomment when .NET 10 is released:
-      # - name: Setup dotnet 10.0.x
-      #   uses: actions/setup-dotnet@v5
-      #   with:
-      #     dotnet-version: 10.0.x
+      - name: Setup dotnet 10.0.x
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
 
       - name: restore
         run: dotnet restore
@@ -101,8 +98,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        # TODO: Add net10.0 to framework matrix once .NET 10 is released
-        framework: [net8.0, net472, net9.0]
+        framework: [net8.0, net472, net9.0, net10.0]
 
         include:
           - framework: net8.0
@@ -111,9 +107,8 @@ jobs:
           - framework: net9.0
             dotnetVersion: "9.0.x"
 
-          # Uncomment when .NET 10 is released:
-          # - framework: net10.0
-          #   dotnetVersion: "10.0.x"
+          - framework: net10.0
+            dotnetVersion: "10.0.x"
     steps:
       - uses: actions/checkout@v5
 
@@ -127,11 +122,10 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      # Uncomment when .NET 10 is released:
-      # - name: Setup dotnet 10.0.x
-      #   uses: actions/setup-dotnet@v5
-      #   with:
-      #     dotnet-version: 10.0.x
+      - name: Setup dotnet 10.0.x
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
 
       - uses: nuget/setup-nuget@v2.0.1
       - run: nuget restore NuGetUtility.sln
@@ -171,8 +165,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # TODO: Add net10.0 to framework matrix once .NET 10 is released
-        framework: [net8.0, net9.0]
+        framework: [net8.0, net9.0, net10.0]
         project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense]
 
         include:
@@ -182,9 +175,8 @@ jobs:
           - framework: net9.0
             dotnetVersion: "9.0.x"
 
-          # Uncomment when .NET 10 is released:
-          # - framework: net10.0
-          #   dotnetVersion: "10.0.x"
+          - framework: net10.0
+            dotnetVersion: "10.0.x"
 
     steps:
       - uses: actions/checkout@v5
@@ -265,8 +257,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # TODO: Add net10.0 to framework matrix once .NET 10 is released
-        framework: [net8.0, net9.0]
+        framework: [net8.0, net9.0, net10.0]
 
         include:
           - framework:  net8.0
@@ -275,9 +266,8 @@ jobs:
           - framework:  net9.0
             dotnetVersion: "9.0.x"
 
-          # Uncomment when .NET 10 is released:
-          # - framework:  net10.0
-          #   dotnetVersion: "10.0.x"
+          - framework:  net10.0
+            dotnetVersion: "10.0.x"
 
     steps:
       - uses: actions/checkout@v5
