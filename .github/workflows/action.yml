@@ -36,7 +36,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet restore -p:TargetFrameworks=${{ matrix.framework }}
 
       - name: build
         run: dotnet build --configuration Release --no-restore -f ${{ matrix.framework }}
@@ -60,7 +60,7 @@ jobs:
           dotnet-version: 9.0.x
          
       - name: restore
-        run: dotnet restore -p:TargetFramework=net9.0
+        run: dotnet restore -p:TargetFrameworks=net9.0
       
       - name: test
         run: dotnet test ./tests/SPDXLicenseMatcher.Test/SPDXLicenseMatcher.Test.csproj --configuration Release --no-restore
@@ -77,7 +77,7 @@ jobs:
       - uses: browser-actions/setup-chrome@v2.1.0
       
       - name: restore
-        run: dotnet restore -p:TargetFramework=net9.0
+        run: dotnet restore -p:TargetFrameworks=net9.0
       
       - name: test
         run: dotnet test ./tests/NuGetUtility.Test.UrlToLicenseMapping/NuGetUtility.Test.UrlToLicenseMapping.csproj --configuration Release --no-restore
@@ -109,7 +109,7 @@ jobs:
       - uses: nuget/setup-nuget@v2.0.1
       
       - name: restore
-        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet restore NuGetUtility.sln -p:TargetFrameworks=${{ matrix.framework }}
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -135,8 +135,13 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
+      - name: Setup dotnet 10.0.x
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
       - name: restore
-        run: dotnet restore -p:TargetFramework=net9.0
+        run: dotnet restore
 
       - name: check format
         run: dotnet format --verify-no-changes
@@ -169,7 +174,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet restore NuGetUtility.sln -p:TargetFrameworks=${{ matrix.framework }}
 
       - name: build
         run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.framework }} --no-restore
@@ -206,7 +211,7 @@ jobs:
       - uses: nuget/setup-nuget@v2
       
       - name: restore
-        run: dotnet restore NuGetUtility.sln -p:TargetFramework=net472
+        run: dotnet restore NuGetUtility.sln -p:TargetFrameworks=net472
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -262,7 +267,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet restore NuGetUtility.sln -p:TargetFrameworks=${{ matrix.framework }}
 
       - uses: paulhatch/semantic-version@v5.4.0
         id: version
@@ -297,7 +302,7 @@ jobs:
       - uses: nuget/setup-nuget@v2
       
       - name: restore
-        run: dotnet restore NuGetUtility.sln -p:TargetFramework=net472
+        run: dotnet restore NuGetUtility.sln -p:TargetFrameworks=net472
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
