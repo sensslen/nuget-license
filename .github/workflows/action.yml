@@ -50,7 +50,7 @@ jobs:
       - name: test
         run: dotnet test ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore
 
-  test_file-license-matching:
+  test_file_license_matching:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
