@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <!-- Detect if .NET 10 SDK is available by checking if net10.0 directory exists in SDK folder -->
+    <Net10TargetPackPath>$([System.IO.Path]::Combine('$(DOTNET_ROOT)', 'packs', 'Microsoft.NETCore.App.Ref', '10.0.0'))</Net10TargetPackPath>
+    <Net10SdkAvailable Condition="Exists('$(Net10TargetPackPath)')">true</Net10SdkAvailable>
+    <Net10SdkAvailable Condition="'$(Net10SdkAvailable)' == ''">false</Net10SdkAvailable>
+  </PropertyGroup>
+
+  <!-- Define target frameworks based on SDK availability -->
+  <PropertyGroup Condition="'$(Net10SdkAvailable)' == 'true'">
+    <MultiTargetFrameworksWithNet10>net472;net8.0;net9.0;net10.0</MultiTargetFrameworksWithNet10>
+    <MultiTargetFrameworksNet9Net10>net9.0;net10.0</MultiTargetFrameworksNet9Net10>
+    <MultiTargetFrameworksNet8Net9Net10>net8.0;net9.0;net10.0</MultiTargetFrameworksNet8Net9Net10>
+    <MultiTargetFrameworksSpecial>net472;net9.0;net10.0;net8.0-browser</MultiTargetFrameworksSpecial>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Net10SdkAvailable)' != 'true'">
+    <MultiTargetFrameworksWithNet10>net472;net8.0;net9.0</MultiTargetFrameworksWithNet10>
+    <MultiTargetFrameworksNet9Net10>net9.0</MultiTargetFrameworksNet9Net10>
+    <MultiTargetFrameworksNet8Net9Net10>net8.0;net9.0</MultiTargetFrameworksNet8Net9Net10>
+    <MultiTargetFrameworksSpecial>net472;net9.0;net8.0-browser</MultiTargetFrameworksSpecial>
+  </PropertyGroup>
+</Project>

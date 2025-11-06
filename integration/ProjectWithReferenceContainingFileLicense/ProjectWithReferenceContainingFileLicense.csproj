@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>$(MultiTargetFrameworksNet9Net10)</TargetFrameworks>
     <Configurations>Debug;Release;TestWindows</Configurations>
   </PropertyGroup>
 
