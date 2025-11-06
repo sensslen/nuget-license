@@ -37,7 +37,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             }
         }
 
-        private static ProjectCollection GetProjectCollection()
+        private ProjectCollection GetProjectCollection()
         {
             if(_projects is null)
             {
