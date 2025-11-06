@@ -57,7 +57,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v5
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: | 
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: | 
@@ -139,7 +139,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v5
 
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: | 
@@ -211,7 +211,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: | 
