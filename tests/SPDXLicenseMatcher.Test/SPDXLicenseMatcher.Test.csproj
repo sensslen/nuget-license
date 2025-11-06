@@ -11,7 +11,6 @@
 
     <Platforms>AnyCPU</Platforms>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 
   <ItemGroup>
