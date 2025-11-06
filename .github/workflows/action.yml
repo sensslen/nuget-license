@@ -30,10 +30,13 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - name: restore
         run: dotnet restore
@@ -57,7 +60,9 @@ jobs:
       - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: | 
+            9.0.x
+            10.0.x
          
       - name: restore
         run: dotnet restore
@@ -72,7 +77,9 @@ jobs:
       - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: | 
+            9.0.x
+            10.0.x
       
       - uses: browser-actions/setup-chrome@v2.1.0
       
@@ -100,11 +107,13 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
-        if: matrix.dotnetVersion
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - uses: nuget/setup-nuget@v2.0.1
       
@@ -133,7 +142,9 @@ jobs:
       - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: | 
+            9.0.x
+            10.0.x
 
       - name: restore
         run: dotnet restore
@@ -163,10 +174,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - name: restore
         run: dotnet restore NuGetUtility.sln 
@@ -197,11 +211,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      # TODO: Change to 10.0.x once .NET 10 is released
       - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: | 
+            9.0.x
+            10.0.x
 
       - uses: nuget/setup-nuget@v2
       
@@ -256,10 +271,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - name: restore
         run: dotnet restore NuGetUtility.sln
@@ -289,10 +307,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: | 
+            9.0.x
+            10.0.x
 
       - uses: nuget/setup-nuget@v2
       
