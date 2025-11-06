@@ -30,19 +30,26 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup dotnet
+      - name: Setup dotnet 8.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: | 
-            8.0.x
-            9.0.x
-            10.0.x
+          dotnet-version: 8.0.x
+
+      - name: Setup dotnet 9.0.x
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Setup dotnet 10.0.x
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
 
       - name: restore
         run: dotnet restore
 
       - name: build
-        run: dotnet build --configuration Release --no-restore -f ${{ matrix.framework }}
+        run: dotnet build --configuration Release --no-restore
 
       - name: test
         run: dotnet test ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore
@@ -50,14 +57,14 @@ jobs:
       - name: test
         run: dotnet test ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore
 
-  test_file_license_matching:
+  test_file-license-matching:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v5
-      - name: Setup dotnet
+      - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 9.0.x
@@ -72,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - name: Setup dotnet
+      - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 9.0.x
@@ -103,24 +110,29 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup dotnet
+      - name: Setup dotnet 8.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: | 
-            8.0.x
-            9.0.x
-            10.0.x
+          dotnet-version: 8.0.x
+
+      - name: Setup dotnet 9.0.x
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Setup dotnet 10.0.x
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
 
       - uses: nuget/setup-nuget@v2.0.1
-      
-      - name: restore
-        run: dotnet restore NuGetUtility.sln
+      - run: nuget restore NuGetUtility.sln
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
       - name: build
-        run: msbuild -t:rebuild -property:Configuration=TestWindows -property:TargetFramework=${{ matrix.framework }}
+        run: msbuild -t:rebuild -property:Configuration=TestWindows
 
       - name: test (${{ matrix.framework }})
         uses: josepho0918/vstest-action@main
@@ -135,12 +147,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v5
 
-      - name: Setup dotnet
+      - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: | 
-            9.0.x
-            10.0.x
+          dotnet-version: 9.0.x
 
       - name: restore
         run: dotnet restore
@@ -170,16 +180,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet
+      - name: Setup dotnet ${{ matrix.dotnetVersion }}
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: | 
-            8.0.x
-            9.0.x
-            10.0.x
+          dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln 
+        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
 
       - name: build
         run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.framework }} --no-restore
@@ -207,17 +214,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet
+      - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: | 
-            9.0.x
-            10.0.x
+          dotnet-version: 9.0.x
 
       - uses: nuget/setup-nuget@v2
-      
-      - name: restore
-        run: dotnet restore NuGetUtility.sln
+      - run: nuget restore NuGetUtility.sln
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -267,16 +270,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet
+      - name: Setup dotnet ${{ matrix.dotnetVersion }}
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: | 
-            8.0.x
-            9.0.x
-            10.0.x
+          dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln
+        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
 
       - uses: paulhatch/semantic-version@v5.4.0
         id: version
@@ -303,17 +303,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet
+      - name: Setup dotnet 9.0.x
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: | 
-            9.0.x
-            10.0.x
+          dotnet-version: 9.0.x
 
       - uses: nuget/setup-nuget@v2
-      
-      - name: restore
-        run: dotnet restore NuGetUtility.sln
+      - run: nuget restore NuGetUtility.sln
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
