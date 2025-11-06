@@ -32,10 +32,11 @@ jobs:
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:dotnet-version: | 
-          8.0.x
-          9.0.x
-          10.0.x
+        with:
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - name: restore
         run: dotnet restore
@@ -59,9 +60,10 @@ jobs:
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:dotnet-version: | 
-          9.0.x
-          10.0.x
+        with:
+          dotnet-version: | 
+            9.0.x
+            10.0.x
          
       - name: restore
         run: dotnet restore
@@ -76,9 +78,10 @@ jobs:
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:dotnet-version: | 
-          9.0.x
-          10.0.x
+        with:
+          dotnet-version: | 
+            9.0.x
+            10.0.x
       
       - uses: browser-actions/setup-chrome@v2.1.0
       
@@ -108,10 +111,11 @@ jobs:
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:dotnet-version: | 
-          8.0.x
-          9.0.x
-          10.0.x
+        with:
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - uses: nuget/setup-nuget@v2.0.1
       - run: nuget restore NuGetUtility.sln
@@ -137,9 +141,10 @@ jobs:
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:dotnet-version: | 
-          9.0.x
-          10.0.x
+        with:
+          dotnet-version: | 
+            9.0.x
+            10.0.x
 
       - name: restore
         run: dotnet restore
@@ -171,10 +176,11 @@ jobs:
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:dotnet-version: | 
-          8.0.x
-          9.0.x
-          10.0.x
+        with:
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - name: restore
         run: dotnet restore NuGetUtility.sln 
@@ -207,9 +213,10 @@ jobs:
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:dotnet-version: | 
-          9.0.x
-          10.0.x
+        with:
+          dotnet-version: | 
+            9.0.x
+            10.0.x
 
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln
@@ -264,10 +271,11 @@ jobs:
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:dotnet-version: | 
-          8.0.x
-          9.0.x
-          10.0.x
+        with:
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - name: restore
         run: dotnet restore NuGetUtility.sln
@@ -299,9 +307,10 @@ jobs:
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
-        with:dotnet-version: | 
-          9.0.x
-          10.0.x
+        with:
+          dotnet-version: | 
+            9.0.x
+            10.0.x
 
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln
