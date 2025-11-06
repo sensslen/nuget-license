@@ -63,7 +63,7 @@ jobs:
           dotnet-version: 9.0.x
          
       - name: restore
-        run: dotnet restore -p:TargetFramework=net9.0
+        run: dotnet restore
       
       - name: test
         run: dotnet test ./tests/SPDXLicenseMatcher.Test/SPDXLicenseMatcher.Test.csproj --configuration Release --no-restore
@@ -80,7 +80,7 @@ jobs:
       - uses: browser-actions/setup-chrome@v2.1.0
       
       - name: restore
-        run: dotnet restore -p:TargetFramework=net9.0
+        run: dotnet restore
       
       - name: test
         run: dotnet test ./tests/NuGetUtility.Test.UrlToLicenseMapping/NuGetUtility.Test.UrlToLicenseMapping.csproj --configuration Release --no-restore
