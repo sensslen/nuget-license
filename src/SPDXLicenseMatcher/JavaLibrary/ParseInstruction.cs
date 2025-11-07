@@ -644,15 +644,15 @@ public sealed class ParseInstruction
      */
     public void skipNextInstruction()
     {
-        if (Parent == null)
-        {
-            return;
-        }
-        ParseInstruction? nextInst = Parent.findFollowingInstruction(this);
+        ParseInstruction? nextInst = Parent?.findFollowingInstruction(this);
+#if NET10_0_OR_GREATER
+        nextInst?.Skip = true;
+#else
         if (nextInst is not null)
         {
             nextInst.Skip = true;
         }
+#endif
     }
 
     /**

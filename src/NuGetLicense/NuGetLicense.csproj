@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net472;net8.0;net9.0;net10.0</TargetFrameworks>
     <RepositoryType>git</RepositoryType>
     <Version>100.100.100</Version>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
@@ -19,29 +19,11 @@
 
   <ItemGroup>
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Build.Locator" Version="1.10.2" />
-    <PackageReference Include="Microsoft.VisualStudio.SolutionPersistence" Version="1.0.52" />
-    <PackageReference Include="NuGet.Commands" Version="6.14.0" />
-    <PackageReference Include="NuGet.Packaging" Version="6.14.0" />
-    <PackageReference Include="Tethys.SPDX.ExpressionParser" Version="2.1.3" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.3.*" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.11.*" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.14.*" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="System.IO.Hashing" Version="9.0.10" />
     <PackageReference Include="System.Collections.Immutable" Version="9.0.10" />
-    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.14.*" />
     <PackageReference Include="PolySharp" Version="1.15.*">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

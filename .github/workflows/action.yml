@@ -15,7 +15,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
 
-        framework: [net8.0, net9.0]
+        framework: [net8.0, net9.0, net10.0]
 
         include:
           - framework: net8.0
@@ -24,18 +24,19 @@ jobs:
           - framework: net9.0
             dotnetVersion: "9.0.x"
 
+          - framework: net10.0
+            dotnetVersion: "10.0.x"
+
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup dotnet 8.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
-
-      - name: Setup dotnet 9.0.x
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 9.0.x
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - name: restore
         run: dotnet restore
@@ -43,38 +44,44 @@ jobs:
       - name: build
         run: dotnet build --configuration Release --no-restore
 
-      - name: test
-        run: dotnet test ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore
+      - name: test (NuGetUtility.Test.dll)
+        run: dotnet test --project ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore --no-build
 
-      - name: test
-        run: dotnet test ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore
+      - name: test (NuGetLicense.Test.dll)
+        run: dotnet test --project ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore --no-build
 
-  test_file-license-matching:
+  test_file_license_matching:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v5
-      - name: Setup dotnet 9.0.x
+
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: | 
+            9.0.x
+            10.0.x
          
       - name: restore
         run: dotnet restore
       
       - name: test
-        run: dotnet test ./tests/SPDXLicenseMatcher.Test/SPDXLicenseMatcher.Test.csproj --configuration Release --no-restore
+        run: dotnet test --project ./tests/SPDXLicenseMatcher.Test/SPDXLicenseMatcher.Test.csproj --configuration Release --no-restore
 
   test_url_to_license_mapping:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - name: Setup dotnet 9.0.x
+
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: | 
+            9.0.x
+            10.0.x
       
       - uses: browser-actions/setup-chrome@v2.1.0
       
@@ -82,47 +89,35 @@ jobs:
         run: dotnet restore
       
       - name: test
-        run: dotnet test ./tests/NuGetUtility.Test.UrlToLicenseMapping/NuGetUtility.Test.UrlToLicenseMapping.csproj --configuration Release --no-restore
+        run: dotnet test --project ./tests/NuGetUtility.Test.UrlToLicenseMapping/NuGetUtility.Test.UrlToLicenseMapping.csproj --configuration Release --no-restore
 
   test_windows:
     runs-on: windows-latest
     strategy:
       matrix:
-        framework: [net8.0, net472, net9.0]
-
-        include:
-          - framework: net8.0
-            dotnetVersion: "8.0.x"
-
-          - framework: net9.0
-            dotnetVersion: "9.0.x"
+        framework: [net8.0, net472, net9.0, net10.0]
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup dotnet 8.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
-
-      - name: Setup dotnet 9.0.x
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 9.0.x
-
-      - uses: nuget/setup-nuget@v2.0.1
-      - run: nuget restore NuGetUtility.sln
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
       - name: build
-        run: msbuild -t:rebuild -property:Configuration=TestWindows
+        run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=TestWindows
 
-      - name: test (${{ matrix.framework }})
+      - name: test
         uses: josepho0918/vstest-action@main
         with:
-          testAssembly: "NuGetUtility.Test.dll"
-          searchFolder: "tests/NuGetUtility.Test/bin/TestWindows/${{ matrix.framework }}/"
+          testAssembly: "NuGet*.Test.dll"
+          searchFolder: "tests/*/bin/TestWindows/${{ matrix.framework }}/"
           runInParallel: true
 
   check_code_format:
@@ -131,10 +126,12 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v5
 
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: | 
+            9.0.x
+            10.0.x
 
       - name: restore
         run: dotnet restore
@@ -146,25 +143,21 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        framework: [net8.0, net9.0]
+        framework: [net8.0, net9.0, net10.0]
         project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense]
-
-        include:
-          - framework: net8.0
-            dotnetVersion: "8.0.x"
-
-          - framework: net9.0
-            dotnetVersion: "9.0.x"
 
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - name: restore
         run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
@@ -195,16 +188,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
-
-      - uses: nuget/setup-nuget@v2
-      - run: nuget restore NuGetUtility.sln
+          dotnet-version: | 
+            9.0.x
+            10.0.x
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
+
+      - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.sln
 
       - name: fully qualify release path
         id: release_path
@@ -234,24 +228,20 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        framework: [net8.0, net9.0]
-
-        include:
-          - framework:  net8.0
-            dotnetVersion: "8.0.x"
-
-          - framework:  net9.0
-            dotnetVersion: "9.0.x"
+        framework: [net8.0, net9.0, net10.0]
 
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - name: restore
         run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
@@ -281,16 +271,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup dotnet 9.0.x
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
-
-      - uses: nuget/setup-nuget@v2
-      - run: nuget restore NuGetUtility.sln
+          dotnet-version: | 
+            9.0.x
+            10.0.x
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
+
+      - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.sln
 
       - name: fully qualify release path
         id: release_path

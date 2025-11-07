@@ -10,8 +10,6 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
     {
         private ProjectCollection? _projects;
 
-        private ProjectCollection Projects => _projects ??= InitializeProjectCollection();
-
         public MsBuildAbstraction()
         {
             RegisterMsBuildLocatorIfNeeded();
@@ -26,7 +24,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             }
 #endif
 
-            Project project = Projects.LoadProject(projectPath);
+            Project project = GetProjectCollection().LoadProject(projectPath);
 
             return new ProjectWrapper(project);
         }
@@ -37,6 +35,16 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             {
                 MSBuildLocator.RegisterDefaults();
             }
+        }
+
+        private ProjectCollection GetProjectCollection()
+        {
+            if (_projects is null)
+            {
+                _projects = InitializeProjectCollection();
+            }
+
+            return _projects;
         }
 
         private static ProjectCollection InitializeProjectCollection()
