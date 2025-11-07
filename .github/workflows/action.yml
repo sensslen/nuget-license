@@ -123,12 +123,11 @@ jobs:
       - name: build
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=TestWindows
 
-      - name: test
-        uses: josepho0918/vstest-action@main
-        with:
-          testAssembly: "NuGet*.Test.dll"
-          searchFolder: "tests/**/${{ matrix.framework }}/"
-          runInParallel: true
+      - name: test (NuGetUtility.Test.dll)
+        run: dotnet test --project ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore --no-build
+
+      - name: test (NuGetLicense.Test.dll)
+        run: dotnet test --project ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore --no-build
 
   check_code_format:
     runs-on: ubuntu-latest
