@@ -212,11 +212,10 @@ jobs:
             9.0.x
             10.0.x
 
-      - uses: nuget/setup-nuget@v2
-      - run: nuget restore NuGetUtility.sln
-
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
+
+      - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.sln
 
       - name: fully qualify release path
         id: release_path
@@ -303,11 +302,10 @@ jobs:
             9.0.x
             10.0.x
 
-      - uses: nuget/setup-nuget@v2
-      - run: nuget restore NuGetUtility.sln
-
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
+
+      - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.sln
 
       - name: fully qualify release path
         id: release_path
