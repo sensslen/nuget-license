@@ -44,11 +44,11 @@ jobs:
       - name: build
         run: dotnet build --configuration Release --no-restore
 
-      - name: test
+      - name: test (NuGetUtility.Test.dll)
         run: dotnet test --project ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore --no-build
 
-      - name: test
-        run: dotnet test --project ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore --no-build -v diag
+      - name: test (NuGetLicense.Test.dll)
+        run: dotnet test --project ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore --no-build
 
   test_file_license_matching:
     runs-on: ${{ matrix.os }}
@@ -123,14 +123,14 @@ jobs:
       - name: build
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=TestWindows
 
-      - name: test (${{ matrix.framework }})
+      - name: test (NuGetUtility.Test.dll)
         uses: josepho0918/vstest-action@main
         with:
           testAssembly: "NuGetUtility.Test.dll"
           searchFolder: "tests/NuGetUtility.Test/bin/TestWindows/${{ matrix.framework }}/"
           runInParallel: true
 
-      - name: test (${{ matrix.framework }})
+      - name: test (NuGetLicense.Test.dll)
         uses: josepho0918/vstest-action@main
         with:
           testAssembly: "NuGetLicense.Test.dll"
