@@ -645,10 +645,14 @@ public sealed class ParseInstruction
     public void skipNextInstruction()
     {
         ParseInstruction? nextInst = Parent?.findFollowingInstruction(this);
+#if NET10_0_OR_GREATER
+        nextInst?.Skip = true;
+#else
         if (nextInst is not null)
         {
             nextInst.Skip = true;
         }
+#endif
     }
 
     /**

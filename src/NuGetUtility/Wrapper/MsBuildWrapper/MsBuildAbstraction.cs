@@ -39,13 +39,13 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
         private ProjectCollection GetProjectCollection()
         {
-            if(_projects is null)
+            if (_projects is null)
             {
                 _projects = InitializeProjectCollection();
-            } 
+            }
 
             return _projects;
-        } 
+        }
 
         private static ProjectCollection InitializeProjectCollection()
         {
