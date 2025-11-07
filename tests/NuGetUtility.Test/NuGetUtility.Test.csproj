@@ -11,6 +11,9 @@
 
     <Platforms>AnyCPU</Platforms>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    
+    <EnableNUnitRunner>true</EnableNUnitRunner>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <PropertyGroup Condition="  '$(TargetFramework)' == 'net472' ">
