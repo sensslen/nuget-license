@@ -95,17 +95,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        framework: [net8.0, net472, net9.0, net10.0]
-
-        include:
-          - framework: net8.0
-            dotnetVersion: "8.0.x"
-
-          - framework: net9.0
-            dotnetVersion: "9.0.x"
-
-          - framework: net10.0
-            dotnetVersion: "10.0.x"
+        framework: [net8.0, net9.0, net10.0]
     steps:
       - uses: actions/checkout@v5
 
@@ -128,6 +118,31 @@ jobs:
 
       - name: test (NuGetLicense.Test.dll)
         run: dotnet test --project ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration TestWindows -f ${{ matrix.framework }} --no-restore --no-build
+
+  test_windows_net472:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: build
+        run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=TestWindows
+
+      - name: test (NuGetUtility.Test)
+        run: .\tests\NuGetUtility.Test\bin\TestWindows\net472\NuGetUtility.Test.exe
+
+      - name: test (NuGetLicense.Test)
+        run: .\tests\NuGetLicense.Test\bin\TestWindows\net472\NuGetLicense.Test.exe
 
   check_code_format:
     runs-on: ubuntu-latest
