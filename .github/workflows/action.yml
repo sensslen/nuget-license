@@ -130,6 +130,13 @@ jobs:
           searchFolder: "tests/NuGetUtility.Test/bin/TestWindows/${{ matrix.framework }}/"
           runInParallel: true
 
+      - name: test (${{ matrix.framework }})
+        uses: josepho0918/vstest-action@main
+        with:
+          testAssembly: "NuGetLicense.Test.dll"
+          searchFolder: "tests/NuGetLicense.Test/bin/TestWindows/${{ matrix.framework }}/"
+          runInParallel: true
+
   check_code_format:
     runs-on: ubuntu-latest
     steps:
