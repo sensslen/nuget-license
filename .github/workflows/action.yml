@@ -116,15 +116,8 @@ jobs:
       - name: test (NuGetUtility.Test.dll)
         uses: josepho0918/vstest-action@main
         with:
-          testAssembly: "NuGetUtility.Test.dll"
-          searchFolder: "tests/NuGetUtility.Test/bin/TestWindows/${{ matrix.framework }}/"
-          runInParallel: true
-
-      - name: test (NuGetLicense.Test.dll)
-        uses: josepho0918/vstest-action@main
-        with:
-          testAssembly: "NuGetLicense.Test.dll"
-          searchFolder: "tests/NuGetLicense.Test/bin/TestWindows/${{ matrix.framework }}/"
+          testAssembly: "NuGet*.Test.dll"
+          searchFolder: "tests/*/bin/TestWindows/${{ matrix.framework }}/"
           runInParallel: true
 
   check_code_format:
