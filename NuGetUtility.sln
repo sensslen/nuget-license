@@ -47,7 +47,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VersionRangesProject", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiTargetProjectWithDifferentDependencies", "tests\targets\MultiTargetProjectWithDifferentDependencies\MultiTargetProjectWithDifferentDependencies.csproj", "{A19BF89A-8B1F-4612-A923-08F52B53DC84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetUtility.Test.UrlToLicenseMapping", "tests\NuGetUtility.Test.UrlToLicenseMapping\NuGetUtility.Test.UrlToLicenseMapping.csproj", "{A77F9673-8296-4680-A713-8AC26B7DE41C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetUtility.UrlToLicenseMapping.Test", "tests\NuGetUtility.UrlToLicenseMapping.Test\NuGetUtility.UrlToLicenseMapping.Test.csproj", "{A77F9673-8296-4680-A713-8AC26B7DE41C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetLicense", "src\NuGetLicense\NuGetLicense.csproj", "{AC47BC03-4D94-4E35-880A-83B7F00CCD39}"
 EndProject

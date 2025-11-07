@@ -35,7 +35,7 @@ jobs:
       - name: test
         uses: josepho0918/vstest-action@main
         with:
-          testAssembly: "*.Test.*dll"
+          testAssembly: "NuGet*.Test.dll"
           searchFolder: "tests/*/bin/Release/net9.0/"
           runInParallel: true
 
