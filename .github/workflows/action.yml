@@ -117,14 +117,11 @@ jobs:
             9.0.x
             10.0.x
 
-      - uses: nuget/setup-nuget@v2.0.1
-      - run: nuget restore NuGetUtility.sln
-
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
       - name: build
-        run: msbuild -t:rebuild -property:Configuration=TestWindows
+        run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=TestWindows
 
       - name: test (${{ matrix.framework }})
         uses: josepho0918/vstest-action@main

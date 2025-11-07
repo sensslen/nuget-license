@@ -24,16 +24,13 @@ jobs:
         with:
           prefix: 'v'
 
-      - uses: nuget/setup-nuget@v2.0.1
-      - run: nuget restore NuGetUtility.sln
-
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
       - uses: browser-actions/setup-chrome@v2.1.0
 
       - name: build
-        run: msbuild -t:rebuild -property:Configuration=Release
+        run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release
 
       - name: test
         uses: josepho0918/vstest-action@main
