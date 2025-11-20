@@ -28,7 +28,7 @@ jobs:
             dotnetVersion: "10.0.x"
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
@@ -56,7 +56,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
@@ -74,7 +74,7 @@ jobs:
   test_url_to_license_mapping:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
@@ -97,7 +97,7 @@ jobs:
       matrix:
         framework: [net8.0, net472, net9.0, net10.0]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
@@ -147,7 +147,7 @@ jobs:
         project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -184,7 +184,7 @@ jobs:
         project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -231,7 +231,7 @@ jobs:
         framework: [net8.0, net9.0, net10.0]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -267,7 +267,7 @@ jobs:
   check_version_command_net472:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
