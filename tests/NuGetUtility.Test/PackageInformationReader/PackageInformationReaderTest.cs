@@ -155,6 +155,8 @@ namespace NuGetUtility.Test.PackageInformationReader
             //Then
             Assert.That(result, Is.Not.Null);
             Assert.That(result!.LicenseMetadata!.Type, Is.EqualTo(LicenseType.File));
+            Assert.That(result.LicenseMetadata.License, Is.Not.Null);
+            Assert.That(result.LicenseMetadata.License, Is.Not.Empty);
         }
 
         private static void SetupPackagesForRepositories(IEnumerable<CustomPackageInformation> packages, IEnumerable<IPackageMetadataResource> packageMetadataResources)
