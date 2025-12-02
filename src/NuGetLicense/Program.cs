@@ -348,8 +348,9 @@ namespace NuGetLicense
                 return spdxLicemseMatcher;
             }
 
+            string containingDirectory = fileSystem.Path.GetDirectoryName(fileSystem.Path.GetFullPath(LicenseFileMappings))!;
             Dictionary<string, string> rawMappings = JsonSerializer.Deserialize<Dictionary<string, string>>(fileSystem.File.ReadAllText(LicenseFileMappings))!;
-            var fullPathMappings = rawMappings.ToDictionary(kvp => fileSystem.Path.GetFullPath(kvp.Key), kvp => kvp.Value);
+            var fullPathMappings = rawMappings.ToDictionary(kvp => fileSystem.Path.GetFullPath(fileSystem.Path.Combine(containingDirectory, kvp.Key)), kvp => kvp.Value);
 
             return new FileLicenseMatcher.Combine.LicenseMatcher([
                 new FileLicenseMatcher.Compare.LicenseMatcher(fileSystem, fullPathMappings),
