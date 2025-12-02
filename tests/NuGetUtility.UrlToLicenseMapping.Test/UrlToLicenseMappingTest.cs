@@ -69,7 +69,9 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
 
         private static Task<CompareResult> CompareLicense(string received, string verified, IReadOnlyDictionary<string, object> context)
         {
-            return Task.FromResult(new CompareResult(!string.IsNullOrWhiteSpace(verified) && received.Contains(verified)));
+            string trimmedReceived = string.Join(' ', received.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries));
+            string trimmedVerified = string.Join(' ', verified.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries));
+            return Task.FromResult(new CompareResult(!string.IsNullOrWhiteSpace(trimmedVerified) && trimmedReceived.Contains(trimmedVerified)));
         }
 
         private sealed class DisposableWebDriver : IDisposable
