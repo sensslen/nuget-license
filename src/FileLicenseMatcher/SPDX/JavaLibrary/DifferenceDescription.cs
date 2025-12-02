@@ -2,9 +2,9 @@
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.Collections.Generic;
-using SPDXLicenseMatcher.JavaCore;
+using FileLicenseMatcher.SPDX.JavaCore;
 
-namespace SPDXLicenseMatcher.JavaLibrary;
+namespace FileLicenseMatcher.SPDX.JavaLibrary;
 
 /**
  * Information about any difference found

@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
  * SPDX-FileType: SOURCE
  * SPDX-License-Identifier: Apache-2.0
  */
-namespace SPDXLicenseMatcher.JavaCore;
+namespace FileLicenseMatcher.SPDX.JavaCore;
 
 /**
  * Implements common conversion methods for processing SPDX license templates

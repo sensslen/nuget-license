@@ -19,6 +19,11 @@
 
   <ItemGroup>
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="22.1.0" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Analyzers" Version="2022.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
@@ -31,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FileLicenseMatcher\FileLicenseMatcher.csproj" />
     <ProjectReference Include="..\NuGetUtility\NuGetUtility.csproj" />
-    <ProjectReference Include="..\SPDXLicenseMatcher\SPDXLicenseMatcher.csproj" />
   </ItemGroup>
 </Project>

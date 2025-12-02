@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using SPDXLicenseMatcher.JavaCore;
+using FileLicenseMatcher.SPDX.JavaCore;
 
 /**
  * SPDX-FileCopyrightText: Copyright (c) 2019 Source Auditor Inc.
@@ -22,7 +22,7 @@ using SPDXLicenseMatcher.JavaCore;
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-namespace SPDXLicenseMatcher.JavaLibrary;
+namespace FileLicenseMatcher.SPDX.JavaLibrary;
 
 /**
  * Compares the output of a parsed license template to text.  The method matches is called after

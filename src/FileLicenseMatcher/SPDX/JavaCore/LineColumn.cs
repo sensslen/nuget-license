@@ -6,7 +6,7 @@
  * SPDX-FileType: SOURCE
  * SPDX-License-Identifier: Apache-2.0
  */
-namespace SPDXLicenseMatcher.JavaCore;
+namespace FileLicenseMatcher.SPDX.JavaCore;
 
 /**
  * Holds information on lines and columns

@@ -7,17 +7,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using FileLicenseMatcher.SPDX.JavaCore;
+using FileLicenseMatcher.SPDX.JavaLibrary;
 using Spdx.Licenses;
-using SPDXLicenseMatcher.JavaCore;
-using SPDXLicenseMatcher.JavaLibrary;
 
-namespace SPDXLicenseMatcher
+namespace FileLicenseMatcher.SPDX
 {
     /// <summary>
     /// This class implements a faster way to match licenses as compared to the LicenseMatcher class.
     /// The code is not as close to the original java code as the LicenseMatcher class.
     /// </summary>
-    public class FastLicenseMatcher : ILicenseMatcher
+    public class FastLicenseMatcher : IFileLicenseMatcher
     {
         private const string START_RULE = "<<";
         private const string END_RULE = ">>";

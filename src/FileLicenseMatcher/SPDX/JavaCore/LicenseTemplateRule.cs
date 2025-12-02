@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
  * SPDX-License-Identifier: Apache-2.0
  */
 
-namespace SPDXLicenseMatcher.JavaCore;
+namespace FileLicenseMatcher.SPDX.JavaCore;
 
 /**
  * Implements a license rule

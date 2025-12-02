@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using SPDXLicenseMatcher.JavaCore;
+using FileLicenseMatcher.SPDX.JavaCore;
 
-namespace SPDXLicenseMatcher.JavaLibrary;
+namespace FileLicenseMatcher.SPDX.JavaLibrary;
 
 public sealed class ParseInstruction
 {

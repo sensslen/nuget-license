@@ -3,6 +3,7 @@
 
 using System.Collections.Immutable;
 using AutoFixture;
+using FileLicenseMatcher;
 using NSubstitute;
 using NuGetLicense.LicenseValidator;
 using NuGetUtility.PackageInformationReader;
@@ -13,7 +14,6 @@ using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
-using SPDXLicenseMatcher;
 
 namespace NuGetLicense.Test.LicenseValidator
 {
@@ -25,7 +25,7 @@ namespace NuGetLicense.Test.LicenseValidator
         {
             var fixture = new Fixture();
             _fileDownloader = Substitute.For<IFileDownloader>();
-            _licenseMatcher = Substitute.For<ILicenseMatcher>();
+            _licenseMatcher = Substitute.For<IFileLicenseMatcher>();
             _licenseMapping = ImmutableDictionary.CreateRange(fixture.Create<Dictionary<Uri, string>>());
             _allowedLicenses = fixture.CreateMany<string>();
             _context = fixture.Create<string>();
@@ -54,7 +54,7 @@ namespace NuGetLicense.Test.LicenseValidator
         private Uri _projectUrl = null!;
         private string[] _ignoredLicenses = null!;
         private CancellationTokenSource _token = null!;
-        private ILicenseMatcher _licenseMatcher = null!;
+        private IFileLicenseMatcher _licenseMatcher = null!;
 
         [Test]
         public async Task ValidatingEmptyList_Should_ReturnEmptyValidatedLicenses()

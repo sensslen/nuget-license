@@ -6,7 +6,7 @@
  * SPDX-FileType: SOURCE
  * SPDX-License-Identifier: Apache-2.0
  */
-namespace SPDXLicenseMatcher.JavaCore;
+namespace FileLicenseMatcher.SPDX.JavaCore;
 
 /**
  * Handles output for parsed license templates

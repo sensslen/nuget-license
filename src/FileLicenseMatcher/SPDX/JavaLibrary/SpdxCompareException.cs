@@ -20,7 +20,7 @@ using System;
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-namespace SPDXLicenseMatcher.JavaLibrary;
+namespace FileLicenseMatcher.SPDX.JavaLibrary;
 
 /**
  * Exception thrown when there is an error during the comparison of SPDX

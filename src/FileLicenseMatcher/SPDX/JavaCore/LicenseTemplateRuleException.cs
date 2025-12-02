@@ -8,7 +8,7 @@ using System;
  * SPDX-FileType: SOURCE
  * SPDX-License-Identifier: Apache-2.0
  */
-namespace SPDXLicenseMatcher.JavaCore;
+namespace FileLicenseMatcher.SPDX.JavaCore;
 
 /**
  * Exception for license template rules

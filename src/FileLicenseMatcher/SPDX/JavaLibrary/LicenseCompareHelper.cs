@@ -7,10 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using FileLicenseMatcher.SPDX.JavaCore;
 using Spdx.Licenses;
-using SPDXLicenseMatcher.JavaCore;
 
-namespace SPDXLicenseMatcher.JavaLibrary;
+namespace FileLicenseMatcher.SPDX.JavaLibrary;
 
 internal static class LicenseCompareHelper
 {
