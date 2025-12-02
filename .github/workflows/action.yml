@@ -69,7 +69,7 @@ jobs:
         run: dotnet restore
       
       - name: test
-        run: dotnet test --project ./tests/SPDXLicenseMatcher.Test/SPDXLicenseMatcher.Test.csproj --configuration Release --no-restore
+        run: dotnet test --project ./tests/FileLicenseMatcher.Test/FileLicenseMatcher.Test.csproj --configuration Release --no-restore
 
   test_url_to_license_mapping:
     runs-on: ubuntu-latest

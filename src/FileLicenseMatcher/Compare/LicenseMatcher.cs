@@ -21,6 +21,7 @@ namespace FileLicenseMatcher.Compare
 
         public string Match(string licenseText)
         {
+            string[] licenseContent = licenseText.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries);
             foreach (KeyValuePair<string, string> kvp in _fileLicenseMap)
             {
                 if (!_fileSystem.File.Exists(kvp.Key))
@@ -28,7 +29,6 @@ namespace FileLicenseMatcher.Compare
                     continue;
                 }
                 IEnumerable<string> fileContent = _fileSystem.File.ReadAllText(kvp.Key).Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries);
-                IEnumerable<string> licenseContent = licenseText.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries);
                 if (licenseContent.SequenceEqual(fileContent))
                 {
                     return kvp.Value;
