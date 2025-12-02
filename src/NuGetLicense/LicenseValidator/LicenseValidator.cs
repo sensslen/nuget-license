@@ -3,13 +3,13 @@
 
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using FileLicenseMatcher;
 using NuGetUtility.Extensions;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
-using SPDXLicenseMatcher;
 using Tethys.SPDX.ExpressionParser;
 
 namespace NuGetLicense.LicenseValidator
@@ -18,14 +18,14 @@ namespace NuGetLicense.LicenseValidator
     {
         private readonly IEnumerable<string> _allowedLicenses;
         private readonly IFileDownloader _fileDownloader;
-        private readonly ILicenseMatcher _fileLicenseMatcher;
+        private readonly IFileLicenseMatcher _fileLicenseMatcher;
         private readonly string[] _ignoredPackages;
         private readonly IImmutableDictionary<Uri, string> _licenseMapping;
 
         public LicenseValidator(IImmutableDictionary<Uri, string> licenseMapping,
             IEnumerable<string> allowedLicenses,
             IFileDownloader fileDownloader,
-            ILicenseMatcher fileLicenseMatcher,
+            IFileLicenseMatcher fileLicenseMatcher,
             string[] ignoredPackages)
         {
             _licenseMapping = licenseMapping;
@@ -159,7 +159,18 @@ namespace NuGetLicense.LicenseValidator
                 case LicenseType.File:
                     {
                         string matchedLicense = _fileLicenseMatcher.Match(info.LicenseMetadata.License);
-                        SpdxExpression? licenseExpression = string.IsNullOrEmpty(matchedLicense) ? null : SpdxExpressionParser.Parse(matchedLicense, _ => true, _ => true);
+
+                        if (string.IsNullOrEmpty(matchedLicense))
+                        {
+                            AddOrUpdateLicense(result,
+                                info,
+                                LicenseInformationOrigin.File,
+                                new ValidationError("Unable to determine license from the given license file", context),
+                                info.LicenseMetadata.License);
+                            break;
+                        }
+
+                        SpdxExpression? licenseExpression = SpdxExpressionParser.Parse(matchedLicense, _ => true, _ => true);
                         if (IsValidLicenseExpression(licenseExpression))
                         {
                             await StoreLicenseAsync(info.LicenseMetadata.License, info.Identity, token);
@@ -173,7 +184,7 @@ namespace NuGetLicense.LicenseValidator
                             AddOrUpdateLicense(result,
                                 info,
                                 LicenseInformationOrigin.File,
-                                new ValidationError("Unable to determine license from the given license file", context),
+                                new ValidationError(GetLicenseNotAllowedMessage(matchedLicense), context),
                                 info.LicenseMetadata.License);
                         }
                         break;

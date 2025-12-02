@@ -21,12 +21,16 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Selenium.WebDriver" Version="4.38.0" />
     <PackageReference Include="Verify.TUnit" Version="31.8.0" />
-    <PackageReference Include="Verify.ParametersHashing" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\NuGetLicense\NuGetLicense.csproj" />
+    <ProjectReference Include="..\..\src\FileLicenseMatcher\FileLicenseMatcher.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SPDX\SPDXLicenses\*" />
+    <EmbeddedResource Include="SPDX\NonSpdxTestLicenses\*" />
+    <EmbeddedResource Include="SPDX\RealLicenses\*" />
   </ItemGroup>
 </Project>

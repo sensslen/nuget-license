@@ -2,8 +2,10 @@
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.Collections.Immutable;
+using System.IO.Abstractions;
 using System.Reflection;
 using System.Text.Json;
+using FileLicenseMatcher;
 using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
@@ -25,7 +27,6 @@ using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
-using SPDXLicenseMatcher;
 
 #if !NET
 using System.Net.Http;
@@ -115,6 +116,11 @@ namespace NuGetLicense
             Description = "The destination file to put the valiation output to. If omitted, the output is printed to the console.")]
         public string? DestinationFile { get; } = null;
 
+        [Option(LongName = "licensefile-to-license-mappings",
+            ShortName = "file-mapping",
+            Description = "File in json format that contains a dictionary to map license files to licenses.")]
+        public string? LicenseFileMappings { get; } = null;
+
         private static string GetVersion() =>
             typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
 
@@ -123,12 +129,13 @@ namespace NuGetLicense
 #pragma warning restore S1144 // Unused private types or members should be removed
         {
             using var httpClient = new HttpClient();
-            string[] inputFiles = GetInputFiles();
-            string[] ignoredPackages = GetIgnoredPackages();
-            IImmutableDictionary<Uri, string> licenseMappings = GetLicenseMappings();
-            string[] allowedLicenses = GetAllowedLicenses();
-            CustomPackageInformation[] overridePackageInformation = GetOverridePackageInformation();
-            IFileDownloader? licenseDownloader = GetFileDownloader(httpClient);
+            var fileSystem = new System.IO.Abstractions.FileSystem();
+            string[] inputFiles = GetInputFiles(fileSystem);
+            string[] ignoredPackages = GetIgnoredPackages(fileSystem);
+            IImmutableDictionary<Uri, string> licenseMappings = GetLicenseMappings(fileSystem);
+            string[] allowedLicenses = GetAllowedLicenses(fileSystem);
+            CustomPackageInformation[] overridePackageInformation = GetOverridePackageInformation(fileSystem);
+            IFileDownloader? licenseDownloader = GetFileDownloader(httpClient, fileSystem);
             IOutputFormatter output = GetOutputFormatter();
 
             var solutionPersistance = new SolutionPersistanceWrapper();
@@ -138,10 +145,10 @@ namespace NuGetLicense
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicenses,
                 licenseDownloader,
-                new FastLicenseMatcher(Spdx.Licenses.SpdxLicenseStore.Licenses),
+                GetLicenseMatcher(fileSystem),
                 ignoredPackages);
 
-            string[] excludedProjects = GetExcludedProjects();
+            string[] excludedProjects = GetExcludedProjects(fileSystem);
             IEnumerable<string> projects = (await inputFiles.SelectManyAsync(projectCollector.GetProjectsAsync)).Where(p => !Array.Exists(excludedProjects, ignored => p.Like(ignored)));
             IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects, projectReader, out IReadOnlyCollection<Exception>? projectReaderExceptions);
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
@@ -157,7 +164,7 @@ namespace NuGetLicense
 
             try
             {
-                using Stream outputStream = GetOutputStream();
+                using Stream outputStream = GetOutputStream(fileSystem);
                 await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
                 return results.Count(r => r.ValidationErrors.Any());
             }
@@ -168,13 +175,13 @@ namespace NuGetLicense
             }
         }
 
-        private Stream GetOutputStream()
+        private Stream GetOutputStream(IFileSystem fileSystem)
         {
             if (DestinationFile is null)
             {
                 return Console.OpenStandardOutput();
             }
-            return File.Open(Path.GetFullPath(DestinationFile), FileMode.Create, FileAccess.Write, FileShare.None);
+            return fileSystem.File.Open(fileSystem.Path.GetFullPath(DestinationFile), FileMode.Create, FileAccess.Write, FileShare.None);
         }
 
         private static IPackagesConfigReader GetPackagesConfigReader()
@@ -213,16 +220,16 @@ namespace NuGetLicense
             };
         }
 
-        private IFileDownloader GetFileDownloader(HttpClient httpClient)
+        private IFileDownloader GetFileDownloader(HttpClient httpClient, IFileSystem fileSystem)
         {
             if (DownloadLicenseInformation == null)
             {
                 return new NopFileDownloader();
             }
 
-            if (!Directory.Exists(DownloadLicenseInformation))
+            if (!fileSystem.Directory.Exists(DownloadLicenseInformation))
             {
-                Directory.CreateDirectory(DownloadLicenseInformation);
+                fileSystem.Directory.CreateDirectory(DownloadLicenseInformation);
             }
 
             return new FileDownloader(httpClient, DownloadLicenseInformation);
@@ -236,7 +243,7 @@ namespace NuGetLicense
             }
         }
 
-        private CustomPackageInformation[] GetOverridePackageInformation()
+        private CustomPackageInformation[] GetOverridePackageInformation(IFileSystem fileSystem)
         {
             if (OverridePackageInformation == null)
             {
@@ -245,57 +252,57 @@ namespace NuGetLicense
 
             var serializerOptions = new JsonSerializerOptions();
             serializerOptions.Converters.Add(new NuGetVersionJsonConverter());
-            return JsonSerializer.Deserialize<CustomPackageInformation[]>(File.ReadAllText(OverridePackageInformation), serializerOptions)!;
+            return JsonSerializer.Deserialize<CustomPackageInformation[]>(fileSystem.File.ReadAllText(OverridePackageInformation), serializerOptions)!;
         }
 
-        private string[] GetAllowedLicenses()
+        private string[] GetAllowedLicenses(IFileSystem fileSystem)
         {
             if (AllowedLicenses == null)
             {
                 return Array.Empty<string>();
             }
 
-            return JsonSerializer.Deserialize<string[]>(File.ReadAllText(AllowedLicenses))!;
+            return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(AllowedLicenses))!;
         }
 
-        private IImmutableDictionary<Uri, string> GetLicenseMappings()
+        private IImmutableDictionary<Uri, string> GetLicenseMappings(IFileSystem fileSystem)
         {
             if (LicenseMapping == null)
             {
                 return UrlToLicenseMapping.Default;
             }
 
-            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping))!;
+            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(fileSystem.File.ReadAllText(LicenseMapping))!;
 
             return UrlToLicenseMapping.Default.SetItems(userDictionary);
         }
 
-        private string[] GetIgnoredPackages()
+        private string[] GetIgnoredPackages(IFileSystem fileSystem)
         {
             if (IgnoredPackages == null)
             {
                 return Array.Empty<string>();
             }
 
-            return JsonSerializer.Deserialize<string[]>(File.ReadAllText(IgnoredPackages))!;
+            return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(IgnoredPackages))!;
         }
 
-        private string[] GetExcludedProjects()
+        private string[] GetExcludedProjects(IFileSystem fileSystem)
         {
             if (ExcludedProjects == null)
             {
                 return Array.Empty<string>();
             }
 
-            if (File.Exists(ExcludedProjects))
+            if (fileSystem.File.Exists(ExcludedProjects))
             {
-                return JsonSerializer.Deserialize<string[]>(File.ReadAllText(ExcludedProjects))!;
+                return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(ExcludedProjects))!;
             }
 
             return [ExcludedProjects];
         }
 
-        private string[] GetInputFiles()
+        private string[] GetInputFiles(IFileSystem fileSystem)
         {
             if (InputFile != null)
             {
@@ -304,7 +311,7 @@ namespace NuGetLicense
 
             if (InputJsonFile != null)
             {
-                return JsonSerializer.Deserialize<string[]>(File.ReadAllText(InputJsonFile))!;
+                return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(InputJsonFile))!;
             }
 
             throw new FileNotFoundException("Please provide an input file");
@@ -331,6 +338,24 @@ namespace NuGetLicense
             }
 
             return result;
+        }
+
+        private IFileLicenseMatcher GetLicenseMatcher(IFileSystem fileSystem)
+        {
+            var spdxLicemseMatcher = new FileLicenseMatcher.SPDX.FastLicenseMatcher(Spdx.Licenses.SpdxLicenseStore.Licenses);
+            if (LicenseFileMappings is null)
+            {
+                return spdxLicemseMatcher;
+            }
+
+            string containingDirectory = fileSystem.Path.GetDirectoryName(fileSystem.Path.GetFullPath(LicenseFileMappings))!;
+            Dictionary<string, string> rawMappings = JsonSerializer.Deserialize<Dictionary<string, string>>(fileSystem.File.ReadAllText(LicenseFileMappings))!;
+            var fullPathMappings = rawMappings.ToDictionary(kvp => fileSystem.Path.GetFullPath(fileSystem.Path.Combine(containingDirectory, kvp.Key)), kvp => kvp.Value);
+
+            return new FileLicenseMatcher.Combine.LicenseMatcher([
+                new FileLicenseMatcher.Compare.LicenseMatcher(fileSystem, fullPathMappings),
+                spdxLicemseMatcher
+            ]);
         }
     }
 }

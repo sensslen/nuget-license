@@ -61,6 +61,7 @@ nuget-license [options]
 | `-a`, `--allowed-license-types <FILE>` | JSON file listing allowed license types. See [docs/allowed-licenses-json.md](docs/allowed-licenses-json.md). |
 | `-ignore`, `--ignored-packages <FILE>` | JSON file listing package names to ignore (supports wildcards). See [docs/ignored-packages-json.md](docs/ignored-packages-json.md). |
 | `-mapping`, `--licenseurl-to-license-mappings <FILE>` | JSON dictionary mapping license URLs to license types. See [docs/licenseurl-mappings-json.md](docs/licenseurl-mappings-json.md). |
+| `-file-mapping`, `--licensefile-to-license-mappings <FILE>` | JSON dictionary mapping license files to license types. Paths are relative to the JSON file. See [docs/licensefile-mappings-json.md](docs/licensefile-mappings-json.md). |
 | `-override`, `--override-package-information <FILE>` | JSON list to override package/license info. See [docs/override-package-json.md](docs/override-package-json.md). |
 | `-d`, `--license-information-download-location <FOLDER>` | Download all license files to the specified folder. |
 | `-o`, `--output <TYPE>` | Output format: `Table`, `Markdown`, `Json` or `JsonPretty` (default: Table). |
@@ -109,6 +110,14 @@ nuget-license -i MyProject.csproj -o JsonPretty
 ```ps
 nuget-license -i MyProject.csproj -d licenses/
 ```
+
+### Map license files to license types
+
+```ps
+nuget-license -i MyProject.csproj -file-mapping license-file-mappings.json
+```
+
+**Note:** License file paths in the JSON are relative to the JSON file's directory.
 
 ## Advanced Usage
 

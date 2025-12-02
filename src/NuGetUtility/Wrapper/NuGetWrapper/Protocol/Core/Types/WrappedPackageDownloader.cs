@@ -7,7 +7,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
     {
         public async Task<string> ReadAsync(string path, CancellationToken cancellationToken)
         {
-            using Stream stream = await downloader.CoreReader.GetStreamAsync(path, cancellationToken);
+            string normalizedPath = NuGet.Common.PathUtility.GetPathWithDirectorySeparator(path);
+            using Stream stream = await downloader.CoreReader.GetStreamAsync(normalizedPath, cancellationToken);
             using var reader = new StreamReader(stream);
             return await reader.ReadToEndAsync();
         }
