@@ -212,7 +212,7 @@ jobs:
         run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }} /p:TargetFramework=net472
 
       - name: check
-        run: ${{ steps.release_path.outputs.path }}/NuGetLicenseFramework.exe -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}
+        run: ${{ steps.release_path.outputs.path }}/NuGetLicenseFramework.exe -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json
 
       - name: show downloaded licenses
         shell: pwsh
