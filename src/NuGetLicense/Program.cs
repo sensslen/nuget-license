@@ -348,10 +348,11 @@ namespace NuGetLicense
                 return spdxLicemseMatcher;
             }
 
-            Dictionary<string, string> mappings = JsonSerializer.Deserialize<Dictionary<string, string>>(fileSystem.File.ReadAllText(LicenseFileMappings))!;
+            Dictionary<string, string> rawMappings = JsonSerializer.Deserialize<Dictionary<string, string>>(fileSystem.File.ReadAllText(LicenseFileMappings))!;
+            var fullPathMappings = rawMappings.ToDictionary(kvp => fileSystem.Path.GetFullPath(kvp.Key), kvp => kvp.Value);
 
             return new FileLicenseMatcher.Combine.LicenseMatcher([
-                new FileLicenseMatcher.Compare.LicenseMatcher(fileSystem, mappings),
+                new FileLicenseMatcher.Compare.LicenseMatcher(fileSystem, fullPathMappings),
                 spdxLicemseMatcher
             ]);
         }
