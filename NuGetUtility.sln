@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.32112.339
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGetUtility", "src\NuGetUtility\NuGetUtility.csproj", "{E9F108AD-CE14-4BDD-B674-A1CDDE8B27EC}"
 EndProject
@@ -60,6 +60,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPDXLicenseMatcher.Test", "tests\SPDXLicenseMatcher.Test\SPDXLicenseMatcher.Test.csproj", "{4515C3B7-6F32-406E-A80E-3665F5F5A5CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectWithReferenceContainingFileLicense", "integration\ProjectWithReferenceContainingFileLicense\ProjectWithReferenceContainingFileLicense.csproj", "{291E000A-2484-44FE-A175-D1F586071FCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectWithReferenceContainingWindowsSpecificPath", "integration\ProjectWithReferenceContainingWindowsSpecificPath\ProjectWithReferenceContainingWindowsSpecificPath.csproj", "{70DA7262-B953-F20A-B58A-FA9EB7AF849B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -446,6 +448,24 @@ Global
 		{291E000A-2484-44FE-A175-D1F586071FCC}.TestWindows|x64.Build.0 = Debug|Any CPU
 		{291E000A-2484-44FE-A175-D1F586071FCC}.TestWindows|x86.ActiveCfg = Debug|Any CPU
 		{291E000A-2484-44FE-A175-D1F586071FCC}.TestWindows|x86.Build.0 = Debug|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.Debug|x64.Build.0 = Debug|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.Debug|x86.Build.0 = Debug|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.Release|x64.ActiveCfg = Release|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.Release|x64.Build.0 = Release|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.Release|x86.ActiveCfg = Release|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.Release|x86.Build.0 = Release|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.TestWindows|Any CPU.ActiveCfg = Debug|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.TestWindows|Any CPU.Build.0 = Debug|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.TestWindows|x64.ActiveCfg = Debug|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.TestWindows|x64.Build.0 = Debug|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.TestWindows|x86.ActiveCfg = Debug|Any CPU
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B}.TestWindows|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -473,6 +493,7 @@ Global
 		{8469C159-1438-41E3-8712-1790EC7C431F} = {D2AB2D00-1F48-487D-BFE0-99FDB4E071CC}
 		{4515C3B7-6F32-406E-A80E-3665F5F5A5CC} = {C00E0699-ACCD-44CD-91A7-243A30504DB9}
 		{291E000A-2484-44FE-A175-D1F586071FCC} = {FFB2826C-17A3-4C18-8FFE-A34AB51592F7}
+		{70DA7262-B953-F20A-B58A-FA9EB7AF849B} = {FFB2826C-17A3-4C18-8FFE-A34AB51592F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {70887D40-0182-4C32-BFA1-B5A02E405F11}
