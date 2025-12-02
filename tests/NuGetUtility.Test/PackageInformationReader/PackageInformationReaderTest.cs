@@ -4,6 +4,7 @@
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using NSubstitute;
+using NuGet.Configuration;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Test.Extensions.Helper.AsyncEnumerableExtension;
 using NuGetUtility.Test.Extensions.Helper.AutoFixture.NuGet.Versioning;
@@ -12,6 +13,7 @@ using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Test.PackageInformationReader
 {
@@ -141,6 +143,18 @@ namespace NuGetUtility.Test.PackageInformationReader
             {
                 await repo.Received(0).GetPackageMetadataResourceAsync(default);
             }
+        }
+
+        [Test]
+        public void GetPackageInfo_Should_NormalizePathOfFaultyPackage()
+        {
+            var utility = new GlobalPackagesFolderUtility(new NullSettings());
+            // Package with this version has a license path containing a backslash.
+            var result = utility.GetPackage(new PackageIdentity("SonarAnalyzer.CSharp", new WrappedNuGetVersion("10.16.0.128591")));
+
+            //Then
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result!.LicenseMetadata!.Type, Is.EqualTo(LicenseType.File));
         }
 
         private static void SetupPackagesForRepositories(IEnumerable<CustomPackageInformation> packages, IEnumerable<IPackageMetadataResource> packageMetadataResources)

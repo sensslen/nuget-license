@@ -40,7 +40,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
             var result = new WrappedPackageMetadata(manifest.Metadata);
             if (result.LicenseMetadata?.Type == Packaging.LicenseType.File)
             {
-                using Stream licenseStream = pkgStream.GetStream(manifest.Metadata.LicenseMetadata.License);
+                using Stream licenseStream = pkgStream.GetStream(manifest.Metadata.LicenseMetadata.License.Replace('\\', '/'));
                 using var reader = new StreamReader(licenseStream);
                 return new LicenseAugmentedPackageMetadata(result, reader.ReadToEnd());
             }

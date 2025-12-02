@@ -18,6 +18,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Needed for test GetPackageInfo_Should_NormalizePathOfFaultyPackage, do not increase version -->
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.16.0.128591">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Bogus" Version="35.6.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
     <PackageReference Include="Mono.Cecil" Version="0.11.6" />
