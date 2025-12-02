@@ -9,23 +9,20 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
-      - name: Setup dotnet 8.0.x
+      - uses: actions/checkout@v6
+
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: "8.0.x"
-      - name: Setup dotnet 9.0.x
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: "9.0.x"
+          dotnet-version: | 
+            8.0.x
+            9.0.x
+            10.0.x
 
       - uses: nowsprinting/check-version-format-action@v3
         id: version
         with:
           prefix: 'v'
-
-      - uses: nuget/setup-nuget@v2.0.1
-      - run: nuget restore NuGetUtility.sln
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -33,20 +30,13 @@ jobs:
       - uses: browser-actions/setup-chrome@v2.1.0
 
       - name: build
-        run: msbuild -t:rebuild -property:Configuration=Release
+        run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release
 
       - name: test
         uses: josepho0918/vstest-action@main
         with:
-          testAssembly: "NuGetUtility.Test.dll"
-          searchFolder: "tests/NuGetUtility.Test/bin/Release/net8.0/"
-          runInParallel: true
-
-      - name: test
-        uses: josepho0918/vstest-action@main
-        with:
-          testAssembly: "NuGetUtility.Test.UrlToLicenseMapping.dll"
-          searchFolder: "tests/NuGetUtility.Test.UrlToLicenseMapping/bin/Release/net9.0/"
+          testAssembly: "NuGet*.Test.dll"
+          searchFolder: "tests/*/bin/Release/net9.0/"
           runInParallel: true
 
       - name: fully qualify artifacts path
@@ -58,13 +48,15 @@ jobs:
           echo "path=$path" >> $env:GITHUB_OUTPUT
 
       - name: Publish the application binaries (.net8)
-        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net8 -f net8.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net8 -f net8.0 -p:Version=${{ steps.version.outputs.full_without_prefix }} -p:ContinuousIntegrationBuild=true
       - name: Publish the application binaries (.net9)
-        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net8 -f net9.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net9 -f net9.0 -p:Version=${{ steps.version.outputs.full_without_prefix }} -p:ContinuousIntegrationBuild=true
+      - name: Publish the application binaries (.net10)
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net10 -f net10.0 -p:Version=${{ steps.version.outputs.full_without_prefix }} -p:ContinuousIntegrationBuild=true
       - name: Publish the application binaries (.net472)
-        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.artifacts_path.outputs.path }}/net472 /p:Version=${{ steps.version.outputs.full_without_prefix }}
+        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.artifacts_path.outputs.path }}/net472 /p:Version=${{ steps.version.outputs.full_without_prefix }} /p:ContinuousIntegrationBuild=true
       - name: Create nuget package
-        run: dotnet pack ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-build -o ${{ steps.artifacts_path.outputs.path }} -p:Version=${{ steps.version.outputs.full_without_prefix }}
+        run: dotnet pack ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-build -o ${{ steps.artifacts_path.outputs.path }} -p:Version=${{ steps.version.outputs.full_without_prefix }} -p:ContinuousIntegrationBuild=true
 
       - name: Zip artifacts
         uses: thedoctor0/zip-release@0.7.6
