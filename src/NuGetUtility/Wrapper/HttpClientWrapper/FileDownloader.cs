@@ -10,6 +10,12 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
         private readonly SemaphoreSlim _parallelDownloadLimiter = new SemaphoreSlim(10, 10);
         private readonly HttpClient _client;
         private readonly string _downloadDirectory;
+        private readonly List<Uri> _downloadedItems = new();
+#if NET9_0_OR_GREATER
+        private readonly Lock _lock = new();
+#else
+        private readonly object _lock = new();
+#endif
         private const int EXPONENTIAL_BACKOFF_WAIT_TIME_MILLISECONDS = 200;
         private const int MAX_RETRIES = 5;
 
@@ -21,6 +27,15 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
 
         public async Task DownloadFile(Uri url, string fileNameStem, CancellationToken token)
         {
+            lock (_lock)
+            {
+                if (_downloadedItems.Contains(url))
+                {
+                    return;
+                }
+                _downloadedItems.Add(url);
+            }
+
             await _parallelDownloadLimiter.WaitAsync(token);
             try
             {

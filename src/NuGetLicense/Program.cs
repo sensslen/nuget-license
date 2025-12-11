@@ -14,7 +14,6 @@ using NuGetLicense.Output;
 using NuGetLicense.Output.Json;
 using NuGetLicense.Output.Table;
 using NuGetUtility;
-using NuGetUtility.Extension;
 using NuGetUtility.Extensions;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.ProjectFiltering;
