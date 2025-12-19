@@ -98,29 +98,12 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
         public Task StoreFileAsync(string licenseText, string fileNameStem, CancellationToken token)
         {
             string fileName = $"{fileNameStem}.txt";
-            byte[] licenseBytes = Encoding.UTF8.GetBytes(licenseText);
-            using var licenseStream = new MemoryStream(licenseBytes);
-            return StoreFileAsync(licenseStream, fileName, token);
-        }
-
-#pragma warning disable S1172 // Unused parameter
-        private async Task StoreFileAsync(Stream licenseStream, string fileName, CancellationToken token)
-#pragma warning restore S1172 // Unused parameter
-        {
 #if NETFRAMEWORK
-            using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
-            await licenseStream.CopyToAsync(file);
+            File.WriteAllText(Path.Combine(_downloadDirectory, fileName), licenseText);
+            return Task.CompletedTask;
 #else
-            await using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
-            await licenseStream.CopyToAsync(file, token);
+            return File.WriteAllTextAsync(Path.Combine(_downloadDirectory, fileName), licenseText, token);
 #endif
-        }
-    }
-
-    public class DownloadFailedException : Exception
-    {
-        public DownloadFailedException(Uri url) : base($"Download failed for URL: {url}")
-        {
         }
     }
 }
