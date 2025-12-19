@@ -28,9 +28,8 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
 
             if (!initialDownloadName.StartsWith(fileNameStem))
             {
-                string downloadedFile = Directory.EnumerateFiles(_downloadDirectory, initialDownloadName).First();
-                using Stream fileStream = File.OpenRead(downloadedFile);
-                await StoreFileAsync(fileStream, fileNameStem, token);
+                string destinationFile = $"{fileNameStem}.{Path.GetExtension(initialDownloadName)}";
+                File.Copy(Path.Combine(_downloadDirectory, initialDownloadName), Path.Combine(_downloadDirectory, destinationFile), true);
             }
         }
 
