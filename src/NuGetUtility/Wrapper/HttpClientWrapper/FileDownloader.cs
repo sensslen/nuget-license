@@ -1,7 +1,9 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.Collections.Concurrent;
 using System.Net.Http;
+using System.Text;
 
 namespace NuGetUtility.Wrapper.HttpClientWrapper
 {
@@ -10,12 +12,7 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
         private readonly SemaphoreSlim _parallelDownloadLimiter = new SemaphoreSlim(10, 10);
         private readonly HttpClient _client;
         private readonly string _downloadDirectory;
-        private readonly List<Uri> _downloadedItems = new();
-#if NET9_0_OR_GREATER
-        private readonly Lock _lock = new();
-#else
-        private readonly object _lock = new();
-#endif
+        private readonly ConcurrentDictionary<Uri, Task<string>> _downloadedLicenses = new();
         private const int EXPONENTIAL_BACKOFF_WAIT_TIME_MILLISECONDS = 200;
         private const int MAX_RETRIES = 5;
 
@@ -27,23 +24,27 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
 
         public async Task DownloadFile(Uri url, string fileNameStem, CancellationToken token)
         {
-            lock (_lock)
-            {
-                if (_downloadedItems.Contains(url))
-                {
-                    return;
-                }
-                _downloadedItems.Add(url);
-            }
+            string initialDownloadName = await _downloadedLicenses.GetOrAdd(url, u => DownloadFileActuallyAsync(u, fileNameStem, token));
 
+            if (!initialDownloadName.StartsWith(fileNameStem))
+            {
+                string downloadedFile = Directory.EnumerateFiles(_downloadDirectory, $"{fileNameStem}.*").First();
+                using Stream fileStream = File.OpenRead(downloadedFile);
+                await StoreFileAsync(fileStream, fileNameStem, token);
+            }
+        }
+
+        private async Task<string> DownloadFileActuallyAsync(Uri url, string fileNameStem, CancellationToken token)
+        {
             await _parallelDownloadLimiter.WaitAsync(token);
             try
             {
                 for (int i = 0; i < MAX_RETRIES; i++)
                 {
-                    if (await TryDownload(fileNameStem, url, token))
+                    string? fileLocation = await TryDownload(fileNameStem, url, token);
+                    if (fileLocation is not null)
                     {
-                        return;
+                        return fileLocation;
                     }
                     await Task.Delay(EXPONENTIAL_BACKOFF_WAIT_TIME_MILLISECONDS * ((int)Math.Pow(2, i)), token);
                 }
@@ -52,10 +53,11 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
             {
                 _parallelDownloadLimiter.Release();
             }
+            throw new DownloadFailedException(url);
         }
 
 #pragma warning disable S1172 // Unused parameter
-        private async Task<bool> TryDownload(string fileNameStem, Uri url, CancellationToken token)
+        private async Task<string?> TryDownload(string fileNameStem, Uri url, CancellationToken token)
 #pragma warning restore S1172 // Unused parameter
         {
             var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -69,7 +71,7 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
             if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
 #endif
             {
-                return false;
+                return null;
             }
             response.EnsureSuccessStatusCode();
 
@@ -91,18 +93,35 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
 #else
             await downloadStream.CopyToAsync(file, token);
 #endif
-            return true;
+            return fileName;
         }
 
         public Task StoreFileAsync(string licenseText, string fileNameStem, CancellationToken token)
         {
             string fileName = $"{fileNameStem}.txt";
+            byte[] licenseBytes = Encoding.UTF8.GetBytes(licenseText);
+            using var licenseStream = new MemoryStream(licenseBytes);
+            return StoreFileAsync(licenseStream, fileName, token);
+        }
+
+#pragma warning disable S1172 // Unused parameter
+        private async Task StoreFileAsync(Stream licenseStream, string fileName, CancellationToken token)
+#pragma warning restore S1172 // Unused parameter
+        {
 #if NETFRAMEWORK
-            File.WriteAllText(Path.Combine(_downloadDirectory, fileName), licenseText);
-            return Task.CompletedTask;
+            using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
+            await licenseStream.CopyToAsync(file);
 #else
-            return File.WriteAllTextAsync(Path.Combine(_downloadDirectory, fileName), licenseText, token);
+            await using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
+            await licenseStream.CopyToAsync(file, token);
 #endif
+        }
+    }
+
+    public class DownloadFailedException : Exception
+    {
+        public DownloadFailedException(Uri url) : base($"Download failed for URL: {url}")
+        {
         }
     }
 }
