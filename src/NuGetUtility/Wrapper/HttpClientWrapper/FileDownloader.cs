@@ -3,7 +3,6 @@
 
 using System.Collections.Concurrent;
 using System.Net.Http;
-using System.Text;
 
 namespace NuGetUtility.Wrapper.HttpClientWrapper
 {
@@ -28,7 +27,7 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
 
             if (!initialDownloadName.StartsWith(fileNameStem))
             {
-                string destinationFile = $"{fileNameStem}.{Path.GetExtension(initialDownloadName)}";
+                string destinationFile = $"{fileNameStem}{Path.GetExtension(initialDownloadName)}";
                 File.Copy(Path.Combine(_downloadDirectory, initialDownloadName), Path.Combine(_downloadDirectory, destinationFile), true);
             }
         }
