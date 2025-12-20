@@ -273,7 +273,7 @@ jobs:
         shell: pwsh
         run: |
           $jsonOutput = Get-Content ./licenses-output.json | ConvertFrom-Json
-          $actualFiles = Get-ChildItem -Path ./licenses/${{ matrix.project }}/${{ matrix.framework }} | Select-Object -ExpandProperty Name
+          $actualFiles = Get-ChildItem -Path ./licenses/${{ matrix.project }} | Select-Object -ExpandProperty Name
           
           $missingFiles = @()
           $extraFiles = @($actualFiles)
@@ -324,7 +324,7 @@ jobs:
       - name: show downloaded licenses
         shell: pwsh
         run: |
-          foreach($file in Get-ChildItem -Path ./licenses/${{ matrix.project }}/${{ matrix.framework }})
+          foreach($file in Get-ChildItem -Path ./licenses/${{ matrix.project }})
           {
             Write-Host ::group::$file
             Get-Content $file.FullName
