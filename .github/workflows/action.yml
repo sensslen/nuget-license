@@ -164,7 +164,61 @@ jobs:
         run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.framework }} --no-restore
 
       - name: check
-        run: dotnet ./release/NuGetLicenseCore.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.framework }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json
+        run: |
+          dotnet ./release/NuGetLicenseCore.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.framework }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json > ./licenses-output.json
+          cat ./licenses-output.json
+
+      - name: validate downloaded licenses
+        shell: pwsh
+        run: |
+          $jsonOutput = Get-Content ./licenses-output.json | ConvertFrom-Json
+          $actualFiles = Get-ChildItem -Path ./licenses/${{ matrix.project }}/${{ matrix.framework }} | Select-Object -ExpandProperty Name
+          
+          $missingFiles = @()
+          $extraFiles = @($actualFiles)
+          
+          foreach ($package in $jsonOutput) {
+            $licenseId = $package.PackageId
+            $version = $package.PackageVersion
+            
+            # Check for both .txt and .html extensions
+            $expectedFileName = "${licenseId}__${version}"
+            $txtFile = "${expectedFileName}.txt"
+            $htmlFile = "${expectedFileName}.html"
+            
+            $found = $false
+            if ($actualFiles -contains $txtFile) {
+              $extraFiles = $extraFiles | Where-Object { $_ -ne $txtFile }
+              $found = $true
+            } elseif ($actualFiles -contains $htmlFile) {
+              $extraFiles = $extraFiles | Where-Object { $_ -ne $htmlFile }
+              $found = $true
+            }
+            
+            if (-not $found) {
+              $missingFiles += "${expectedFileName}.[txt|html] (for package $($package.PackageName) $version with license $licenseId)"
+            }
+          }
+          
+          $hasErrors = $false
+          
+          if ($missingFiles.Count -gt 0) {
+            Write-Host "ERROR: Missing license files:"
+            $missingFiles | ForEach-Object { Write-Host "  - $_" }
+            $hasErrors = $true
+          }
+          
+          if ($extraFiles.Count -gt 0) {
+            Write-Host "ERROR: Unexpected license files found:"
+            $extraFiles | ForEach-Object { Write-Host "  - $_" }
+            $hasErrors = $true
+          }
+          
+          if ($hasErrors) {
+            exit 1
+          }
+          
+          Write-Host "SUCCESS: All license files match the JSON output (validated $($jsonOutput.Count) packages)"
 
       - name: show downloaded licenses
         shell: pwsh
@@ -175,6 +229,7 @@ jobs:
             Get-Content $file.FullName
             Write-Host ::endgroup::
           }
+
   check_licenses_net472:
     runs-on: windows-latest
     strategy:
@@ -210,12 +265,66 @@ jobs:
         run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }} /p:TargetFramework=net472
 
       - name: check
-        run: ${{ steps.release_path.outputs.path }}/NuGetLicenseFramework.exe -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json
+        run: |
+          ${{ steps.release_path.outputs.path }}/NuGetLicenseFramework.exe -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json > ./licenses-output.json
+          cat ./licenses-output.json
+
+      - name: validate downloaded licenses
+        shell: pwsh
+        run: |
+          $jsonOutput = Get-Content ./licenses-output.json | ConvertFrom-Json
+          $actualFiles = Get-ChildItem -Path ./licenses/${{ matrix.project }}/${{ matrix.framework }} | Select-Object -ExpandProperty Name
+          
+          $missingFiles = @()
+          $extraFiles = @($actualFiles)
+          
+          foreach ($package in $jsonOutput) {
+            $licenseId = $package.PackageId
+            $version = $package.PackageVersion
+            
+            # Check for both .txt and .html extensions
+            $expectedFileName = "${licenseId}__${version}"
+            $txtFile = "${expectedFileName}.txt"
+            $htmlFile = "${expectedFileName}.html"
+            
+            $found = $false
+            if ($actualFiles -contains $txtFile) {
+              $extraFiles = $extraFiles | Where-Object { $_ -ne $txtFile }
+              $found = $true
+            } elseif ($actualFiles -contains $htmlFile) {
+              $extraFiles = $extraFiles | Where-Object { $_ -ne $htmlFile }
+              $found = $true
+            }
+            
+            if (-not $found) {
+              $missingFiles += "${expectedFileName}.[txt|html] (for package $($package.PackageName) $version with license $licenseId)"
+            }
+          }
+          
+          $hasErrors = $false
+          
+          if ($missingFiles.Count -gt 0) {
+            Write-Host "ERROR: Missing license files:"
+            $missingFiles | ForEach-Object { Write-Host "  - $_" }
+            $hasErrors = $true
+          }
+          
+          if ($extraFiles.Count -gt 0) {
+            Write-Host "ERROR: Unexpected license files found:"
+            $extraFiles | ForEach-Object { Write-Host "  - $_" }
+            $hasErrors = $true
+          }
+          
+          if ($hasErrors) {
+            exit 1
+          }
+          
+          Write-Host "SUCCESS: All license files match the JSON output (validated $($jsonOutput.Count) packages)"
 
       - name: show downloaded licenses
         shell: pwsh
         run: |
-          foreach($file in Get-ChildItem -Path ./licenses/${{ matrix.project }})
+          foreach($file in Get-ChildItem -Path ./licenses/${{ matrix.project }}/${{ matrix.framework }})
           {
             Write-Host ::group::$file
             Get-Content $file.FullName
