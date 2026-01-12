@@ -73,6 +73,39 @@ nuget-license [options]
 | `-fo`, `--file-output <FILE>` | Write output to a file instead of console. |
 | `-?`, `-h`, `--help` | Show help information. |
 
+## Important Notes
+
+### Package Detection and Restore
+
+**nuget-license** does not restore NuGet packages itself. It reads package information from the `project.assets.json` file (also known as the lock file) that is generated when you run `dotnet restore` or build your project.
+
+**Key points:**
+
+- The packages evaluated by nuget-license are **always the ones that were used during the last package restore**.
+- If you use conditional package references (e.g., based on build configuration), only the packages from the last restore will be detected.
+- Packages referenced in `Directory.Build.props` or other MSBuild files with conditions will only appear if they were included in the most recent restore operation.
+
+**To ensure all packages are detected:**
+
+1. Run `dotnet restore` (or `dotnet build`) with the appropriate configuration before running nuget-license:
+   ```ps
+   dotnet restore -c Release
+   nuget-license -i MyProject.csproj
+   ```
+
+2. If you need to analyze packages for different configurations, restore with each configuration separately:
+   ```ps
+   # For Release configuration
+   dotnet restore -c Release
+   nuget-license -i MyProject.csproj -o JsonPretty -fo licenses-release.json
+   
+   # For Debug configuration
+   dotnet restore -c Debug
+   nuget-license -i MyProject.csproj -o JsonPretty -fo licenses-debug.json
+   ```
+
+3. If packages are missing from the output, verify that `project.assets.json` exists in your project's `obj` folder and that a restore was performed recently.
+
 ## Examples
 
 ### Show Help
