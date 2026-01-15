@@ -81,7 +81,15 @@ foreach ($match in $matches) {
 # Replace all links in the README
 $inlinedReadme = $readmeContent
 foreach ($replacement in $replacements.Values) {
-    $inlinedReadme = $inlinedReadme -replace [regex]::Escape($replacement.OriginalLink), $replacement.NewLink
+    # Build a regex pattern that matches any link to this specific doc file
+    # Pattern: \[any text\](docs/filename.md)
+    $docFileName = $replacement.OriginalLink -replace '^\[([^\]]+)\]\(docs/([^)]+\.md)\)$', '$2'
+    $linkPattern = '\[[^\]]+\]\(docs/' + [regex]::Escape($docFileName) + '\)'
+    
+    # Escape special regex characters in the replacement text, especially '$'
+    $safeReplacement = $replacement.NewLink -replace '[\$]', '$$$$'
+    
+    $inlinedReadme = $inlinedReadme -replace $linkPattern, $safeReplacement
 }
 
 # Append all documentation sections at the end
