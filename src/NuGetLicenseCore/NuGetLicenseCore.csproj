@@ -22,22 +22,26 @@
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;TestWindows</Configurations>
     <Platforms>AnyCPU</Platforms>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects.</Description>
     <PackageTags>NuGet;License</PackageTags>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="..\..\README.md">
-      <Pack>true</Pack>
-      <PackagePath>README.md</PackagePath>
-    </Content>
-    <Content Include="..\..\docs\**\*.md">
-      <Pack>true</Pack>
-      <PackagePath>docs\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
-    </Content>
-  </ItemGroup>
+  <!-- Generate inlined README for NuGet package -->
+  <Target Name="GenerateInlinedReadme" BeforeTargets="_GetPackageFiles">
+    <PropertyGroup>
+      <InlinedReadmePath>$(MSBuildProjectDirectory)\obj\README-nuget.md</InlinedReadmePath>
+      <PackageReadmeFile>README-nuget.md</PackageReadmeFile>
+    </PropertyGroup>
+    <Exec Command="pwsh &quot;$(MSBuildThisFileDirectory)..\..\scripts\Inline-Readme.ps1&quot; -ReadmePath &quot;$(MSBuildThisFileDirectory)..\..\README.md&quot; -OutputPath &quot;$(InlinedReadmePath)&quot; -DocsFolder &quot;$(MSBuildThisFileDirectory)..\..\docs&quot;" />
+    <ItemGroup>
+      <None Include="$(InlinedReadmePath)">
+        <Pack>true</Pack>
+        <PackagePath>\</PackagePath>
+        <Visible>false</Visible>
+      </None>
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <ProjectReference Include="..\NuGetLicense\NuGetLicense.csproj" />
