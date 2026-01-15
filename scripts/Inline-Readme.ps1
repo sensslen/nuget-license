@@ -75,15 +75,13 @@ if ($matches.Count -gt 0) {
     $processedReadme += "`n"
 }
 
-$inlinedReadme = $processedReadme
-
 # Write the output
 $outputDir = Split-Path -Parent $OutputPath
 if (-not (Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
 }
 
-$inlinedReadme | Set-Content -Path $OutputPath -NoNewline
+$processedReadme | Set-Content -Path $OutputPath -NoNewline
 
 Write-Host "Successfully created README with GitHub documentation links at: $OutputPath"
 Write-Host "Replaced $($matches.Count) documentation links"
