@@ -30,10 +30,13 @@
   <!-- Generate inlined README for NuGet package -->
   <Target Name="GenerateInlinedReadme" BeforeTargets="_GetPackageFiles">
     <PropertyGroup>
+      <InlineScriptPath>$(MSBuildThisFileDirectory)..\..\scripts\Inline-Readme.ps1</InlineScriptPath>
+      <OriginalReadmePath>$(MSBuildThisFileDirectory)..\..\README.md</OriginalReadmePath>
+      <DocsFolderPath>$(MSBuildThisFileDirectory)..\..\docs</DocsFolderPath>
       <InlinedReadmePath>$(MSBuildProjectDirectory)\obj\README-nuget.md</InlinedReadmePath>
       <PackageReadmeFile>README-nuget.md</PackageReadmeFile>
     </PropertyGroup>
-    <Exec Command="pwsh &quot;$(MSBuildThisFileDirectory)..\..\scripts\Inline-Readme.ps1&quot; -ReadmePath &quot;$(MSBuildThisFileDirectory)..\..\README.md&quot; -OutputPath &quot;$(InlinedReadmePath)&quot; -DocsFolder &quot;$(MSBuildThisFileDirectory)..\..\docs&quot;" />
+    <Exec Command="pwsh &quot;$(InlineScriptPath)&quot; -ReadmePath &quot;$(OriginalReadmePath)&quot; -OutputPath &quot;$(InlinedReadmePath)&quot; -DocsFolder &quot;$(DocsFolderPath)&quot;" />
     <ItemGroup>
       <None Include="$(InlinedReadmePath)">
         <Pack>true</Pack>
