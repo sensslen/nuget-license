@@ -36,7 +36,15 @@
       <InlinedReadmePath>$([System.IO.Path]::Combine('$(IntermediateOutputPath)', 'README-nuget.md'))</InlinedReadmePath>
       <PackageReadmeFile>README-nuget.md</PackageReadmeFile>
     </PropertyGroup>
-    <Exec Command="pwsh &quot;$(InlineScriptPath)&quot; -ReadmePath &quot;$(OriginalReadmePath)&quot; -OutputPath &quot;$(InlinedReadmePath)&quot; -DocsFolder &quot;$(DocsFolderPath)&quot;" />
+    <!-- Get git commit hash -->
+    <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" IgnoreExitCode="true" WorkingDirectory="$(MSBuildThisFileDirectory)">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitHash" />
+      <Output TaskParameter="ExitCode" PropertyName="GitExitCode" />
+    </Exec>
+    <!-- Run the script with git hash if available -->
+    <Exec Command="pwsh &quot;$(InlineScriptPath)&quot; -ReadmePath &quot;$(OriginalReadmePath)&quot; -OutputPath &quot;$(InlinedReadmePath)&quot; -DocsFolder &quot;$(DocsFolderPath)&quot; -GitCommitHash &quot;$(GitCommitHash)&quot;" Condition="'$(GitExitCode)' == '0'" />
+    <!-- Fallback without git hash if git command failed -->
+    <Exec Command="pwsh &quot;$(InlineScriptPath)&quot; -ReadmePath &quot;$(OriginalReadmePath)&quot; -OutputPath &quot;$(InlinedReadmePath)&quot; -DocsFolder &quot;$(DocsFolderPath)&quot;" Condition="'$(GitExitCode)' != '0'" />
     <ItemGroup>
       <None Include="$(InlinedReadmePath)">
         <Pack>true</Pack>
