@@ -28,7 +28,8 @@ $readmeContent = Get-Content -Path $ReadmePath -Raw
 
 # Determine the base GitHub URL
 # If we have a git commit hash, use it; otherwise use 'main' branch
-$gitRef = if ($GitCommitHash) { $GitCommitHash } else { "main" }
+# Trim the git commit hash to remove any trailing whitespace or newlines
+$gitRef = if ($GitCommitHash) { $GitCommitHash.Trim() } else { "main" }
 $baseGitHubUrl = "https://github.com/sensslen/nuget-license/blob/$gitRef"
 
 Write-Host "Base GitHub URL: $baseGitHubUrl"
@@ -57,11 +58,8 @@ foreach ($match in $matches) {
     # Create replacement link
     $replacement = "[$linkText]($gitHubUrl)"
     
-    # Escape special regex characters in the match, especially '$'
-    $escapedMatch = [regex]::Escape($fullMatch)
-    
-    # Replace this specific link
-    $processedReadme = $processedReadme -replace $escapedMatch, $replacement
+    # Use literal string replacement to avoid issues with special characters
+    $processedReadme = $processedReadme.Replace($fullMatch, $replacement)
 }
 
 # Add a note at the end about documentation
@@ -70,7 +68,8 @@ if ($matches.Count -gt 0) {
     $processedReadme += "## Documentation`n`n"
     $processedReadme += "For detailed documentation on configuration files and advanced usage, please refer to the documentation files linked above in the GitHub repository."
     if ($GitCommitHash) {
-        $processedReadme += " The links point to the documentation that was available at the time this package version was created (commit: ``$GitCommitHash``)."
+        $trimmedHash = $GitCommitHash.Trim()
+        $processedReadme += " The links point to the documentation that was available at the time this package version was created (commit: ``$trimmedHash``)."
     }
     $processedReadme += "`n"
 }

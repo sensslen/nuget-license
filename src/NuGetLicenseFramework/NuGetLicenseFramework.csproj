@@ -30,6 +30,7 @@
       <OriginalReadmePath>$(MSBuildThisFileDirectory)..\..\README.md</OriginalReadmePath>
       <DocsFolderPath>$(MSBuildThisFileDirectory)..\..\docs</DocsFolderPath>
       <ProcessedReadmePath>$([System.IO.Path]::Combine('$(IntermediateOutputPath)', 'README-nuget.md'))</ProcessedReadmePath>
+      <PackageReadmeFile>README-nuget.md</PackageReadmeFile>
     </PropertyGroup>
     <!-- Get git commit hash -->
     <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" IgnoreExitCode="true" WorkingDirectory="$(MSBuildThisFileDirectory)">
@@ -46,6 +47,11 @@
         <PackagePath>README.md</PackagePath>
         <Visible>false</Visible>
       </Content>
+      <None Include="$(ProcessedReadmePath)">
+        <Pack>true</Pack>
+        <PackagePath>\</PackagePath>
+        <Visible>false</Visible>
+      </None>
     </ItemGroup>
   </Target>
 
