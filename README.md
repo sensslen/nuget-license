@@ -64,7 +64,7 @@ nuget-license [options]
 | `-file-mapping`, `--licensefile-to-license-mappings <FILE>` | JSON dictionary mapping license files to license types. Paths are relative to the JSON file. See [docs/licensefile-mappings-json.md](docs/licensefile-mappings-json.md). |
 | `-override`, `--override-package-information <FILE>` | JSON list to override package/license info. See [docs/override-package-json.md](docs/override-package-json.md). |
 | `-d`, `--license-information-download-location <FOLDER>` | Download all license files to the specified folder. |
-| `-o`, `--output <TYPE>` | Output format: `Table`, `Markdown`, `Json` or `JsonPretty` (default: Table). |
+| `-o`, `--output <TYPE>` | Output format: `Table`, `Markdown`, `Json` or `JsonPretty` (default: Table). See [docs/output-json.md](docs/output-json.md) for JSON format details. |
 | `-err`, `--error-only` | Only show validation errors. |
 | `-include-ignored`, `--include-ignored-packages` | Include ignored packages in output. |
 | `-exclude-projects`, `--exclude-projects-matching <PATTERN\|FILE>` | Exclude projects by name or pattern (supports wildcards or JSON file). See [docs/exclude-projects-json.md](docs/exclude-projects-json.md). |
@@ -137,6 +137,8 @@ nuget-license -i MyProject.csproj -a allowed-licenses.json
 ```ps
 nuget-license -i MyProject.csproj -o JsonPretty
 ```
+
+See [docs/output-json.md](docs/output-json.md) for detailed information about the JSON output format.
 
 ### Download all license files
 

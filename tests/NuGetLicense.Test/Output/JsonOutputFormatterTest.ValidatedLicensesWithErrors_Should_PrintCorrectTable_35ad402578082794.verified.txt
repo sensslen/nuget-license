@@ -4,23 +4,43 @@
     "PackageVersion": "1.5.3",
     "ValidationErrors": [
       {
-        "Error": "Judson",
-        "Context": "https://wilson.net"
+        "Error": "Wilson",
+        "Context": "https://guadalupe.com"
       },
       {
-        "Error": "Guadalupe",
-        "Context": "http://otho.info"
+        "Error": "Otho",
+        "Context": "http://general.net"
       },
       {
-        "Error": "General",
-        "Context": "https://skylar.name"
+        "Error": "Skylar",
+        "Context": "https://haylie.biz"
       },
       {
-        "Error": "Haylie",
-        "Context": "http://audreanne.info"
+        "Error": "Audreanne",
+        "Context": "http://graciela.net"
+      },
+      {
+        "Error": "Maddison",
+        "Context": "http://randy.net"
+      },
+      {
+        "Error": "Dereck",
+        "Context": "http://cara.info"
+      },
+      {
+        "Error": "Dawson",
+        "Context": "http://addie.org"
+      },
+      {
+        "Error": "Xander",
+        "Context": "https://everette.info"
+      },
+      {
+        "Error": "Otha",
+        "Context": "https://cletus.net"
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 3
   }
 ]

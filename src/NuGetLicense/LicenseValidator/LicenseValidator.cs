@@ -87,6 +87,8 @@ namespace NuGetLicense.LicenseValidator
                 info.LicenseUrl?.AbsoluteUri,
                 info.Copyright,
                 info.Authors,
+                info.Description,
+                info.Summary,
                 origin,
                 new List<ValidationError> { error });
             result.AddOrUpdate(new LicenseNameAndVersion(info.Identity.Id, info.Identity.Version),
@@ -108,6 +110,8 @@ namespace NuGetLicense.LicenseValidator
                 info.LicenseUrl?.AbsoluteUri,
                 info.Copyright,
                 info.Authors,
+                info.Description,
+                info.Summary,
                 origin);
             result.AddOrUpdate(new LicenseNameAndVersion(info.Identity.Id, info.Identity.Version),
                 newValue,

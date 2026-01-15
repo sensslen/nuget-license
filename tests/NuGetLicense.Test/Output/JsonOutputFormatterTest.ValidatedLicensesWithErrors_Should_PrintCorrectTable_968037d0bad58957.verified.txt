@@ -1,81 +1,58 @@
 ﻿[
   {
-    "PackageId": "Future Integration Analyst",
-    "PackageVersion": "9.0.4",
+    "PackageId": "Regional Solutions Executive",
+    "PackageVersion": "1.8.0",
+    "Summary": "Aut minus repellat.",
     "ValidationErrors": [
       {
-        "Error": "Abner",
-        "Context": "http://tavares.info"
+        "Error": "Paula",
+        "Context": "http://heidi.biz"
       },
       {
-        "Error": "Johann",
-        "Context": "http://andres.net"
+        "Error": "Letha",
+        "Context": "https://reid.name"
       },
       {
-        "Error": "Jaquan",
-        "Context": "http://carey.org"
+        "Error": "Amely",
+        "Context": "http://nikki.org"
       },
       {
-        "Error": "Arvel",
-        "Context": "http://mortimer.org"
-      },
-      {
-        "Error": "Alicia",
-        "Context": "http://paula.com"
-      },
-      {
-        "Error": "Heidi",
-        "Context": "http://letha.name"
-      },
-      {
-        "Error": "Reid",
-        "Context": "https://amely.info"
-      },
-      {
-        "Error": "Nikki",
-        "Context": "https://mckayla.info"
-      },
-      {
-        "Error": "Kiara",
-        "Context": "https://floyd.net"
+        "Error": "Mckayla",
+        "Context": "http://kiara.org"
       }
     ],
+    "License": "You can\u0027t connect the feed without backing up the primary XML feed!",
     "LicenseInformationOrigin": 0
   },
   {
-    "PackageId": "Principal Functionality Agent",
-    "PackageVersion": "1.5.3",
+    "PackageId": "Dynamic Marketing Representative",
+    "PackageVersion": "4.4.7",
+    "PackageProjectUrl": "http://mariam.com",
+    "Description": "Repellendus libero ipsa temporibus libero odio nihil.",
+    "Summary": "Dolorem quae excepturi.",
     "ValidationErrors": [
       {
-        "Error": "Paige",
-        "Context": "https://remington.info"
+        "Error": "Michele",
+        "Context": "https://miles.net"
       },
       {
-        "Error": "Aletha",
-        "Context": "https://isobel.info"
+        "Error": "Freddie",
+        "Context": "http://kade.net"
       },
       {
-        "Error": "Pearline",
-        "Context": "https://johnathon.info"
+        "Error": "Jaunita",
+        "Context": "http://marcelina.biz"
       },
       {
-        "Error": "Eleanora",
-        "Context": "http://jaeden.info"
+        "Error": "Donna",
+        "Context": "https://darby.biz"
       },
       {
-        "Error": "Nikolas",
-        "Context": "https://daphney.net"
-      },
-      {
-        "Error": "Oceane",
-        "Context": "http://clifton.com"
-      },
-      {
-        "Error": "Francisco",
-        "Context": "http://bessie.com"
+        "Error": "Joana",
+        "Context": "https://albin.info"
       }
     ],
-    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 1
+    "License": "synthesizing the alarm won\u0027t do anything, we need to program the back-end USB alarm!",
+    "LicenseInformationOrigin": 0
   }
 ]

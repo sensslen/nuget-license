@@ -1,69 +1,32 @@
 ﻿[
   {
-    "PackageId": "Dynamic Integration Assistant",
-    "PackageVersion": "2.1.6",
-    "PackageProjectUrl": "https://gerson.info",
-    "LicenseInformationOrigin": 2
-  },
-  {
-    "PackageId": "Principal Functionality Agent",
-    "PackageVersion": "1.5.3",
-    "ValidationErrors": [
-      {
-        "Error": "Paige",
-        "Context": "https://remington.info"
-      },
-      {
-        "Error": "Aletha",
-        "Context": "https://isobel.info"
-      },
-      {
-        "Error": "Pearline",
-        "Context": "https://johnathon.info"
-      },
-      {
-        "Error": "Eleanora",
-        "Context": "http://jaeden.info"
-      },
-      {
-        "Error": "Nikolas",
-        "Context": "https://daphney.net"
-      },
-      {
-        "Error": "Oceane",
-        "Context": "http://clifton.com"
-      },
-      {
-        "Error": "Francisco",
-        "Context": "http://bessie.com"
-      }
-    ],
-    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
-    "LicenseInformationOrigin": 1
-  },
-  {
-    "PackageId": "District Mobility Administrator",
-    "PackageVersion": "3.2.3",
-    "Authors": "Christopher Dietrich,Christopher Dietrich,Christopher Dietrich,Christopher Dietrich",
-    "LicenseInformationOrigin": 2
-  },
-  {
-    "PackageId": "International Mobility Technician",
-    "PackageVersion": "3.7.5",
-    "PackageProjectUrl": "http://katelin.org",
-    "License": "We need to parse the cross-platform THX driver!",
+    "PackageId": "Principal Branding Assistant",
+    "PackageVersion": "8.2.6",
+    "Authors": "",
+    "Description": "Quaerat molestias blanditiis perspiciatis voluptatem culpa ab omnis iste.",
+    "License": "Use the multi-byte JSON panel, then you can bypass the multi-byte panel!",
     "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Dynamic Implementation Planner",
+    "PackageVersion": "1.0.3",
+    "PackageProjectUrl": "https://tito.info",
+    "License": "I\u0027ll input the cross-platform AGP system, that should system the AGP system!",
+    "LicenseInformationOrigin": 1
   },
   {
     "PackageId": "Legacy Metrics Planner",
     "PackageVersion": "9.5.0",
+    "Description": "Id facilis ipsam autem molestias soluta atque unde.",
+    "Summary": "Velit quidem iure ipsum accusantium sapiente qui aspernatur.",
     "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
-    "LicenseInformationOrigin": 4
+    "LicenseInformationOrigin": 2
   },
   {
-    "PackageId": "District Integration Manager",
-    "PackageVersion": "5.1.0",
-    "License": "I\u0027ll compress the cross-platform JSON capacitor, that should capacitor the JSON capacitor!",
-    "LicenseInformationOrigin": 1
+    "PackageId": "Senior Markets Orchestrator",
+    "PackageVersion": "4.0.0",
+    "Summary": "Odio maiores minus iste amet.",
+    "License": "We need to quantify the multi-byte COM application!",
+    "LicenseInformationOrigin": 2
   }
 ]

@@ -5,20 +5,32 @@
     "Authors": "Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson",
     "ValidationErrors": [
       {
-        "Error": "Alyson",
-        "Context": "https://carmelo.biz"
+        "Error": "Carmelo",
+        "Context": "http://michele.name"
       },
       {
-        "Error": "Michele",
-        "Context": "https://miles.net"
+        "Error": "Miles",
+        "Context": "https://freddie.com"
       },
       {
-        "Error": "Freddie",
-        "Context": "http://kade.net"
+        "Error": "Kade",
+        "Context": "https://jaunita.biz"
       },
       {
-        "Error": "Jaunita",
-        "Context": "http://marcelina.biz"
+        "Error": "Marcelina",
+        "Context": "http://donna.net"
+      },
+      {
+        "Error": "Darby",
+        "Context": "http://joana.org"
+      },
+      {
+        "Error": "Albin",
+        "Context": "http://hal.com"
+      },
+      {
+        "Error": "Betsy",
+        "Context": "http://quinton.com"
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",

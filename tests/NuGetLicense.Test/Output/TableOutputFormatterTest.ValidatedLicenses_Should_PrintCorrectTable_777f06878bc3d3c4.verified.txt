@@ -1,9 +1,9 @@
-﻿+---------------------------------+---------+----------------------------+-------------------------------------------------------------------------------------------------+---------------------+
-| Package                         | Version | License Information Origin | License Expression                                                                              | Package Project Url |
-+---------------------------------+---------+----------------------------+-------------------------------------------------------------------------------------------------+---------------------+
-| Legacy Metrics Planner          | 9.5.0   | Url                        | Use the open-source JBOD matrix, then you can synthesize the open-source matrix!                |                     |
-| Forward Quality Producer        | 6.3.7   | File                       | The CSS microchip is down, back up the bluetooth microchip so we can back up the CSS microchip! | https://jayne.name  |
-| Regional Security Architect     | 2.2.5   | Unknown                    |                                                                                                 |                     |
-| Global Usability Representative | 3.5.9   | Url                        |                                                                                                 |                     |
-| District Mobility Administrator | 3.2.3   | Ignored                    |                                                                                                 |                     |
-+---------------------------------+---------+----------------------------+-------------------------------------------------------------------------------------------------+---------------------+
+﻿+-------------------------------------+---------+----------------------------+----------------------------------------------------------------------------------+---------------------+
+| Package                             | Version | License Information Origin | License Expression                                                               | Package Project Url |
++-------------------------------------+---------+----------------------------+----------------------------------------------------------------------------------+---------------------+
+| Legacy Metrics Planner              | 9.5.0   | File                       | Use the open-source JBOD matrix, then you can synthesize the open-source matrix! |                     |
+| Dynamic Implementation Orchestrator | 3.1.0   | File                       |                                                                                  | http://ayden.info   |
+| Chief Identity Designer             | 9.2.3   | Expression                 |                                                                                  |                     |
+| Lead Implementation Assistant       | 2.5.5   | Overwrite                  |                                                                                  | https://kelley.info |
+| Chief Response Associate            | 7.2.5   | Expression                 | We need to back up the neural RAM monitor!                                       |                     |
++-------------------------------------+---------+----------------------------+----------------------------------------------------------------------------------+---------------------+

@@ -1,1 +1,1 @@
-﻿[{"PackageId":"Legacy Metrics Planner","PackageVersion":"9.5.0","License":"Use the open-source JBOD matrix, then you can synthesize the open-source matrix!","LicenseInformationOrigin":4}]
+﻿[{"PackageId":"Legacy Metrics Planner","PackageVersion":"9.5.0","Description":"Id facilis ipsam autem molestias soluta atque unde.","Summary":"Velit quidem iure ipsum accusantium sapiente qui aspernatur.","License":"Use the open-source JBOD matrix, then you can synthesize the open-source matrix!","LicenseInformationOrigin":2}]
