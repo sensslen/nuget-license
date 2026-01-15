@@ -55,10 +55,10 @@ foreach ($match in $matches) {
         # GitHub converts to lowercase, removes non-alphanumeric except spaces and hyphens,
         # converts spaces to hyphens, and removes consecutive/trailing hyphens
         $anchorId = $docTitle.ToLower()
-        $anchorId = $anchorId -replace '[^\w\s-]', ''  # Remove special chars except word chars, spaces, hyphens
-        $anchorId = $anchorId -replace '\s+', '-'       # Convert spaces to hyphens
-        $anchorId = $anchorId -replace '-+', '-'        # Remove consecutive hyphens
-        $anchorId = $anchorId.Trim('-')                 # Remove leading/trailing hyphens
+        $anchorId = $anchorId -replace '[^a-z0-9\s-]', ''  # Remove special chars except lowercase alphanumeric, spaces, hyphens
+        $anchorId = $anchorId -replace '\s+', '-'          # Convert spaces to hyphens
+        $anchorId = $anchorId -replace '-+', '-'           # Remove consecutive hyphens
+        $anchorId = $anchorId.Trim('-')                    # Remove leading/trailing hyphens
         
         # Create inline replacement: link to anchor using the title as link text
         $linkReplacement = "[${docTitle}](#${anchorId})"
