@@ -26,7 +26,8 @@ This repository contains **nuget-license**, a .NET tool for analyzing, printing,
 
 ### Prerequisites
 
-- .NET SDK 8.0, 9.0, and 10.0
+- .NET SDK 10.0.102 or later (with rollForward to support minor versions)
+  - The project also targets net8.0 and net9.0, which require their respective SDKs
 - MSBuild (for .NET Framework and C++ projects on Windows)
 
 ### Build Commands
@@ -94,7 +95,9 @@ dotnet format
 ### Naming Conventions
 
 - **Private/internal fields**: `_camelCase` with underscore prefix
-- **Static private fields**: `s_camelCase` with `s_` prefix
+- **Static private/internal fields**: `s_camelCase` with `s_` prefix (preferred for new code)
+  - Note: Some ported code (e.g., FileLicenseMatcher from Java SPDX library) uses `UPPER_CASE` for static readonly fields
+- **Public static readonly fields**: `UPPER_CASE` (especially for constants and patterns in ported code)
 - **Constants**: `PascalCase`
 - **Public members**: `PascalCase`
 - **Local variables**: `camelCase`
