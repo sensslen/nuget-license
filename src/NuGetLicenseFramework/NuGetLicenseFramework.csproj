@@ -21,14 +21,39 @@
     <Description>A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects.</Description>
     <LangVersion>10.0</LangVersion>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <PackageReadmeFile>README-nuget.md</PackageReadmeFile>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="..\..\README.md">
-      <Pack>true</Pack>
-      <PackagePath>README.md</PackagePath>
-    </Content>
-  </ItemGroup>
+  <!-- Generate README with GitHub links for NuGet package -->
+  <Target Name="GenerateReadmeWithGitHubLinks" BeforeTargets="_GetPackageFiles">
+    <PropertyGroup>
+      <InlineScriptPath>$(MSBuildThisFileDirectory)..\..\scripts\Inline-Readme.ps1</InlineScriptPath>
+      <OriginalReadmePath>$(MSBuildThisFileDirectory)..\..\README.md</OriginalReadmePath>
+      <DocsFolderPath>$(MSBuildThisFileDirectory)..\..\docs</DocsFolderPath>
+      <ProcessedReadmePath>$([System.IO.Path]::Combine('$(IntermediateOutputPath)', 'README-nuget.md'))</ProcessedReadmePath>
+    </PropertyGroup>
+    <!-- Get git commit hash -->
+    <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" IgnoreExitCode="true" WorkingDirectory="$(MSBuildThisFileDirectory)">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitHash" />
+      <Output TaskParameter="ExitCode" PropertyName="GitExitCode" />
+    </Exec>
+    <!-- Run the script with git hash if available -->
+    <Exec Command="pwsh &quot;$(InlineScriptPath)&quot; -ReadmePath &quot;$(OriginalReadmePath)&quot; -OutputPath &quot;$(ProcessedReadmePath)&quot; -DocsFolder &quot;$(DocsFolderPath)&quot; -GitCommitHash &quot;$(GitCommitHash)&quot;" Condition="'$(GitExitCode)' == '0'" />
+    <!-- Fallback without git hash if git command failed -->
+    <Exec Command="pwsh &quot;$(InlineScriptPath)&quot; -ReadmePath &quot;$(OriginalReadmePath)&quot; -OutputPath &quot;$(ProcessedReadmePath)&quot; -DocsFolder &quot;$(DocsFolderPath)&quot;" Condition="'$(GitExitCode)' != '0'" />
+    <ItemGroup>
+      <Content Include="$(ProcessedReadmePath)">
+        <Pack>true</Pack>
+        <PackagePath>README.md</PackagePath>
+        <Visible>false</Visible>
+      </Content>
+      <None Include="$(ProcessedReadmePath)">
+        <Pack>true</Pack>
+        <PackagePath>\</PackagePath>
+        <Visible>false</Visible>
+      </None>
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <ProjectReference Include="..\NuGetLicense\NuGetLicense.csproj" />
