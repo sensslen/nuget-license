@@ -1,0 +1,31 @@
+﻿[
+  {
+    "PackageId": "Global Implementation Engineer",
+    "PackageVersion": "6.0.7",
+    "Summary": "Aut expedita id accusamus.",
+    "LicenseUrl": "I\u0027ll calculate the 1080p HDD system, that should system the HDD system!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Dynamic Implementation Planner",
+    "PackageVersion": "1.0.3",
+    "PackageProjectUrl": "https://tito.info",
+    "License": "I\u0027ll input the cross-platform AGP system, that should system the AGP system!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "Description": "Id facilis ipsam autem molestias soluta atque unde.",
+    "Summary": "Velit quidem iure ipsum accusantium sapiente qui aspernatur.",
+    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Senior Markets Orchestrator",
+    "PackageVersion": "4.0.0",
+    "Summary": "Odio maiores minus iste amet.",
+    "License": "We need to quantify the multi-byte COM application!",
+    "LicenseInformationOrigin": 2
+  }
+]

@@ -1,0 +1,185 @@
+﻿[
+  {
+    "PackageId": "Legacy Research Officer",
+    "PackageVersion": "0.5.1",
+    "PackageProjectUrl": "http://van.biz",
+    "Summary": "Quo excepturi molestias laudantium laudantium quo et.",
+    "ValidationErrors": [
+      {
+        "Error": "Gaylord",
+        "Context": "https://bret.org"
+      },
+      {
+        "Error": "Jewell",
+        "Context": "https://khalil.com"
+      },
+      {
+        "Error": "Aiyana",
+        "Context": "http://uriel.com"
+      },
+      {
+        "Error": "Ignatius",
+        "Context": "http://edgardo.biz"
+      },
+      {
+        "Error": "Laverna",
+        "Context": "http://khalil.org"
+      },
+      {
+        "Error": "Mona",
+        "Context": "https://erling.net"
+      },
+      {
+        "Error": "Dusty",
+        "Context": "http://ali.com"
+      },
+      {
+        "Error": "Andrew",
+        "Context": "https://immanuel.net"
+      },
+      {
+        "Error": "Juana",
+        "Context": "http://maeve.org"
+      },
+      {
+        "Error": "Alysha",
+        "Context": "https://sydnee.com"
+      }
+    ],
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Principal Functionality Agent",
+    "PackageVersion": "1.5.3",
+    "Summary": "Voluptatibus qui ea doloremque dolor ducimus vel autem saepe.",
+    "ValidationErrors": [
+      {
+        "Error": "Eleanora",
+        "Context": "http://jaeden.info"
+      },
+      {
+        "Error": "Nikolas",
+        "Context": "https://daphney.net"
+      },
+      {
+        "Error": "Oceane",
+        "Context": "http://clifton.com"
+      },
+      {
+        "Error": "Francisco",
+        "Context": "http://bessie.com"
+      },
+      {
+        "Error": "Verna",
+        "Context": "https://rupert.info"
+      },
+      {
+        "Error": "Furman",
+        "Context": "https://torrey.biz"
+      }
+    ],
+    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Dynamic Marketing Representative",
+    "PackageVersion": "4.4.7",
+    "PackageProjectUrl": "http://mariam.com",
+    "Description": "Repellendus libero ipsa temporibus libero odio nihil.",
+    "Summary": "Dolorem quae excepturi.",
+    "ValidationErrors": [
+      {
+        "Error": "Michele",
+        "Context": "https://miles.net"
+      },
+      {
+        "Error": "Freddie",
+        "Context": "http://kade.net"
+      },
+      {
+        "Error": "Jaunita",
+        "Context": "http://marcelina.biz"
+      },
+      {
+        "Error": "Donna",
+        "Context": "https://darby.biz"
+      },
+      {
+        "Error": "Joana",
+        "Context": "https://albin.info"
+      }
+    ],
+    "License": "synthesizing the alarm won\u0027t do anything, we need to program the back-end USB alarm!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Regional Solutions Executive",
+    "PackageVersion": "1.8.0",
+    "Summary": "Aut minus repellat.",
+    "ValidationErrors": [
+      {
+        "Error": "Paula",
+        "Context": "http://heidi.biz"
+      },
+      {
+        "Error": "Letha",
+        "Context": "https://reid.name"
+      },
+      {
+        "Error": "Amely",
+        "Context": "http://nikki.org"
+      },
+      {
+        "Error": "Mckayla",
+        "Context": "http://kiara.org"
+      }
+    ],
+    "License": "You can\u0027t connect the feed without backing up the primary XML feed!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "National Assurance Orchestrator",
+    "PackageVersion": "3.9.1",
+    "PackageProjectUrl": "https://pietro.info",
+    "Summary": "Ea quis qui quia accusantium.",
+    "ValidationErrors": [
+      {
+        "Error": "Mckenna",
+        "Context": "http://ladarius.org"
+      },
+      {
+        "Error": "Adrianna",
+        "Context": "https://ursula.name"
+      },
+      {
+        "Error": "Monty",
+        "Context": "https://fabiola.com"
+      },
+      {
+        "Error": "Lyric",
+        "Context": "http://gene.net"
+      },
+      {
+        "Error": "Dale",
+        "Context": "https://jon.org"
+      },
+      {
+        "Error": "Gabriella",
+        "Context": "http://jevon.name"
+      },
+      {
+        "Error": "Deja",
+        "Context": "http://clementina.info"
+      },
+      {
+        "Error": "Jayson",
+        "Context": "https://casimer.name"
+      },
+      {
+        "Error": "Kendall",
+        "Context": "https://abe.biz"
+      }
+    ],
+    "LicenseInformationOrigin": 2
+  }
+]

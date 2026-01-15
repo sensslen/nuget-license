@@ -1,0 +1,181 @@
+﻿[
+  {
+    "PackageId": "Chief Response Associate",
+    "PackageVersion": "7.2.5",
+    "License": "We need to back up the neural RAM monitor!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Principal Functionality Agent",
+    "PackageVersion": "1.5.3",
+    "ValidationErrors": [
+      {
+        "Error": "Wilson",
+        "Context": "https://guadalupe.com"
+      },
+      {
+        "Error": "Otho",
+        "Context": "http://general.net"
+      },
+      {
+        "Error": "Skylar",
+        "Context": "https://haylie.biz"
+      },
+      {
+        "Error": "Audreanne",
+        "Context": "http://graciela.net"
+      },
+      {
+        "Error": "Maddison",
+        "Context": "http://randy.net"
+      },
+      {
+        "Error": "Dereck",
+        "Context": "http://cara.info"
+      },
+      {
+        "Error": "Dawson",
+        "Context": "http://addie.org"
+      },
+      {
+        "Error": "Xander",
+        "Context": "https://everette.info"
+      },
+      {
+        "Error": "Otha",
+        "Context": "https://cletus.net"
+      }
+    ],
+    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Chief Identity Designer",
+    "PackageVersion": "9.2.3",
+    "Description": "Reprehenderit dolore enim sunt iure dolorum.",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Legacy Applications Engineer",
+    "PackageVersion": "6.2.2",
+    "PackageProjectUrl": "http://cynthia.name",
+    "Description": "Voluptatem repudiandae velit.",
+    "Summary": "Inventore nihil rem.",
+    "ValidationErrors": [
+      {
+        "Error": "Tessie",
+        "Context": "http://adelbert.net"
+      },
+      {
+        "Error": "Zoe",
+        "Context": "http://clare.net"
+      },
+      {
+        "Error": "Bobby",
+        "Context": "http://cecil.name"
+      },
+      {
+        "Error": "Kira",
+        "Context": "https://makenzie.com"
+      }
+    ],
+    "License": "If we hack the bandwidth, we can get to the AI bandwidth through the redundant AI bandwidth!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Central Accounts Facilitator",
+    "PackageVersion": "7.4.5",
+    "PackageProjectUrl": "http://melba.name",
+    "Description": "Est ut quibusdam quis.",
+    "ValidationErrors": [
+      {
+        "Error": "Wyman",
+        "Context": "http://guido.info"
+      },
+      {
+        "Error": "Reinhold",
+        "Context": "http://albertha.info"
+      },
+      {
+        "Error": "Robyn",
+        "Context": "https://eula.name"
+      },
+      {
+        "Error": "Rosanna",
+        "Context": "http://kian.org"
+      },
+      {
+        "Error": "Lia",
+        "Context": "https://manley.info"
+      },
+      {
+        "Error": "Bridget",
+        "Context": "https://alberta.info"
+      }
+    ],
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Corporate Factors Architect",
+    "PackageVersion": "4.7.7",
+    "Description": "Autem possimus provident repellendus libero ipsa temporibus libero odio.",
+    "ValidationErrors": [
+      {
+        "Error": "Catalina",
+        "Context": "http://jolie.com"
+      },
+      {
+        "Error": "Dianna",
+        "Context": "https://leda.net"
+      },
+      {
+        "Error": "Nicola",
+        "Context": "http://aleen.name"
+      }
+    ],
+    "License": "If we input the panel, we can get to the COM panel through the optical COM panel!",
+    "LicenseInformationOrigin": 4
+  },
+  {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "Summary": "Id facilis ipsam autem molestias soluta atque unde.",
+    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
+    "LicenseInformationOrigin": 5
+  },
+  {
+    "PackageId": "Lead Implementation Assistant",
+    "PackageVersion": "2.5.5",
+    "PackageProjectUrl": "https://kelley.info",
+    "Description": "Odio maiores minus iste amet.",
+    "LicenseInformationOrigin": 4
+  },
+  {
+    "PackageId": "Dynamic Implementation Orchestrator",
+    "PackageVersion": "3.1.0",
+    "PackageProjectUrl": "http://ayden.info",
+    "Summary": "Ab ex cupiditate.",
+    "LicenseInformationOrigin": 5
+  },
+  {
+    "PackageId": "International Integration Orchestrator",
+    "PackageVersion": "5.8.3",
+    "Description": "Unde error cupiditate alias.",
+    "ValidationErrors": [
+      {
+        "Error": "Catherine",
+        "Context": "http://larry.biz"
+      },
+      {
+        "Error": "Luella",
+        "Context": "http://van.biz"
+      },
+      {
+        "Error": "Eugene",
+        "Context": "http://albina.net"
+      }
+    ],
+    "License": "Use the primary AGP array, then you can connect the primary array!",
+    "LicenseInformationOrigin": 4
+  }
+]

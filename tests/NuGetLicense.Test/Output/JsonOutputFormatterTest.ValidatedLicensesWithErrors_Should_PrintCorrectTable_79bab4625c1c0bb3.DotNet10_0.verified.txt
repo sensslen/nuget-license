@@ -1,0 +1,330 @@
+﻿[
+  {
+    "PackageId": "Dynamic Identity Director",
+    "PackageVersion": "8.4.5",
+    "PackageProjectUrl": "https://bradly.name",
+    "Authors": "Patsy Williamson,Patsy Williamson,Patsy Williamson,Patsy Williamson,Patsy Williamson,Patsy Williamson,Patsy Williamson,Patsy Williamson,Patsy Williamson",
+    "Summary": "Nihil sit nostrum ex praesentium.",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Principal Functionality Agent",
+    "PackageVersion": "1.5.3",
+    "Summary": "Voluptatibus qui ea doloremque dolor ducimus vel autem saepe.",
+    "ValidationErrors": [
+      {
+        "Error": "Eleanora",
+        "Context": "http://jaeden.info"
+      },
+      {
+        "Error": "Nikolas",
+        "Context": "https://daphney.net"
+      },
+      {
+        "Error": "Oceane",
+        "Context": "http://clifton.com"
+      },
+      {
+        "Error": "Francisco",
+        "Context": "http://bessie.com"
+      },
+      {
+        "Error": "Verna",
+        "Context": "https://rupert.info"
+      },
+      {
+        "Error": "Furman",
+        "Context": "https://torrey.biz"
+      }
+    ],
+    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Senior Quality Engineer",
+    "PackageVersion": "9.8.7",
+    "PackageProjectUrl": "https://adam.info",
+    "License": "If we program the circuit, we can get to the SAS circuit through the back-end SAS circuit!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Chief Markets Analyst",
+    "PackageVersion": "9.2.9",
+    "Authors": "Melissa Kuhlman,Melissa Kuhlman,Melissa Kuhlman,Melissa Kuhlman,Melissa Kuhlman",
+    "Summary": "Non fugit commodi non ducimus possimus.",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "District Implementation Assistant",
+    "PackageVersion": "0.4.7",
+    "PackageProjectUrl": "http://melisa.com",
+    "Summary": "Qui officiis delectus beatae cupiditate tempora deserunt et magni odio.",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "International Optimization Coordinator",
+    "PackageVersion": "6.5.5",
+    "PackageProjectUrl": "http://antoinette.org",
+    "Description": "Minima hic debitis.",
+    "LicenseInformationOrigin": 5
+  },
+  {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "Description": "Id facilis ipsam autem molestias soluta atque unde.",
+    "Summary": "Velit quidem iure ipsum accusantium sapiente qui aspernatur.",
+    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Legacy Research Officer",
+    "PackageVersion": "0.5.1",
+    "PackageProjectUrl": "http://van.biz",
+    "Summary": "Quo excepturi molestias laudantium laudantium quo et.",
+    "ValidationErrors": [
+      {
+        "Error": "Gaylord",
+        "Context": "https://bret.org"
+      },
+      {
+        "Error": "Jewell",
+        "Context": "https://khalil.com"
+      },
+      {
+        "Error": "Aiyana",
+        "Context": "http://uriel.com"
+      },
+      {
+        "Error": "Ignatius",
+        "Context": "http://edgardo.biz"
+      },
+      {
+        "Error": "Laverna",
+        "Context": "http://khalil.org"
+      },
+      {
+        "Error": "Mona",
+        "Context": "https://erling.net"
+      },
+      {
+        "Error": "Dusty",
+        "Context": "http://ali.com"
+      },
+      {
+        "Error": "Andrew",
+        "Context": "https://immanuel.net"
+      },
+      {
+        "Error": "Juana",
+        "Context": "http://maeve.org"
+      },
+      {
+        "Error": "Alysha",
+        "Context": "https://sydnee.com"
+      }
+    ],
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Legacy Research Technician",
+    "PackageVersion": "6.1.9",
+    "Authors": "Lorraine Jones,Lorraine Jones,Lorraine Jones,Lorraine Jones,Lorraine Jones,Lorraine Jones,Lorraine Jones,Lorraine Jones",
+    "License": "I\u0027ll program the back-end EXE sensor, that should sensor the EXE sensor!",
+    "LicenseInformationOrigin": 4
+  },
+  {
+    "PackageId": "Dynamic Marketing Representative",
+    "PackageVersion": "4.4.7",
+    "PackageProjectUrl": "http://mariam.com",
+    "Description": "Repellendus libero ipsa temporibus libero odio nihil.",
+    "Summary": "Dolorem quae excepturi.",
+    "ValidationErrors": [
+      {
+        "Error": "Michele",
+        "Context": "https://miles.net"
+      },
+      {
+        "Error": "Freddie",
+        "Context": "http://kade.net"
+      },
+      {
+        "Error": "Jaunita",
+        "Context": "http://marcelina.biz"
+      },
+      {
+        "Error": "Donna",
+        "Context": "https://darby.biz"
+      },
+      {
+        "Error": "Joana",
+        "Context": "https://albin.info"
+      }
+    ],
+    "License": "synthesizing the alarm won\u0027t do anything, we need to program the back-end USB alarm!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "District Branding Analyst",
+    "PackageVersion": "1.9.5",
+    "PackageProjectUrl": "https://paula.net",
+    "LicenseInformationOrigin": 4
+  },
+  {
+    "PackageId": "Principal Branding Assistant",
+    "PackageVersion": "8.2.6",
+    "Authors": "",
+    "Description": "Quaerat molestias blanditiis perspiciatis voluptatem culpa ab omnis iste.",
+    "License": "Use the multi-byte JSON panel, then you can bypass the multi-byte panel!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Future Accounts Designer",
+    "PackageVersion": "5.1.9",
+    "License": "We need to navigate the wireless SAS pixel!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Chief Mobility Supervisor",
+    "PackageVersion": "2.3.6",
+    "Authors": "",
+    "Description": "Natus labore non nihil et aut minima.",
+    "License": "generating the matrix won\u0027t do anything, we need to parse the solid state GB matrix!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Global Markets Administrator",
+    "PackageVersion": "8.6.8",
+    "PackageProjectUrl": "https://lois.biz",
+    "Authors": "Dominic Reilly,Dominic Reilly,Dominic Reilly,Dominic Reilly,Dominic Reilly,Dominic Reilly,Dominic Reilly",
+    "Description": "Numquam quibusdam excepturi consequatur rerum consequatur.",
+    "License": "You can\u0027t transmit the application without connecting the open-source SDD application!",
+    "LicenseInformationOrigin": 4
+  },
+  {
+    "PackageId": "Dynamic Division Agent",
+    "PackageVersion": "4.2.8",
+    "PackageProjectUrl": "https://camilla.info",
+    "License": "programming the hard drive won\u0027t do anything, we need to transmit the cross-platform HTTP hard drive!",
+    "LicenseInformationOrigin": 5
+  },
+  {
+    "PackageId": "Future Data Architect",
+    "PackageVersion": "8.5.1",
+    "Authors": "Benjamin Spinka,Benjamin Spinka,Benjamin Spinka,Benjamin Spinka,Benjamin Spinka",
+    "Description": "Numquam sed dolores suscipit.",
+    "License": "The FTP firewall is down, compress the back-end firewall so we can compress the FTP firewall!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Global Research Executive",
+    "PackageVersion": "1.4.4",
+    "Authors": "Alicia Emmerich,Alicia Emmerich,Alicia Emmerich,Alicia Emmerich,Alicia Emmerich,Alicia Emmerich,Alicia Emmerich,Alicia Emmerich,Alicia Emmerich",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Regional Solutions Executive",
+    "PackageVersion": "1.8.0",
+    "Summary": "Aut minus repellat.",
+    "ValidationErrors": [
+      {
+        "Error": "Paula",
+        "Context": "http://heidi.biz"
+      },
+      {
+        "Error": "Letha",
+        "Context": "https://reid.name"
+      },
+      {
+        "Error": "Amely",
+        "Context": "http://nikki.org"
+      },
+      {
+        "Error": "Mckayla",
+        "Context": "http://kiara.org"
+      }
+    ],
+    "License": "You can\u0027t connect the feed without backing up the primary XML feed!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "National Assurance Orchestrator",
+    "PackageVersion": "3.9.1",
+    "PackageProjectUrl": "https://pietro.info",
+    "Summary": "Ea quis qui quia accusantium.",
+    "ValidationErrors": [
+      {
+        "Error": "Mckenna",
+        "Context": "http://ladarius.org"
+      },
+      {
+        "Error": "Adrianna",
+        "Context": "https://ursula.name"
+      },
+      {
+        "Error": "Monty",
+        "Context": "https://fabiola.com"
+      },
+      {
+        "Error": "Lyric",
+        "Context": "http://gene.net"
+      },
+      {
+        "Error": "Dale",
+        "Context": "https://jon.org"
+      },
+      {
+        "Error": "Gabriella",
+        "Context": "http://jevon.name"
+      },
+      {
+        "Error": "Deja",
+        "Context": "http://clementina.info"
+      },
+      {
+        "Error": "Jayson",
+        "Context": "https://casimer.name"
+      },
+      {
+        "Error": "Kendall",
+        "Context": "https://abe.biz"
+      }
+    ],
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Dynamic Implementation Planner",
+    "PackageVersion": "1.0.3",
+    "PackageProjectUrl": "https://tito.info",
+    "License": "I\u0027ll input the cross-platform AGP system, that should system the AGP system!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Investor Data Assistant",
+    "PackageVersion": "6.9.6",
+    "PackageProjectUrl": "https://charity.net",
+    "Description": "Tempora praesentium eos tempore dolorem dolor labore cumque autem accusantium.",
+    "Summary": "Occaecati ipsum aliquid ut tenetur rerum voluptatibus nesciunt.",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "National Usability Manager",
+    "PackageVersion": "0.3.8",
+    "License": "Use the 1080p USB alarm, then you can copy the 1080p alarm!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Senior Markets Orchestrator",
+    "PackageVersion": "4.0.0",
+    "Summary": "Odio maiores minus iste amet.",
+    "License": "We need to quantify the multi-byte COM application!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "International Factors Specialist",
+    "PackageVersion": "0.7.2",
+    "PackageProjectUrl": "http://rowan.com",
+    "Authors": "Michelle Harvey,Michelle Harvey,Michelle Harvey,Michelle Harvey,Michelle Harvey,Michelle Harvey,Michelle Harvey,Michelle Harvey,Michelle Harvey,Michelle Harvey",
+    "Summary": "Aliquid id debitis commodi sit eaque ea repudiandae pariatur.",
+    "LicenseInformationOrigin": 3
+  }
+]

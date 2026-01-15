@@ -1,0 +1,8 @@
+﻿| Package                       | Version | License Information Origin | License Expression                                                                   | Error     | Error Context       |
+| ----------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------------------ | --------- | ------------------- |
+| Principal Functionality Agent | 1.5.3   | Ignored                    | connecting the firewall won't do anything, we need to copy the digital XSS firewall! | Eleanora  | http://jaeden.info  |
+|                               |         |                            |                                                                                      | Nikolas   | https://daphney.net |
+|                               |         |                            |                                                                                      | Oceane    | http://clifton.com  |
+|                               |         |                            |                                                                                      | Francisco | http://bessie.com   |
+|                               |         |                            |                                                                                      | Verna     | https://rupert.info |
+|                               |         |                            |                                                                                      | Furman    | https://torrey.biz  |

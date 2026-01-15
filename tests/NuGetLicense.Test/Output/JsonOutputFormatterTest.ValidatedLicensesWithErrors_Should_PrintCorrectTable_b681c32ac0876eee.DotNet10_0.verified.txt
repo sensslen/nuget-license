@@ -1,0 +1,103 @@
+﻿[
+  {
+    "PackageId": "Dynamic Marketing Representative",
+    "PackageVersion": "4.4.7",
+    "PackageProjectUrl": "http://mariam.com",
+    "Description": "Repellendus libero ipsa temporibus libero odio nihil.",
+    "Summary": "Dolorem quae excepturi.",
+    "ValidationErrors": [
+      {
+        "Error": "Michele",
+        "Context": "https://miles.net"
+      },
+      {
+        "Error": "Freddie",
+        "Context": "http://kade.net"
+      },
+      {
+        "Error": "Jaunita",
+        "Context": "http://marcelina.biz"
+      },
+      {
+        "Error": "Donna",
+        "Context": "https://darby.biz"
+      },
+      {
+        "Error": "Joana",
+        "Context": "https://albin.info"
+      }
+    ],
+    "License": "synthesizing the alarm won\u0027t do anything, we need to program the back-end USB alarm!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Regional Solutions Executive",
+    "PackageVersion": "1.8.0",
+    "Summary": "Aut minus repellat.",
+    "ValidationErrors": [
+      {
+        "Error": "Paula",
+        "Context": "http://heidi.biz"
+      },
+      {
+        "Error": "Letha",
+        "Context": "https://reid.name"
+      },
+      {
+        "Error": "Amely",
+        "Context": "http://nikki.org"
+      },
+      {
+        "Error": "Mckayla",
+        "Context": "http://kiara.org"
+      }
+    ],
+    "License": "You can\u0027t connect the feed without backing up the primary XML feed!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "National Assurance Orchestrator",
+    "PackageVersion": "3.9.1",
+    "PackageProjectUrl": "https://pietro.info",
+    "Summary": "Ea quis qui quia accusantium.",
+    "ValidationErrors": [
+      {
+        "Error": "Mckenna",
+        "Context": "http://ladarius.org"
+      },
+      {
+        "Error": "Adrianna",
+        "Context": "https://ursula.name"
+      },
+      {
+        "Error": "Monty",
+        "Context": "https://fabiola.com"
+      },
+      {
+        "Error": "Lyric",
+        "Context": "http://gene.net"
+      },
+      {
+        "Error": "Dale",
+        "Context": "https://jon.org"
+      },
+      {
+        "Error": "Gabriella",
+        "Context": "http://jevon.name"
+      },
+      {
+        "Error": "Deja",
+        "Context": "http://clementina.info"
+      },
+      {
+        "Error": "Jayson",
+        "Context": "https://casimer.name"
+      },
+      {
+        "Error": "Kendall",
+        "Context": "https://abe.biz"
+      }
+    ],
+    "LicenseInformationOrigin": 2
+  }
+]

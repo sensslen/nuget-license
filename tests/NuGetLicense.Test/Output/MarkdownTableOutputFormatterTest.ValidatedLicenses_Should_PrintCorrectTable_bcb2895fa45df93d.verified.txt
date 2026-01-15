@@ -1,2 +1,0 @@
-﻿| Package | Version | License Information Origin | License Expression | License Url | Copyright | Package Project Url |
-| ------- | ------- | -------------------------- | ------------------ | ----------- | --------- | ------------------- |

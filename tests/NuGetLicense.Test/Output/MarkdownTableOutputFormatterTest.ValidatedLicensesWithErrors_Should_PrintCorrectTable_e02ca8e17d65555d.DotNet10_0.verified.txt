@@ -1,0 +1,3 @@
+﻿| Package                | Version | License Information Origin | License Expression                                                               | Error | Error Context |
+| ---------------------- | ------- | -------------------------- | -------------------------------------------------------------------------------- | ----- | ------------- |
+| Legacy Metrics Planner | 9.5.0   | File                       | Use the open-source JBOD matrix, then you can synthesize the open-source matrix! |       |               |

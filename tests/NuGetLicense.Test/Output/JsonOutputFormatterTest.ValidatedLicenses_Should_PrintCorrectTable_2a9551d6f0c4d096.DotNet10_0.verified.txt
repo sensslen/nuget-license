@@ -1,0 +1,42 @@
+﻿[
+  {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "Authors": "Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson",
+    "Summary": "Iste amet nisi est recusandae veniam quasi maxime.",
+    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Customer Solutions Facilitator",
+    "PackageVersion": "1.1.8",
+    "PackageProjectUrl": "https://alize.info",
+    "Authors": "Audrey Kuvalis,Audrey Kuvalis,Audrey Kuvalis,Audrey Kuvalis,Audrey Kuvalis,Audrey Kuvalis,Audrey Kuvalis,Audrey Kuvalis",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Chief Configuration Orchestrator",
+    "PackageVersion": "9.6.8",
+    "PackageProjectUrl": "http://lucius.biz",
+    "Authors": "Deborah Sanford",
+    "Summary": "Fugiat ratione quam qui sapiente eius ut numquam rem.",
+    "License": "Use the multi-byte JSON panel, then you can bypass the multi-byte panel!",
+    "LicenseUrl": "If we connect the firewall, we can get to the EXE firewall through the neural EXE firewall!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Customer Directives Architect",
+    "PackageVersion": "2.3.6",
+    "PackageProjectUrl": "https://kira.net",
+    "Summary": "Adipisci nisi perspiciatis hic ipsum numquam sed.",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "National Tactics Architect",
+    "PackageVersion": "6.7.8",
+    "PackageProjectUrl": "https://margaret.net",
+    "Summary": "Dolor labore cumque autem accusantium necessitatibus libero occaecati ipsum.",
+    "License": "We need to parse the auxiliary SAS capacitor!",
+    "LicenseInformationOrigin": 2
+  }
+]

@@ -1,0 +1,10 @@
+﻿[
+  {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "Authors": "Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson",
+    "Summary": "Iste amet nisi est recusandae veniam quasi maxime.",
+    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
+    "LicenseInformationOrigin": 1
+  }
+]
