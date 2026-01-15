@@ -48,7 +48,7 @@ foreach ($match in $matches) {
         $docTitle = if ($titleMatch.Success) { $titleMatch.Groups[1].Value.Trim() } else { $linkText }
         
         # Remove the title from content since we'll use it as a section header
-        $docContentWithoutTitle = $docContent -replace '^\s*#\s+.+$', ''
+        $docContentWithoutTitle = [regex]::Replace($docContent, '^\s*#\s+.+$', '', [System.Text.RegularExpressions.RegexOptions]::Multiline)
         $docContentWithoutTitle = $docContentWithoutTitle.Trim()
         
         # Create an anchor link (GitHub-style)
