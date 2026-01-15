@@ -26,7 +26,7 @@ This repository contains **nuget-license**, a .NET tool for analyzing, printing,
 
 ### Prerequisites
 
-- .NET SDK 10.0.102 or later (with rollForward to support minor versions)
+- .NET SDK 10.0.101 or later (with rollForward to support minor versions)
   - The project also targets net8.0 and net9.0, which require their respective SDKs
 - MSBuild (for .NET Framework and C++ projects on Windows)
 
