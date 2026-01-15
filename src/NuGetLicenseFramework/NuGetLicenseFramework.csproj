@@ -21,6 +21,7 @@
     <Description>A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects.</Description>
     <LangVersion>10.0</LangVersion>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <PackageReadmeFile>README-nuget.md</PackageReadmeFile>
   </PropertyGroup>
 
   <!-- Generate README with GitHub links for NuGet package -->
@@ -30,7 +31,6 @@
       <OriginalReadmePath>$(MSBuildThisFileDirectory)..\..\README.md</OriginalReadmePath>
       <DocsFolderPath>$(MSBuildThisFileDirectory)..\..\docs</DocsFolderPath>
       <ProcessedReadmePath>$([System.IO.Path]::Combine('$(IntermediateOutputPath)', 'README-nuget.md'))</ProcessedReadmePath>
-      <PackageReadmeFile>README-nuget.md</PackageReadmeFile>
     </PropertyGroup>
     <!-- Get git commit hash -->
     <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" IgnoreExitCode="true" WorkingDirectory="$(MSBuildThisFileDirectory)">
