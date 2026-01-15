@@ -33,7 +33,7 @@
       <InlineScriptPath>$(MSBuildThisFileDirectory)..\..\scripts\Inline-Readme.ps1</InlineScriptPath>
       <OriginalReadmePath>$(MSBuildThisFileDirectory)..\..\README.md</OriginalReadmePath>
       <DocsFolderPath>$(MSBuildThisFileDirectory)..\..\docs</DocsFolderPath>
-      <InlinedReadmePath>$(MSBuildProjectDirectory)\obj\README-nuget.md</InlinedReadmePath>
+      <InlinedReadmePath>$(IntermediateOutputPath)README-nuget.md</InlinedReadmePath>
       <PackageReadmeFile>README-nuget.md</PackageReadmeFile>
     </PropertyGroup>
     <Exec Command="pwsh &quot;$(InlineScriptPath)&quot; -ReadmePath &quot;$(OriginalReadmePath)&quot; -OutputPath &quot;$(InlinedReadmePath)&quot; -DocsFolder &quot;$(DocsFolderPath)&quot;" />
