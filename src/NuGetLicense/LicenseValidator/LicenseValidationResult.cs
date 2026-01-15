@@ -12,6 +12,8 @@ namespace NuGetLicense.LicenseValidator
         string? LicenseUrl,
         string? Copyright,
         string? Authors,
+        string? Description,
+        string? Summary,
         LicenseInformationOrigin LicenseInformationOrigin,
         List<ValidationError>? ValidationErrors = null)
     {
@@ -26,6 +28,8 @@ namespace NuGetLicense.LicenseValidator
                                                                                  $"{nameof(PackageProjectUrl)} = {PackageProjectUrl}, " +
                                                                                  $"{nameof(Copyright)} = {Copyright}, " +
                                                                                  $"{nameof(Authors)} = {Authors}, " +
+                                                                                 $"{nameof(Description)} = {Description}, " +
+                                                                                 $"{nameof(Summary)} = {Summary}, " +
                                                                                  $"{nameof(ValidationErrors)} = [{string.Join(",", ValidationErrors)}], " +
                                                                                  $"{nameof(License)} = {License}, " +
                                                                                  $"{nameof(LicenseUrl)} = {LicenseUrl}, " +

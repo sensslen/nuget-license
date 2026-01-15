@@ -37,6 +37,8 @@ namespace NuGetLicense.Test.Output
                         _includeLicenseUrl ? GetNullable(f, f.Hacker.Phrase) : null,
                         _includeCopyright ? GetNullable(f, f.Hacker.Phrase) : null,
                         _includeAuthors ? GetNullable(f, () => string.Join(",", Enumerable.Repeat(true, f.Random.Int(0, 10)).Select(_ => f.Person.FullName))) : null,
+                        GetNullable<string>(f, () => f.Lorem.Sentence()),
+                        GetNullable<string>(f, () => f.Lorem.Sentence()),
                         f.Random.Enum<LicenseInformationOrigin>()))
                 .UseSeed(8675309);
             LicenseValidationErrorFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
@@ -47,6 +49,8 @@ namespace NuGetLicense.Test.Output
                         _includeLicenseUrl ? GetNullable(f, f.Hacker.Phrase) : null,
                         _includeCopyright ? GetNullable(f, f.Hacker.Phrase) : null,
                         _includeAuthors ? GetNullable(f, () => string.Join(",", Enumerable.Repeat(true, f.Random.Int(0, 10)).Select(_ => f.Person.FullName))) : null,
+                        GetNullable<string>(f, () => f.Lorem.Sentence()),
+                        GetNullable<string>(f, () => f.Lorem.Sentence()),
                         f.Random.Enum<LicenseInformationOrigin>(),
                         GetErrorList(f).ToList()))
                 .UseSeed(9078345);
