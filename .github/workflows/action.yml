@@ -353,7 +353,7 @@ jobs:
       - name: restore
         run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
 
-      - uses: paulhatch/semantic-version@v5.4.0
+      - uses: paulhatch/semantic-version@v6.0.0
         id: version
         name: version
         with:
@@ -398,7 +398,7 @@ jobs:
           echo "publish to path: $path"
           echo "path=$path" >> $env:GITHUB_OUTPUT
 
-      - uses: paulhatch/semantic-version@v5.4.0
+      - uses: paulhatch/semantic-version@v6.0.0
         id: version
         name: version
         with:
