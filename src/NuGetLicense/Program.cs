@@ -122,24 +122,24 @@ namespace NuGetLicense
 
             rootCommand.SetHandler(async (context) =>
             {
-                var inputFile = context.ParseResult.GetValueForOption(inputFileOption);
-                var inputJsonFile = context.ParseResult.GetValueForOption(inputJsonFileOption);
-                var includeTransitive = context.ParseResult.GetValueForOption(includeTransitiveOption);
-                var allowedLicenses = context.ParseResult.GetValueForOption(allowedLicensesOption);
-                var ignoredPackages = context.ParseResult.GetValueForOption(ignoredPackagesOption);
-                var licenseMapping = context.ParseResult.GetValueForOption(licenseMappingOption);
-                var overridePackageInformation = context.ParseResult.GetValueForOption(overridePackageInformationOption);
-                var downloadLicenseInformation = context.ParseResult.GetValueForOption(downloadLicenseInformationOption);
-                var outputType = context.ParseResult.GetValueForOption(outputTypeOption);
-                var returnErrorsOnly = context.ParseResult.GetValueForOption(returnErrorsOnlyOption);
-                var includeIgnoredPackages = context.ParseResult.GetValueForOption(includeIgnoredPackagesOption);
-                var excludedProjects = context.ParseResult.GetValueForOption(excludedProjectsOption);
-                var includeSharedProjects = context.ParseResult.GetValueForOption(includeSharedProjectsOption);
-                var targetFramework = context.ParseResult.GetValueForOption(targetFrameworkOption);
-                var destinationFile = context.ParseResult.GetValueForOption(destinationFileOption);
-                var licenseFileMappings = context.ParseResult.GetValueForOption(licenseFileMappingsOption);
+                string? inputFile = context.ParseResult.GetValueForOption(inputFileOption);
+                string? inputJsonFile = context.ParseResult.GetValueForOption(inputJsonFileOption);
+                bool includeTransitive = context.ParseResult.GetValueForOption(includeTransitiveOption);
+                string? allowedLicenses = context.ParseResult.GetValueForOption(allowedLicensesOption);
+                string? ignoredPackages = context.ParseResult.GetValueForOption(ignoredPackagesOption);
+                string? licenseMapping = context.ParseResult.GetValueForOption(licenseMappingOption);
+                string? overridePackageInformation = context.ParseResult.GetValueForOption(overridePackageInformationOption);
+                string? downloadLicenseInformation = context.ParseResult.GetValueForOption(downloadLicenseInformationOption);
+                OutputType outputType = context.ParseResult.GetValueForOption(outputTypeOption);
+                bool returnErrorsOnly = context.ParseResult.GetValueForOption(returnErrorsOnlyOption);
+                bool includeIgnoredPackages = context.ParseResult.GetValueForOption(includeIgnoredPackagesOption);
+                string? excludedProjects = context.ParseResult.GetValueForOption(excludedProjectsOption);
+                bool includeSharedProjects = context.ParseResult.GetValueForOption(includeSharedProjectsOption);
+                string? targetFramework = context.ParseResult.GetValueForOption(targetFrameworkOption);
+                string? destinationFile = context.ParseResult.GetValueForOption(destinationFileOption);
+                string? licenseFileMappings = context.ParseResult.GetValueForOption(licenseFileMappingsOption);
 
-                var exitCode = await ExecuteAsync(
+                int exitCode = await ExecuteAsync(
                     inputFile,
                     inputJsonFile,
                     includeTransitive,
@@ -376,10 +376,10 @@ namespace NuGetLicense
         }
 
         private static IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(
-            IEnumerable<string> projects, 
-            ReferencedPackageReader reader, 
-            bool includeTransitive, 
-            string? targetFramework, 
+            IEnumerable<string> projects,
+            ReferencedPackageReader reader,
+            bool includeTransitive,
+            string? targetFramework,
             bool includeSharedProjects,
             out IReadOnlyCollection<Exception> exceptions)
         {

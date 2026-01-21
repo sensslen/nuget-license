@@ -11,7 +11,7 @@ namespace NuGetLicenseFramework
         public static async Task Main(string[] args)
         {
             var lifetime = new AppLifetime();
-            var rootCommand = NuGetLicense.Program.CreateRootCommand();
+            RootCommand rootCommand = NuGetLicense.Program.CreateRootCommand();
             int returnCode = await rootCommand.InvokeAsync(args);
             lifetime.Done(returnCode);
         }
