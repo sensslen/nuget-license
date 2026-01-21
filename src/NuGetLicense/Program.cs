@@ -2,11 +2,9 @@
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.Collections.Immutable;
-using System.IO.Abstractions;
-using System.Reflection;
+using System.CommandLine;
 using System.Text.Json;
 using FileLicenseMatcher;
-using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGetLicense.LicenseValidator;
@@ -33,154 +31,185 @@ using System.Net.Http;
 
 namespace NuGetLicense
 {
-    [VersionOptionFromMember(MemberName = nameof(GetVersion))]
-    public class Program
+    public static class Program
     {
-        [Option(ShortName = "i",
-            LongName = "input",
-            Description = "The project (or solution) file for which to analyze dependency licenses")]
-        public string? InputFile { get; } = null;
-
-        [Option(ShortName = "ji",
-            LongName = "json-input",
-            Description =
-                "File in json format that contains an array of all files to be evaluated. The Files can either point to a project or a solution.")]
-        public string? InputJsonFile { get; } = null;
-
-        [Option(LongName = "include-transitive",
-            ShortName = "t",
-            Description =
-                "If set, the whole license tree is followed in order to determine all nuget's used by the projects")]
-        public bool IncludeTransitive { get; } = false;
-
-        [Option(LongName = "allowed-license-types",
-            ShortName = "a",
-            Description = "File in json format that contains an array of all allowed license types")]
-        public string? AllowedLicenses { get; } = null;
-
-        [Option(LongName = "ignored-packages",
-            ShortName = "ignore",
-            Description = "File in json format that contains an array of nuget package names to ignore (e.g. useful for nuget packages built in-house). Note that even though the packages are ignored, their transitive dependencies are not. Wildcard characters (*) are supported to specify ranges of ignored packages.")]
-        public string? IgnoredPackages { get; } = null;
-
-        [Option(LongName = "licenseurl-to-license-mappings",
-            ShortName = "mapping",
-            Description = "File in json format that contains a dictionary to map license urls to licenses.")]
-        public string? LicenseMapping { get; } = null;
-
-        [Option(LongName = "override-package-information",
-            ShortName = "override",
-            Description =
-                "File in json format that contains a list of package and license information which should be used in favor of the online version. This option can be used to override the license type of packages that e.g. specify the license as file.")]
-        public string? OverridePackageInformation { get; } = null;
-
-        [Option(LongName = "license-information-download-location",
-            ShortName = "d",
-            Description =
-                "When set, the application downloads all licenses given using a license URL to the specified folder.")]
-        public string? DownloadLicenseInformation { get; } = null;
-
-        [Option(LongName = "output",
-            ShortName = "o",
-            Description = "This parameter allows to choose between tabular and json output.")]
-        public OutputType OutputType { get; } = OutputType.Table;
-
-        [Option(LongName = "error-only",
-            ShortName = "err",
-            Description = "If this option is set and there are license validation errors, only the errors are returned as result. Otherwise all validation results are always returned.")]
-        public bool ReturnErrorsOnly { get; } = false;
-
-        [Option(LongName = "include-ignored-packages",
-            ShortName = "include-ignored",
-            Description = "If this option is set, the packages that are ignored from validation are still included in the output.")]
-        public bool IncludeIgnoredPackages { get; } = false;
-
-        [Option(LongName = "exclude-projects-matching",
-            ShortName = "exclude-projects",
-            Description = "This option allows to specify project name(s) to exclude from the analysis. This can be useful to exclude test projects from the analysis when supplying a solution file as input. Wildcard characters (*) are supported to specify ranges of ignored projects. The input can either be a file name containing a list of project names in json format or a plain string that is then used as a single entry.")]
-        public string? ExcludedProjects { get; } = null;
-
-        [Option(LongName = "include-shared-projects",
-        ShortName = "isp",
-        Description = "If set, shared projects (.shproj) will be included in the analysis. By default, shared projects are excluded.")]
-        public bool IncludeSharedProjects { get; } = false;
-
-        [Option(LongName = "target-framework",
-            ShortName = "f",
-            Description = "This option allows to select a Target framework moniker (https://learn.microsoft.com/en-us/dotnet/standard/frameworks) for which to analyze dependencies.")]
-        public string? TargetFramework { get; } = null;
-
-        [Option(LongName = "file-output",
-            ShortName = "fo",
-            Description = "The destination file to put the valiation output to. If omitted, the output is printed to the console.")]
-        public string? DestinationFile { get; } = null;
-
-        [Option(LongName = "licensefile-to-license-mappings",
-            ShortName = "file-mapping",
-            Description = "File in json format that contains a dictionary to map license files to licenses.")]
-        public string? LicenseFileMappings { get; } = null;
-
-        private static string GetVersion() =>
-            typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
-
-#pragma warning disable S1144 // Unused private types or members should be removed
-        private async Task<int> OnExecuteAsync(CancellationToken cancellationToken)
-#pragma warning restore S1144 // Unused private types or members should be removed
+        public static RootCommand CreateRootCommand()
         {
-            using var httpClient = new HttpClient();
-            var fileSystem = new System.IO.Abstractions.FileSystem();
-            string[] inputFiles = GetInputFiles(fileSystem);
-            string[] ignoredPackages = GetIgnoredPackages(fileSystem);
-            IImmutableDictionary<Uri, string> licenseMappings = GetLicenseMappings(fileSystem);
-            string[] allowedLicenses = GetAllowedLicenses(fileSystem);
-            CustomPackageInformation[] overridePackageInformation = GetOverridePackageInformation(fileSystem);
-            IFileDownloader? licenseDownloader = GetFileDownloader(httpClient, fileSystem);
-            IOutputFormatter output = GetOutputFormatter();
-
-            var solutionPersistance = new SolutionPersistanceWrapper();
-            var projectCollector = new ProjectsCollector(solutionPersistance);
-            var msBuild = new MsBuildAbstraction();
-            var projectReader = new ReferencedPackageReader(msBuild, new LockFileFactory(), GetPackagesConfigReader());
-            var validator = new LicenseValidator.LicenseValidator(licenseMappings,
-                allowedLicenses,
-                licenseDownloader,
-                GetLicenseMatcher(fileSystem),
-                ignoredPackages);
-
-            string[] excludedProjects = GetExcludedProjects(fileSystem);
-            IEnumerable<string> projects = (await inputFiles.SelectManyAsync(projectCollector.GetProjectsAsync)).Where(p => !Array.Exists(excludedProjects, ignored => p.Like(ignored)));
-            IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects, projectReader, out IReadOnlyCollection<Exception>? projectReaderExceptions);
-            IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
-                packagesForProject.SelectMany(p => GetPackageInformations(p, overridePackageInformation, cancellationToken));
-            var results = (await validator.Validate(downloadedLicenseInformation, cancellationToken)).ToList();
-
-            if (projectReaderExceptions.Count > 0)
+            var inputFileOption = new Option<string?>("-i", "--input")
             {
-                await WriteValidationExceptions(projectReaderExceptions);
+                Description = "The project (or solution) file for which to analyze dependency licenses"
+            };
 
-                return -1;
-            }
+            var inputJsonFileOption = new Option<string?>("-ji", "--json-input")
+            {
+                Description = "File in json format that contains an array of all files to be evaluated. The Files can either point to a project or a solution."
+            };
 
-            try
+            var includeTransitiveOption = new Option<bool>("-t", "--include-transitive")
             {
-                using Stream outputStream = GetOutputStream(fileSystem);
-                await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
-                return results.Count(r => r.ValidationErrors.Any());
-            }
-            catch (Exception e)
+                Description = "If set, the whole license tree is followed in order to determine all nuget's used by the projects"
+            };
+
+            var allowedLicensesOption = new Option<string?>("-a", "--allowed-license-types")
             {
-                await Console.Error.WriteLineAsync(e.ToString());
-                return -1;
-            }
+                Description = "File in json format that contains an array of all allowed license types"
+            };
+
+            var ignoredPackagesOption = new Option<string?>("-ignore", "--ignored-packages")
+            {
+                Description = "File in json format that contains an array of nuget package names to ignore (e.g. useful for nuget packages built in-house). Note that even though the packages are ignored, their transitive dependencies are not. Wildcard characters (*) are supported to specify ranges of ignored packages."
+            };
+
+            var licenseMappingOption = new Option<string?>("-mapping", "--licenseurl-to-license-mappings")
+            {
+                Description = "File in json format that contains a dictionary to map license urls to licenses."
+            };
+
+            var overridePackageInformationOption = new Option<string?>("-override", "--override-package-information")
+            {
+                Description = "File in json format that contains a list of package and license information which should be used in favor of the online version. This option can be used to override the license type of packages that e.g. specify the license as file."
+            };
+
+            var downloadLicenseInformationOption = new Option<string?>("-d", "--license-information-download-location")
+            {
+                Description = "When set, the application downloads all licenses given using a license URL to the specified folder.",
+            };
+
+            var outputTypeOption = new Option<OutputType>("-o", "--output")
+            {
+                Description = "This parameter allows to choose between tabular and json output.",
+                DefaultValueFactory = _ => OutputType.Table
+            };
+
+            var returnErrorsOnlyOption = new Option<bool>("-err", "--error-only")
+            {
+                Description = "If this option is set and there are license validation errors, only the errors are returned as result. Otherwise all validation results are always returned."
+            };
+
+            var includeIgnoredPackagesOption = new Option<bool>("-include-ignored", "--include-ignored-packages")
+            {
+                Description = "If this option is set, the packages that are ignored from validation are still included in the output."
+            };
+
+            var excludedProjectsOption = new Option<string?>("-exclude-projects", "--exclude-projects-matching")
+            {
+                Description = "This option allows to specify project name(s) to exclude from the analysis. This can be useful to exclude test projects from the analysis when supplying a solution file as input. Wildcard characters (*) are supported to specify ranges of ignored projects. The input can either be a file name containing a list of project names in json format or a plain string that is then used as a single entry."
+            };
+
+            var includeSharedProjectsOption = new Option<bool>("-isp", "--include-shared-projects")
+            {
+                Description = "If set, shared projects (.shproj) will be included in the analysis. By default, shared projects are excluded."
+            };
+
+            var targetFrameworkOption = new Option<string?>("-f", "--target-framework")
+            {
+                Description = "This option allows to select a Target framework moniker (https://learn.microsoft.com/en-us/dotnet/standard/frameworks) for which to analyze dependencies."
+            };
+
+            var destinationFileOption = new Option<string?>("-fo", "--file-output")
+            {
+                Description = "The destination file to put the validation output to. If omitted, the output is printed to the console."
+            };
+
+            var licenseFileMappingsOption = new Option<string?>("-file-mapping", "--licensefile-to-license-mappings")
+            {
+                Description = "File in json format that contains a dictionary to map license files to licenses."
+            };
+
+            var rootCommand = new RootCommand("A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects.");
+            rootCommand.Options.Add(inputFileOption);
+            rootCommand.Options.Add(inputJsonFileOption);
+            rootCommand.Options.Add(includeTransitiveOption);
+            rootCommand.Options.Add(allowedLicensesOption);
+            rootCommand.Options.Add(ignoredPackagesOption);
+            rootCommand.Options.Add(licenseMappingOption);
+            rootCommand.Options.Add(overridePackageInformationOption);
+            rootCommand.Options.Add(downloadLicenseInformationOption);
+            rootCommand.Options.Add(outputTypeOption);
+            rootCommand.Options.Add(returnErrorsOnlyOption);
+            rootCommand.Options.Add(includeIgnoredPackagesOption);
+            rootCommand.Options.Add(excludedProjectsOption);
+            rootCommand.Options.Add(includeSharedProjectsOption);
+            rootCommand.Options.Add(targetFrameworkOption);
+            rootCommand.Options.Add(destinationFileOption);
+            rootCommand.Options.Add(licenseFileMappingsOption);
+
+            rootCommand.SetAction(async (parseResult, cancellationToken) =>
+            {
+                string? inputFile = parseResult.GetValue(inputFileOption);
+                string? inputJsonFile = parseResult.GetValue(inputJsonFileOption);
+                bool includeTransitive = parseResult.GetValue(includeTransitiveOption);
+                string? allowedLicenses = parseResult.GetValue(allowedLicensesOption);
+                string? ignoredPackages = parseResult.GetValue(ignoredPackagesOption);
+                string? licenseMapping = parseResult.GetValue(licenseMappingOption);
+                string? overridePackageInformation = parseResult.GetValue(overridePackageInformationOption);
+                string? downloadLicenseInformation = parseResult.GetValue(downloadLicenseInformationOption);
+                OutputType outputType = parseResult.GetValue(outputTypeOption);
+                bool returnErrorsOnly = parseResult.GetValue(returnErrorsOnlyOption);
+                bool includeIgnoredPackages = parseResult.GetValue(includeIgnoredPackagesOption);
+                string? excludedProjects = parseResult.GetValue(excludedProjectsOption);
+                bool includeSharedProjects = parseResult.GetValue(includeSharedProjectsOption);
+                string? targetFramework = parseResult.GetValue(targetFrameworkOption);
+                string? destinationFile = parseResult.GetValue(destinationFileOption);
+                string? licenseFileMappings = parseResult.GetValue(licenseFileMappingsOption);
+
+                using var httpClient = new HttpClient();
+                var fileSystem = new System.IO.Abstractions.FileSystem();
+                string[] inputFiles = GetInputFiles(fileSystem, inputFile, inputJsonFile);
+                string[] ignoredPackagesArray = GetIgnoredPackages(fileSystem, ignoredPackages);
+                IImmutableDictionary<Uri, string> licenseMappings = GetLicenseMappings(fileSystem, licenseMapping);
+                string[] allowedLicensesArray = GetAllowedLicenses(fileSystem, allowedLicenses);
+                CustomPackageInformation[] overridePackageInformationArray = GetOverridePackageInformation(fileSystem, overridePackageInformation);
+                IFileDownloader? licenseDownloader = GetFileDownloader(httpClient, fileSystem, downloadLicenseInformation);
+                IOutputFormatter output = GetOutputFormatter(outputType, returnErrorsOnly, includeIgnoredPackages);
+
+                var solutionPersistance = new SolutionPersistanceWrapper();
+                var projectCollector = new ProjectsCollector(solutionPersistance);
+                var msBuild = new MsBuildAbstraction();
+                var projectReader = new ReferencedPackageReader(msBuild, new LockFileFactory(), GetPackagesConfigReader());
+                var validator = new LicenseValidator.LicenseValidator(licenseMappings,
+                    allowedLicensesArray,
+                    licenseDownloader,
+                    GetLicenseMatcher(fileSystem, licenseFileMappings),
+                    ignoredPackagesArray);
+
+                string[] excludedProjectsArray = GetExcludedProjects(fileSystem, excludedProjects);
+                IEnumerable<string> projects = (await inputFiles.SelectManyAsync(projectCollector.GetProjectsAsync)).Where(p => !Array.Exists(excludedProjectsArray, ignored => p.Like(ignored)));
+                IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects, projectReader, includeTransitive, targetFramework, includeSharedProjects, out IReadOnlyCollection<Exception>? projectReaderExceptions);
+                IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
+                    packagesForProject.SelectMany(p => GetPackageInformations(p, overridePackageInformationArray, cancellationToken));
+                var results = (await validator.Validate(downloadedLicenseInformation, cancellationToken)).ToList();
+
+                if (projectReaderExceptions.Count > 0)
+                {
+                    await WriteValidationExceptions(projectReaderExceptions);
+
+                    return -1;
+                }
+
+                try
+                {
+                    using Stream outputStream = GetOutputStream(fileSystem, destinationFile);
+                    await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
+                    return results.Count(r => r.ValidationErrors.Any());
+                }
+                catch (Exception e)
+                {
+                    await Console.Error.WriteLineAsync(e.ToString());
+                    return -1;
+                }
+            });
+
+            return rootCommand;
         }
 
-        private Stream GetOutputStream(IFileSystem fileSystem)
+        private static Stream GetOutputStream(System.IO.Abstractions.IFileSystem fileSystem, string? destinationFile)
         {
-            if (DestinationFile is null)
+            if (destinationFile is null)
             {
                 return Console.OpenStandardOutput();
             }
-            return fileSystem.File.Open(fileSystem.Path.GetFullPath(DestinationFile), FileMode.Create, FileAccess.Write, FileShare.None);
+            return fileSystem.File.Open(fileSystem.Path.GetFullPath(destinationFile), FileMode.Create, FileAccess.Write, FileShare.None);
         }
 
         private static IPackagesConfigReader GetPackagesConfigReader()
@@ -207,31 +236,31 @@ namespace NuGetLicense
             return informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project, projectWithReferences.ReferencedPackages), cancellation);
         }
 
-        private IOutputFormatter GetOutputFormatter()
+        private static IOutputFormatter GetOutputFormatter(OutputType outputType, bool returnErrorsOnly, bool includeIgnoredPackages)
         {
-            return OutputType switch
+            return outputType switch
             {
-                OutputType.Json => new JsonOutputFormatter(false, ReturnErrorsOnly, !IncludeIgnoredPackages),
-                OutputType.JsonPretty => new JsonOutputFormatter(true, ReturnErrorsOnly, !IncludeIgnoredPackages),
-                OutputType.Table => new TableOutputFormatter(ReturnErrorsOnly, !IncludeIgnoredPackages),
-                OutputType.Markdown => new TableOutputFormatter(ReturnErrorsOnly, !IncludeIgnoredPackages, printMarkdown: true),
-                _ => throw new ArgumentOutOfRangeException($"{OutputType} not supported")
+                OutputType.Json => new JsonOutputFormatter(false, returnErrorsOnly, !includeIgnoredPackages),
+                OutputType.JsonPretty => new JsonOutputFormatter(true, returnErrorsOnly, !includeIgnoredPackages),
+                OutputType.Table => new TableOutputFormatter(returnErrorsOnly, !includeIgnoredPackages),
+                OutputType.Markdown => new TableOutputFormatter(returnErrorsOnly, !includeIgnoredPackages, printMarkdown: true),
+                _ => throw new ArgumentOutOfRangeException($"{outputType} not supported")
             };
         }
 
-        private IFileDownloader GetFileDownloader(HttpClient httpClient, IFileSystem fileSystem)
+        private static IFileDownloader GetFileDownloader(HttpClient httpClient, System.IO.Abstractions.IFileSystem fileSystem, string? downloadLicenseInformation)
         {
-            if (DownloadLicenseInformation == null)
+            if (downloadLicenseInformation == null)
             {
                 return new NopFileDownloader();
             }
 
-            if (!fileSystem.Directory.Exists(DownloadLicenseInformation))
+            if (!fileSystem.Directory.Exists(downloadLicenseInformation))
             {
-                fileSystem.Directory.CreateDirectory(DownloadLicenseInformation);
+                fileSystem.Directory.CreateDirectory(downloadLicenseInformation);
             }
 
-            return new FileDownloader(httpClient, DownloadLicenseInformation);
+            return new FileDownloader(httpClient, downloadLicenseInformation);
         }
 
         private static async Task WriteValidationExceptions(IReadOnlyCollection<Exception> validationExceptions)
@@ -242,92 +271,98 @@ namespace NuGetLicense
             }
         }
 
-        private CustomPackageInformation[] GetOverridePackageInformation(IFileSystem fileSystem)
+        private static CustomPackageInformation[] GetOverridePackageInformation(System.IO.Abstractions.IFileSystem fileSystem, string? overridePackageInformation)
         {
-            if (OverridePackageInformation == null)
+            if (overridePackageInformation == null)
             {
                 return Array.Empty<CustomPackageInformation>();
             }
 
             var serializerOptions = new JsonSerializerOptions();
             serializerOptions.Converters.Add(new NuGetVersionJsonConverter());
-            return JsonSerializer.Deserialize<CustomPackageInformation[]>(fileSystem.File.ReadAllText(OverridePackageInformation), serializerOptions)!;
+            return JsonSerializer.Deserialize<CustomPackageInformation[]>(fileSystem.File.ReadAllText(overridePackageInformation), serializerOptions)!;
         }
 
-        private string[] GetAllowedLicenses(IFileSystem fileSystem)
+        private static string[] GetAllowedLicenses(System.IO.Abstractions.IFileSystem fileSystem, string? allowedLicenses)
         {
-            if (AllowedLicenses == null)
+            if (allowedLicenses == null)
             {
                 return Array.Empty<string>();
             }
 
-            return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(AllowedLicenses))!;
+            return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(allowedLicenses))!;
         }
 
-        private IImmutableDictionary<Uri, string> GetLicenseMappings(IFileSystem fileSystem)
+        private static IImmutableDictionary<Uri, string> GetLicenseMappings(System.IO.Abstractions.IFileSystem fileSystem, string? licenseMapping)
         {
-            if (LicenseMapping == null)
+            if (licenseMapping == null)
             {
                 return UrlToLicenseMapping.Default;
             }
 
-            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(fileSystem.File.ReadAllText(LicenseMapping))!;
+            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(fileSystem.File.ReadAllText(licenseMapping))!;
 
             return UrlToLicenseMapping.Default.SetItems(userDictionary);
         }
 
-        private string[] GetIgnoredPackages(IFileSystem fileSystem)
+        private static string[] GetIgnoredPackages(System.IO.Abstractions.IFileSystem fileSystem, string? ignoredPackages)
         {
-            if (IgnoredPackages == null)
+            if (ignoredPackages == null)
             {
                 return Array.Empty<string>();
             }
 
-            return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(IgnoredPackages))!;
+            return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(ignoredPackages))!;
         }
 
-        private string[] GetExcludedProjects(IFileSystem fileSystem)
+        private static string[] GetExcludedProjects(System.IO.Abstractions.IFileSystem fileSystem, string? excludedProjects)
         {
-            if (ExcludedProjects == null)
+            if (excludedProjects == null)
             {
                 return Array.Empty<string>();
             }
 
-            if (fileSystem.File.Exists(ExcludedProjects))
+            if (fileSystem.File.Exists(excludedProjects))
             {
-                return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(ExcludedProjects))!;
+                return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(excludedProjects))!;
             }
 
-            return [ExcludedProjects];
+            return [excludedProjects];
         }
 
-        private string[] GetInputFiles(IFileSystem fileSystem)
+        private static string[] GetInputFiles(System.IO.Abstractions.IFileSystem fileSystem, string? inputFile, string? inputJsonFile)
         {
-            if (InputFile != null)
+            if (inputFile != null)
             {
-                return [InputFile];
+                return [inputFile];
             }
 
-            if (InputJsonFile != null)
+            if (inputJsonFile != null)
             {
-                return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(InputJsonFile))!;
+                return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(inputJsonFile))!;
             }
 
             throw new FileNotFoundException("Please provide an input file");
         }
 
-        private IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(IEnumerable<string> projects, ReferencedPackageReader reader, out IReadOnlyCollection<Exception> exceptions)
+        private static IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(
+            IEnumerable<string> projects,
+            ReferencedPackageReader reader,
+            bool includeTransitive,
+            string? targetFramework,
+            bool includeSharedProjects,
+            out IReadOnlyCollection<Exception> exceptions)
         {
             var encounteredExceptions = new List<Exception>();
             var result = new List<ProjectWithReferencedPackages>();
             exceptions = encounteredExceptions;
 
             ProjectFilter filter = new ProjectFilter();
-            foreach (string project in filter.FilterProjects(projects, IncludeSharedProjects))
+            foreach (string project in filter.FilterProjects(projects, includeSharedProjects))
             {
                 try
                 {
-                    IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, IncludeTransitive, TargetFramework);
+                    IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, includeTransitive, targetFramework);
                     result.Add(new ProjectWithReferencedPackages(project, installedPackages));
                 }
                 catch (Exception e)
@@ -339,16 +374,16 @@ namespace NuGetLicense
             return result;
         }
 
-        private IFileLicenseMatcher GetLicenseMatcher(IFileSystem fileSystem)
+        private static IFileLicenseMatcher GetLicenseMatcher(System.IO.Abstractions.IFileSystem fileSystem, string? licenseFileMappings)
         {
             var spdxLicemseMatcher = new FileLicenseMatcher.SPDX.FastLicenseMatcher(Spdx.Licenses.SpdxLicenseStore.Licenses);
-            if (LicenseFileMappings is null)
+            if (licenseFileMappings is null)
             {
                 return spdxLicemseMatcher;
             }
 
-            string containingDirectory = fileSystem.Path.GetDirectoryName(fileSystem.Path.GetFullPath(LicenseFileMappings))!;
-            Dictionary<string, string> rawMappings = JsonSerializer.Deserialize<Dictionary<string, string>>(fileSystem.File.ReadAllText(LicenseFileMappings))!;
+            string containingDirectory = fileSystem.Path.GetDirectoryName(fileSystem.Path.GetFullPath(licenseFileMappings))!;
+            Dictionary<string, string> rawMappings = JsonSerializer.Deserialize<Dictionary<string, string>>(fileSystem.File.ReadAllText(licenseFileMappings))!;
             var fullPathMappings = rawMappings.ToDictionary(kvp => fileSystem.Path.GetFullPath(fileSystem.Path.Combine(containingDirectory, kvp.Key)), kvp => kvp.Value);
 
             return new FileLicenseMatcher.Combine.LicenseMatcher([
