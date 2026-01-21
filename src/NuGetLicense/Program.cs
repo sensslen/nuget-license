@@ -96,7 +96,7 @@ namespace NuGetLicense
 
             var destinationFileOption = new Option<string?>(
                 aliases: new[] { "-fo", "--file-output" },
-                description: "The destination file to put the valiation output to. If omitted, the output is printed to the console.");
+                description: "The destination file to put the validation output to. If omitted, the output is printed to the console.");
 
             var licenseFileMappingsOption = new Option<string?>(
                 aliases: new[] { "-file-mapping", "--licensefile-to-license-mappings" },
