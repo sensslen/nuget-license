@@ -165,7 +165,7 @@ jobs:
 
       - name: check
         run: |
-          dotnet ./release/NuGetLicenseCore.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.framework }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json > ./licenses-output.json
+          dotnet ./release/nuget-license.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.framework }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json > ./licenses-output.json
           cat ./licenses-output.json
 
       - name: validate downloaded licenses
@@ -366,7 +366,7 @@ jobs:
       - name: check app version
         shell: pwsh
         run: |
-          $cmdOutput = dotnet ./release/NuGetLicenseCore.dll --version | Out-String
+          $cmdOutput = dotnet ./release/nuget-license.dll --version | Out-String
           if(!($cmdOutput.Trim() -like '${{ steps.version.outputs.version }}')) {
             Write-Host Versions do not match: read $cmdOutput, expected ${{ steps.version.outputs.version }}
             exit 1;
