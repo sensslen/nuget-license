@@ -7,8 +7,8 @@ This document describes the single-file publishing configuration for the nuget-l
 The nuget-license application can be published as a single-file executable for standalone distribution. This provides several benefits:
 
 - **Simplified deployment**: A single executable file instead of multiple DLLs
-- **Faster startup**: Reduced overhead from loading multiple assemblies
-- **Easier distribution**: Users can download and run a single file without installing the .NET SDK
+- **No runtime dependency**: Users can download and run without installing the .NET runtime
+- **Easier distribution**: Convenient for users who want a standalone tool without package managers
 
 ## Configuration
 
@@ -102,7 +102,7 @@ Where `<RID>` is your runtime identifier (e.g., `linux-x64`, `win-x64`, `osx-x64
 ### Advantages of Single-File
 
 - ✅ Simplified distribution and deployment
-- ✅ Faster startup (all code in one file)
+- ✅ Single file to manage and distribute
 - ✅ No dependency on installed .NET runtime
 - ✅ Easier to manage and distribute via GitHub Releases
 
@@ -111,6 +111,7 @@ Where `<RID>` is your runtime identifier (e.g., `linux-x64`, `win-x64`, `osx-x64
 - ❌ Larger file size (includes .NET runtime)
 - ❌ Platform-specific builds required
 - ❌ Cannot benefit from trimming due to compatibility issues
+- ❌ Initial startup may involve extraction overhead
 
 ## Recommendations
 
