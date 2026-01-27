@@ -397,3 +397,8 @@ coverage/**
 lcov.info
 launchSettings.json
 tests/**/*.received.*
+
+# Build artifacts from evaluation
+baseline-publish/
+trimmed-publish/
+singlefile-publish/
