@@ -38,9 +38,17 @@ This repository provides two main tools:
 dotnet tool install --global nuget-license
 ```
 
-### NuGetLicenseFramework.exe
+### Standalone Executables
 
-Download the latest release from [GitHub Releases](https://github.com/sensslen/nuget-license/releases) and run the executable directly.
+Download platform-specific single-file executables from [GitHub Releases](https://github.com/sensslen/nuget-license/releases). These are self-contained and don't require .NET to be installed:
+
+- **Linux**: `nuget-license` (x64, ARM64)
+- **Windows**: `nuget-license.exe` (x64, ARM64)  
+- **macOS**: `nuget-license` (x64, ARM64/Apple Silicon)
+
+### NuGetLicenseFramework.exe (.NET Framework)
+
+Download the .NET Framework version from [GitHub Releases](https://github.com/sensslen/nuget-license/releases) for full .NET Framework support including native C++ projects.
 
 ## Usage
 
