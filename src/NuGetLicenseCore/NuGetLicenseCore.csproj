@@ -29,6 +29,14 @@
     <AssemblyName>nuget-license</AssemblyName>
   </PropertyGroup>
 
+  <!-- Enable single-file publishing for standalone executables -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <PublishSingleFile>true</PublishSingleFile>
+    <!-- Disable trimming due to Microsoft.Build compatibility issues -->
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+
+
   <!-- Generate inlined README for NuGet package -->
   <Target Name="GenerateInlinedReadme" BeforeTargets="_GetPackageFiles">
     <PropertyGroup>

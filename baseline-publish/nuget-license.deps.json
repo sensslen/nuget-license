@@ -1,0 +1,446 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "nuget-license/100.100.100": {
+        "dependencies": {
+          "NuGetLicense": "100.100.100"
+        },
+        "runtime": {
+          "nuget-license.dll": {}
+        }
+      },
+      "Microsoft.Build.Locator/1.11.2": {
+        "runtime": {
+          "lib/net8.0/Microsoft.Build.Locator.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.11.2.35241"
+          }
+        }
+      },
+      "Microsoft.VisualStudio.SolutionPersistence/1.0.52": {
+        "runtime": {
+          "lib/net8.0/Microsoft.VisualStudio.SolutionPersistence.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.52.6595"
+          }
+        }
+      },
+      "Newtonsoft.Json/13.0.3": {
+        "runtime": {
+          "lib/net6.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "13.0.0.0",
+            "fileVersion": "13.0.3.27908"
+          }
+        }
+      },
+      "NuGet.Common/7.0.1": {
+        "runtime": {
+          "lib/net8.0/NuGet.Common.dll": {
+            "assemblyVersion": "7.0.1.0",
+            "fileVersion": "7.0.1.1"
+          }
+        }
+      },
+      "NuGet.Configuration/7.0.1": {
+        "dependencies": {
+          "NuGet.Common": "7.0.1",
+          "System.Security.Cryptography.ProtectedData": "9.0.6"
+        },
+        "runtime": {
+          "lib/net8.0/NuGet.Configuration.dll": {
+            "assemblyVersion": "7.0.1.0",
+            "fileVersion": "7.0.1.1"
+          }
+        }
+      },
+      "NuGet.DependencyResolver.Core/7.0.1": {
+        "dependencies": {
+          "NuGet.Configuration": "7.0.1",
+          "NuGet.LibraryModel": "7.0.1",
+          "NuGet.Protocol": "7.0.1"
+        },
+        "runtime": {
+          "lib/net8.0/NuGet.DependencyResolver.Core.dll": {
+            "assemblyVersion": "7.0.1.0",
+            "fileVersion": "7.0.1.1"
+          }
+        }
+      },
+      "NuGet.LibraryModel/7.0.1": {
+        "dependencies": {
+          "NuGet.Common": "7.0.1",
+          "NuGet.Versioning": "7.0.1"
+        },
+        "runtime": {
+          "lib/net8.0/NuGet.LibraryModel.dll": {
+            "assemblyVersion": "7.0.1.0",
+            "fileVersion": "7.0.1.1"
+          }
+        }
+      },
+      "NuGet.Packaging/7.0.1": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3",
+          "NuGet.Configuration": "7.0.1",
+          "NuGet.Versioning": "7.0.1",
+          "System.Security.Cryptography.Pkcs": "9.0.6"
+        },
+        "runtime": {
+          "lib/net8.0/NuGet.Packaging.dll": {
+            "assemblyVersion": "7.0.1.0",
+            "fileVersion": "7.0.1.1"
+          }
+        }
+      },
+      "NuGet.ProjectModel/7.0.1": {
+        "dependencies": {
+          "NuGet.DependencyResolver.Core": "7.0.1"
+        },
+        "runtime": {
+          "lib/net8.0/NuGet.ProjectModel.dll": {
+            "assemblyVersion": "7.0.1.0",
+            "fileVersion": "7.0.1.1"
+          }
+        }
+      },
+      "NuGet.Protocol/7.0.1": {
+        "dependencies": {
+          "NuGet.Packaging": "7.0.1"
+        },
+        "runtime": {
+          "lib/net8.0/NuGet.Protocol.dll": {
+            "assemblyVersion": "7.0.1.0",
+            "fileVersion": "7.0.1.1"
+          }
+        }
+      },
+      "NuGet.Versioning/7.0.1": {
+        "runtime": {
+          "lib/net8.0/NuGet.Versioning.dll": {
+            "assemblyVersion": "7.0.1.0",
+            "fileVersion": "7.0.1.1"
+          }
+        }
+      },
+      "Sensslen.SPDX.Licenses.Net/3.27.2": {
+        "runtime": {
+          "lib/netstandard2.0/Spdx.Licenses.dll": {
+            "assemblyVersion": "3.27.2.0",
+            "fileVersion": "3.27.2.0"
+          }
+        }
+      },
+      "System.CommandLine/2.0.2": {
+        "runtime": {
+          "lib/net8.0/System.CommandLine.dll": {
+            "assemblyVersion": "2.0.2.0",
+            "fileVersion": "2.0.225.61305"
+          }
+        },
+        "resources": {
+          "lib/net8.0/cs/System.CommandLine.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net8.0/de/System.CommandLine.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net8.0/es/System.CommandLine.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net8.0/fr/System.CommandLine.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net8.0/it/System.CommandLine.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net8.0/ja/System.CommandLine.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net8.0/ko/System.CommandLine.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net8.0/pl/System.CommandLine.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net8.0/pt-BR/System.CommandLine.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net8.0/ru/System.CommandLine.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net8.0/tr/System.CommandLine.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net8.0/zh-Hans/System.CommandLine.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net8.0/zh-Hant/System.CommandLine.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        }
+      },
+      "System.Security.Cryptography.Pkcs/9.0.6": {
+        "runtime": {
+          "lib/net9.0/System.Security.Cryptography.Pkcs.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.625.26613"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net9.0/System.Security.Cryptography.Pkcs.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.625.26613"
+          }
+        }
+      },
+      "System.Security.Cryptography.ProtectedData/9.0.6": {
+        "runtime": {
+          "lib/net9.0/System.Security.Cryptography.ProtectedData.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.625.26613"
+          }
+        }
+      },
+      "TestableIO.System.IO.Abstractions/22.1.0": {
+        "dependencies": {
+          "Testably.Abstractions.FileSystem.Interface": "10.0.0"
+        },
+        "runtime": {
+          "lib/net10.0/TestableIO.System.IO.Abstractions.dll": {
+            "assemblyVersion": "22.1.0.0",
+            "fileVersion": "22.1.0.0"
+          }
+        }
+      },
+      "TestableIO.System.IO.Abstractions.Wrappers/22.1.0": {
+        "dependencies": {
+          "Testably.Abstractions.FileSystem.Interface": "10.0.0"
+        },
+        "runtime": {
+          "lib/net10.0/TestableIO.System.IO.Abstractions.Wrappers.dll": {
+            "assemblyVersion": "22.1.0.0",
+            "fileVersion": "22.1.0.0"
+          }
+        }
+      },
+      "Testably.Abstractions.FileSystem.Interface/10.0.0": {
+        "runtime": {
+          "lib/net10.0/Testably.Abstractions.FileSystem.Interface.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.0.0"
+          }
+        }
+      },
+      "Tethys.SPDX.ExpressionParser/2.1.3": {
+        "runtime": {
+          "lib/netstandard2.0/Tethys.SPDX.ExpressionParser.dll": {
+            "assemblyVersion": "2.1.3.0",
+            "fileVersion": "2.1.3.0"
+          }
+        }
+      },
+      "FileLicenseMatcher/1.0.0": {
+        "dependencies": {
+          "Sensslen.SPDX.Licenses.Net": "3.27.2",
+          "TestableIO.System.IO.Abstractions": "22.1.0"
+        },
+        "runtime": {
+          "FileLicenseMatcher.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "NuGetLicense/100.100.100": {
+        "dependencies": {
+          "FileLicenseMatcher": "1.0.0",
+          "NuGetUtility": "100.100.100",
+          "System.CommandLine": "2.0.2",
+          "TestableIO.System.IO.Abstractions.Wrappers": "22.1.0"
+        },
+        "runtime": {
+          "NuGetLicense.dll": {
+            "assemblyVersion": "100.100.100.0",
+            "fileVersion": "100.100.100.0"
+          }
+        }
+      },
+      "NuGetUtility/100.100.100": {
+        "dependencies": {
+          "Microsoft.Build.Locator": "1.11.2",
+          "Microsoft.VisualStudio.SolutionPersistence": "1.0.52",
+          "NuGet.ProjectModel": "7.0.1",
+          "Tethys.SPDX.ExpressionParser": "2.1.3"
+        },
+        "runtime": {
+          "NuGetUtility.dll": {
+            "assemblyVersion": "100.100.100.0",
+            "fileVersion": "100.100.100.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "nuget-license/100.100.100": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.Build.Locator/1.11.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-tY+/S54G29CGsbL3slVu4vqtpciwVnb3fKOmrhgzEQmu/VziFaWmD/E1e/2KH7cDucuycGSkWsSXndBs5Uawow==",
+      "path": "microsoft.build.locator/1.11.2",
+      "hashPath": "microsoft.build.locator.1.11.2.nupkg.sha512"
+    },
+    "Microsoft.VisualStudio.SolutionPersistence/1.0.52": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-oNv2JtYXhpdJrX63nibx1JT3uCESOBQ1LAk7Dtz/sr0+laW0KRM6eKp4CZ3MHDR2siIkKsY8MmUkeP5DKkQQ5w==",
+      "path": "microsoft.visualstudio.solutionpersistence/1.0.52",
+      "hashPath": "microsoft.visualstudio.solutionpersistence.1.0.52.nupkg.sha512"
+    },
+    "Newtonsoft.Json/13.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ==",
+      "path": "newtonsoft.json/13.0.3",
+      "hashPath": "newtonsoft.json.13.0.3.nupkg.sha512"
+    },
+    "NuGet.Common/7.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-AegMASeOhhm2flGk53b/YtINs2H+zKMnV5fTs3rRo08JMQ3gqrbJUSjiEMOKt5d541IhVA+pHDWVsDCZ+5g7Fg==",
+      "path": "nuget.common/7.0.1",
+      "hashPath": "nuget.common.7.0.1.nupkg.sha512"
+    },
+    "NuGet.Configuration/7.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-En8aIvZywOmgi+Q2Tv7VUELSYc3OCTwmzItr2N3j5pVIBQE92HbOa1b4+fJJbl9X/rAOkNon3fxjwYeqrdMRrw==",
+      "path": "nuget.configuration/7.0.1",
+      "hashPath": "nuget.configuration.7.0.1.nupkg.sha512"
+    },
+    "NuGet.DependencyResolver.Core/7.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-DnkfIlL5qa/bQXFoATE0wSpEAVxpkVDax+jxLlIwO8P098hVGfXClTbg0O5ujbRG2YkqSk4ZVltAs6Uvvi3HAw==",
+      "path": "nuget.dependencyresolver.core/7.0.1",
+      "hashPath": "nuget.dependencyresolver.core.7.0.1.nupkg.sha512"
+    },
+    "NuGet.LibraryModel/7.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/JyiZ2ueI1AiYp6UNJmiyM6DgbSO3FUcxyPdyUsczJa/I7swpKSP8QizvDlRR/thp2CiyyEMvbbbANhCbOWzLQ==",
+      "path": "nuget.librarymodel/7.0.1",
+      "hashPath": "nuget.librarymodel.7.0.1.nupkg.sha512"
+    },
+    "NuGet.Packaging/7.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-hpC6Fx5VlMa42cSZDQ10TKDFHLoMpa8NbDwYSnCiGd4IPiG9+5ywWuxHjVbYYA7/PmJry5hs1GyJjvHV8bQmLw==",
+      "path": "nuget.packaging/7.0.1",
+      "hashPath": "nuget.packaging.7.0.1.nupkg.sha512"
+    },
+    "NuGet.ProjectModel/7.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yvVxNBqWo6ctfdI6G/ZgPj7X6fZWOsSPS9D2MDRPcnaokaCRVESpGK1cgXIEkaOfo5leRVc3vhPEzOMXckwV9A==",
+      "path": "nuget.projectmodel/7.0.1",
+      "hashPath": "nuget.projectmodel.7.0.1.nupkg.sha512"
+    },
+    "NuGet.Protocol/7.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-bYPzTqgOSsXV8AxXXFCCPtAtlxwph0DVtdM8AlaKTGLClHDx7VAlL4cCIcVl2iEzQuG1uC79SvzllvKi1grcNw==",
+      "path": "nuget.protocol/7.0.1",
+      "hashPath": "nuget.protocol.7.0.1.nupkg.sha512"
+    },
+    "NuGet.Versioning/7.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-tu68LnZqiLM/VyLQzPRqedopMi/M+5/6JqwB2Xkd0AWXRpUWewkVv77asVB7wgjMPVzQFK2sBy7AuxV49UzuvQ==",
+      "path": "nuget.versioning/7.0.1",
+      "hashPath": "nuget.versioning.7.0.1.nupkg.sha512"
+    },
+    "Sensslen.SPDX.Licenses.Net/3.27.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jy6XPPBPnYmtNKPj/gxO0zkjYRn4nEH2u7IpWxZwU8vWV/jdcBYqnDVCcy7asQBOljaqF5p4clTm7Sol+cJSzg==",
+      "path": "sensslen.spdx.licenses.net/3.27.2",
+      "hashPath": "sensslen.spdx.licenses.net.3.27.2.nupkg.sha512"
+    },
+    "System.CommandLine/2.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-zqn6I1IULEJaLEFKejeSFlZrf8HzIUU4qEjuYtEVRx5AsxKMLqLP+t0dQ4fk51A5CzT9Uv8wBLdMHSIYIrCKBw==",
+      "path": "system.commandline/2.0.2",
+      "hashPath": "system.commandline.2.0.2.nupkg.sha512"
+    },
+    "System.Security.Cryptography.Pkcs/9.0.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Gny8p2mX0jc5rjh+PA4Gx5GG66sj2C+e+ro7+j/3IsKT/bmQ84tGRV+XKaG+5/CTCdwkSSKDWEQ1rJd0J5jE0Q==",
+      "path": "system.security.cryptography.pkcs/9.0.6",
+      "hashPath": "system.security.cryptography.pkcs.9.0.6.nupkg.sha512"
+    },
+    "System.Security.Cryptography.ProtectedData/9.0.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yErfw/3pZkJE/VKza/Cm5idTpIKOy/vsmVi59Ta5SruPVtubzxb8CtnE8tyUpzs5pr0Y28GUFfSVzAhCLN3F/Q==",
+      "path": "system.security.cryptography.protecteddata/9.0.6",
+      "hashPath": "system.security.cryptography.protecteddata.9.0.6.nupkg.sha512"
+    },
+    "TestableIO.System.IO.Abstractions/22.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-YQ/IuNE8gP/+yNwQjdqd6DKhB9ADGjosxuY2IMXcQ3729iXa9QRsPlmIBpk73L0s9E2b+MTYhAR/2Spk8REjvA==",
+      "path": "testableio.system.io.abstractions/22.1.0",
+      "hashPath": "testableio.system.io.abstractions.22.1.0.nupkg.sha512"
+    },
+    "TestableIO.System.IO.Abstractions.Wrappers/22.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-IsW3jQqIiTN4GwdWFx+dzgRL5XR75UDTFVGuuIackPf2d7eH0KKyrx4wuIoASa1XnS9zhgLP39FKwJq6nbbx1w==",
+      "path": "testableio.system.io.abstractions.wrappers/22.1.0",
+      "hashPath": "testableio.system.io.abstractions.wrappers.22.1.0.nupkg.sha512"
+    },
+    "Testably.Abstractions.FileSystem.Interface/10.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-tZOXFLGjkh8TxgMgKeEcM2HAlz9DwndGl6TFLo6ISHcszFX3FkuPMrtVbmqVjhooWNXrgJ/a9cH9ym5MZL1LAg==",
+      "path": "testably.abstractions.filesystem.interface/10.0.0",
+      "hashPath": "testably.abstractions.filesystem.interface.10.0.0.nupkg.sha512"
+    },
+    "Tethys.SPDX.ExpressionParser/2.1.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-xmtKgsYdF1fznWJmB0eO7qbQ0kHsu2LQITpOgEzfsuvP1PAfSqDPmVSE4KuMioZuf3ksk72rAQMgGE8sZcUBMw==",
+      "path": "tethys.spdx.expressionparser/2.1.3",
+      "hashPath": "tethys.spdx.expressionparser.2.1.3.nupkg.sha512"
+    },
+    "FileLicenseMatcher/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NuGetLicense/100.100.100": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NuGetUtility/100.100.100": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
