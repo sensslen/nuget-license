@@ -26,6 +26,7 @@
     <PackageTags>NuGet;License</PackageTags>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <PackageReadmeFile>README-nuget.md</PackageReadmeFile>
+    <AssemblyName>nuget-license</AssemblyName>
   </PropertyGroup>
 
   <!-- Generate inlined README for NuGet package -->
