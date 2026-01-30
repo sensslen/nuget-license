@@ -69,7 +69,7 @@ namespace NuGetLicense.Test
         }
 
         [Test]
-        public async Task HandleAsync_WithInputFile_ReturnsInputFileArray()
+        public async Task HandleAsync_WithInputFile_CompletesSuccessfully()
         {
             // Arrange
             string inputFile = "/test/project.csproj";
@@ -86,12 +86,12 @@ namespace NuGetLicense.Test
             // Act
             int result = await _handler.HandleAsync(options);
 
-            // Assert - we expect it to complete without throwing
+            // Assert
             Assert.That(result, Is.EqualTo(0));
         }
 
         [Test]
-        public async Task HandleAsync_WithInputJsonFile_ReadsFromJsonFile()
+        public async Task HandleAsync_WithInputJsonFile_CompletesSuccessfully()
         {
             // Arrange
             string jsonFile = "/test/input.json";
@@ -115,7 +115,7 @@ namespace NuGetLicense.Test
         }
 
         [Test]
-        public async Task HandleAsync_WithAllowedLicensesFile_ReadsFromJsonFile()
+        public async Task HandleAsync_WithAllowedLicensesFile_CompletesSuccessfully()
         {
             // Arrange
             string inputFile = "/test/project.csproj";
@@ -140,7 +140,7 @@ namespace NuGetLicense.Test
         }
 
         [Test]
-        public async Task HandleAsync_WithIgnoredPackagesFile_ReadsFromJsonFile()
+        public async Task HandleAsync_WithIgnoredPackagesFile_CompletesSuccessfully()
         {
             // Arrange
             string inputFile = "/test/project.csproj";
@@ -165,7 +165,7 @@ namespace NuGetLicense.Test
         }
 
         [Test]
-        public async Task HandleAsync_WithExcludedProjectsFile_ReadsFromJsonFile()
+        public async Task HandleAsync_WithExcludedProjectsFile_CompletesSuccessfully()
         {
             // Arrange
             string inputFile = "/test/project.csproj";
@@ -190,7 +190,7 @@ namespace NuGetLicense.Test
         }
 
         [Test]
-        public async Task HandleAsync_WithExcludedProjectsAsString_UsesItAsSingleEntry()
+        public async Task HandleAsync_WithExcludedProjectsAsString_CompletesSuccessfully()
         {
             // Arrange
             string inputFile = "/test/project.csproj";
