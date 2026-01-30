@@ -67,7 +67,7 @@ nuget-license [options]
 | `-o`, `--output <TYPE>` | Output format: `Table`, `Markdown`, `Json` or `JsonPretty` (default: Table). See [docs/output-json.md](docs/output-json.md) for JSON format details. |
 | `-err`, `--error-only` | Only show validation errors. |
 | `-include-ignored`, `--include-ignored-packages` | Include ignored packages in output. |
-| `-exclude-projects`, `--exclude-projects-matching <PATTERN\|FILE>` | Exclude projects by name or pattern (supports wildcards or JSON file). See [docs/exclude-projects-json.md](docs/exclude-projects-json.md). |
+| `-exclude-projects`, `--exclude-projects-matching <FILE\|LIST>` | Projects to exclude from analysis. Can be either a JSON file (see [docs/exclude-projects-json.md](docs/exclude-projects-json.md)), or a semicolon-separated list (e.g., `"*Test*;Legacy*"`). Wildcards (`*`) are supported. |
 | `-isp`, `--include-shared-projects` | Include shared projects (`.shproj`). |
 | `-f`, `--target-framework <TFM>` | Analyze for a specific Target Framework Moniker. |
 | `-fo`, `--file-output <FILE>` | Write output to a file instead of console. |

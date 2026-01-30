@@ -293,7 +293,20 @@ namespace NuGetLicense
             // Check if the value is a path to an existing file
             if (fileSystem.File.Exists(value))
             {
-                return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(value))!;
+                try
+                {
+                    string fileContent = fileSystem.File.ReadAllText(value);
+                    string[]? result = JsonSerializer.Deserialize<string[]>(fileContent);
+                    if (result == null)
+                    {
+                        throw new InvalidOperationException($"File '{value}' contains invalid JSON: expected an array of strings but got null.");
+                    }
+                    return result;
+                }
+                catch (JsonException ex)
+                {
+                    throw new InvalidOperationException($"Failed to parse JSON file '{value}': {ex.Message}", ex);
+                }
             }
 
             // Parse as semicolon-separated inline values
