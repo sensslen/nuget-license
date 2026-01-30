@@ -60,10 +60,10 @@ namespace NuGetLicense.Test
         public async Task HandleAsync_WithNoInputFile_ThrowsFileNotFoundException()
         {
             // Arrange
-            var options = new CommandLineOptions();
+            CommandLineOptions options = new CommandLineOptions();
 
             // Act & Assert
-            var ex = Assert.ThrowsAsync<FileNotFoundException>(async () => 
+            FileNotFoundException? ex = Assert.ThrowsAsync<FileNotFoundException>(async () =>
                 await _handler.HandleAsync(options));
             Assert.That(ex!.Message, Does.Contain("Please provide an input file"));
         }
@@ -72,10 +72,10 @@ namespace NuGetLicense.Test
         public async Task HandleAsync_WithInputFile_ReturnsInputFileArray()
         {
             // Arrange
-            var inputFile = "/test/project.csproj";
+            string inputFile = "/test/project.csproj";
             _fileSystem.AddFile(inputFile, new MockFileData(""));
-            
-            var options = new CommandLineOptions
+
+            CommandLineOptions options = new CommandLineOptions
             {
                 InputFile = inputFile
             };
@@ -94,12 +94,12 @@ namespace NuGetLicense.Test
         public async Task HandleAsync_WithInputJsonFile_ReadsFromJsonFile()
         {
             // Arrange
-            var jsonFile = "/test/input.json";
-            var projectFile = "/test/project.csproj";
+            string jsonFile = "/test/input.json";
+            string projectFile = "/test/project.csproj";
             _fileSystem.AddFile(jsonFile, new MockFileData($"[\"{projectFile}\"]"));
             _fileSystem.AddFile(projectFile, new MockFileData(""));
 
-            var options = new CommandLineOptions
+            CommandLineOptions options = new CommandLineOptions
             {
                 InputJsonFile = jsonFile
             };
@@ -118,12 +118,12 @@ namespace NuGetLicense.Test
         public async Task HandleAsync_WithAllowedLicensesFile_ReadsFromJsonFile()
         {
             // Arrange
-            var inputFile = "/test/project.csproj";
-            var allowedLicensesFile = "/test/allowed.json";
+            string inputFile = "/test/project.csproj";
+            string allowedLicensesFile = "/test/allowed.json";
             _fileSystem.AddFile(inputFile, new MockFileData(""));
             _fileSystem.AddFile(allowedLicensesFile, new MockFileData("[\"MIT\", \"Apache-2.0\"]"));
 
-            var options = new CommandLineOptions
+            CommandLineOptions options = new CommandLineOptions
             {
                 InputFile = inputFile,
                 AllowedLicenses = allowedLicensesFile
@@ -143,12 +143,12 @@ namespace NuGetLicense.Test
         public async Task HandleAsync_WithIgnoredPackagesFile_ReadsFromJsonFile()
         {
             // Arrange
-            var inputFile = "/test/project.csproj";
-            var ignoredPackagesFile = "/test/ignored.json";
+            string inputFile = "/test/project.csproj";
+            string ignoredPackagesFile = "/test/ignored.json";
             _fileSystem.AddFile(inputFile, new MockFileData(""));
             _fileSystem.AddFile(ignoredPackagesFile, new MockFileData("[\"MyCompany.*\", \"TestPackage\"]"));
 
-            var options = new CommandLineOptions
+            CommandLineOptions options = new CommandLineOptions
             {
                 InputFile = inputFile,
                 IgnoredPackages = ignoredPackagesFile
@@ -168,12 +168,12 @@ namespace NuGetLicense.Test
         public async Task HandleAsync_WithExcludedProjectsFile_ReadsFromJsonFile()
         {
             // Arrange
-            var inputFile = "/test/project.csproj";
-            var excludedProjectsFile = "/test/excluded.json";
+            string inputFile = "/test/project.csproj";
+            string excludedProjectsFile = "/test/excluded.json";
             _fileSystem.AddFile(inputFile, new MockFileData(""));
             _fileSystem.AddFile(excludedProjectsFile, new MockFileData("[\"*Test*\", \"*.Test\"]"));
 
-            var options = new CommandLineOptions
+            CommandLineOptions options = new CommandLineOptions
             {
                 InputFile = inputFile,
                 ExcludedProjects = excludedProjectsFile
@@ -193,11 +193,11 @@ namespace NuGetLicense.Test
         public async Task HandleAsync_WithExcludedProjectsAsString_UsesItAsSingleEntry()
         {
             // Arrange
-            var inputFile = "/test/project.csproj";
-            var excludedProject = "*Test*";
+            string inputFile = "/test/project.csproj";
+            string excludedProject = "*Test*";
             _fileSystem.AddFile(inputFile, new MockFileData(""));
 
-            var options = new CommandLineOptions
+            CommandLineOptions options = new CommandLineOptions
             {
                 InputFile = inputFile,
                 ExcludedProjects = excludedProject
@@ -217,11 +217,11 @@ namespace NuGetLicense.Test
         public async Task HandleAsync_WithDownloadLicenseInformation_CreatesDirectory()
         {
             // Arrange
-            var inputFile = "/test/project.csproj";
-            var downloadDir = "/test/licenses";
+            string inputFile = "/test/project.csproj";
+            string downloadDir = "/test/licenses";
             _fileSystem.AddFile(inputFile, new MockFileData(""));
 
-            var options = new CommandLineOptions
+            CommandLineOptions options = new CommandLineOptions
             {
                 InputFile = inputFile,
                 DownloadLicenseInformation = downloadDir
@@ -241,11 +241,11 @@ namespace NuGetLicense.Test
         public async Task HandleAsync_WithDestinationFile_WritesToFile()
         {
             // Arrange
-            var inputFile = "/test/project.csproj";
-            var outputFile = "/test/output.txt";
+            string inputFile = "/test/project.csproj";
+            string outputFile = "/test/output.txt";
             _fileSystem.AddFile(inputFile, new MockFileData(""));
 
-            var options = new CommandLineOptions
+            CommandLineOptions options = new CommandLineOptions
             {
                 InputFile = inputFile,
                 DestinationFile = outputFile
@@ -265,10 +265,10 @@ namespace NuGetLicense.Test
         public async Task HandleAsync_WithoutDestinationFile_WritesToOutputStream()
         {
             // Arrange
-            var inputFile = "/test/project.csproj";
+            string inputFile = "/test/project.csproj";
             _fileSystem.AddFile(inputFile, new MockFileData(""));
 
-            var options = new CommandLineOptions
+            CommandLineOptions options = new CommandLineOptions
             {
                 InputFile = inputFile
             };

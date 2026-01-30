@@ -143,7 +143,7 @@ namespace NuGetLicense
                 var fileSystem = new System.IO.Abstractions.FileSystem();
                 var solutionPersistance = new SolutionPersistanceWrapper();
                 var msBuild = new MsBuildAbstraction();
-                var packagesConfigReader = GetPackagesConfigReader();
+                IPackagesConfigReader packagesConfigReader = GetPackagesConfigReader();
 
                 var handler = new LicenseValidationHandler(
                     fileSystem,
