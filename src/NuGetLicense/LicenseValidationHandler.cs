@@ -91,9 +91,21 @@ namespace NuGetLicense
 
             try
             {
-                using Stream outputStream = GetOutputStream(options.DestinationFile);
-                await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
-                return results.Count(r => r.ValidationErrors.Any());
+                Stream outputStream = GetOutputStream(options.DestinationFile);
+                bool shouldDisposeStream = options.DestinationFile != null;
+
+                try
+                {
+                    await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
+                    return results.Count(r => r.ValidationErrors.Any());
+                }
+                finally
+                {
+                    if (shouldDisposeStream)
+                    {
+                        outputStream.Dispose();
+                    }
+                }
             }
             catch (Exception e)
             {
