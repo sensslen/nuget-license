@@ -52,12 +52,12 @@ namespace NuGetLicense
 
             var allowedLicensesOption = new Option<string?>("-a", "--allowed-license-types")
             {
-                Description = "File in json format that contains an array of all allowed license types"
+                Description = "Allowed license types. Can be either a file in json format containing an array of license types, or a semicolon-separated list of license identifiers (e.g., \"MIT;Apache-2.0;BSD-3-Clause\")"
             };
 
             var ignoredPackagesOption = new Option<string?>("-ignore", "--ignored-packages")
             {
-                Description = "File in json format that contains an array of nuget package names to ignore (e.g. useful for nuget packages built in-house). Note that even though the packages are ignored, their transitive dependencies are not. Wildcard characters (*) are supported to specify ranges of ignored packages."
+                Description = "Packages to ignore. Can be either a file in json format containing an array of package names, or a semicolon-separated list of package names (e.g., \"Package1;Package2\"). Wildcards (*) are supported. Note that even though packages are ignored, their transitive dependencies are not."
             };
 
             var licenseMappingOption = new Option<string?>("-mapping", "--licenseurl-to-license-mappings")
@@ -93,7 +93,7 @@ namespace NuGetLicense
 
             var excludedProjectsOption = new Option<string?>("-exclude-projects", "--exclude-projects-matching")
             {
-                Description = "This option allows to specify project name(s) to exclude from the analysis. This can be useful to exclude test projects from the analysis when supplying a solution file as input. Wildcard characters (*) are supported to specify ranges of ignored projects. The input can either be a file name containing a list of project names in json format or a plain string that is then used as a single entry."
+                Description = "Projects to exclude from analysis. Can be either a file in json format containing an array of project names, or a semicolon-separated list of project names (e.g., \"TestProject1;TestProject2\"). Wildcards (*) are supported. Useful to exclude test projects when supplying a solution file as input."
             };
 
             var includeSharedProjectsOption = new Option<bool>("-isp", "--include-shared-projects")
@@ -283,14 +283,26 @@ namespace NuGetLicense
             return JsonSerializer.Deserialize<CustomPackageInformation[]>(fileSystem.File.ReadAllText(overridePackageInformation), serializerOptions)!;
         }
 
-        private static string[] GetAllowedLicenses(System.IO.Abstractions.IFileSystem fileSystem, string? allowedLicenses)
+        private static string[] ParseStringArrayOrFile(System.IO.Abstractions.IFileSystem fileSystem, string? value)
         {
-            if (allowedLicenses == null)
+            if (value == null)
             {
                 return Array.Empty<string>();
             }
 
-            return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(allowedLicenses))!;
+            // Check if the value is a path to an existing file
+            if (fileSystem.File.Exists(value))
+            {
+                return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(value))!;
+            }
+
+            // Parse as semicolon-separated inline values
+            return value.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        }
+
+        private static string[] GetAllowedLicenses(System.IO.Abstractions.IFileSystem fileSystem, string? allowedLicenses)
+        {
+            return ParseStringArrayOrFile(fileSystem, allowedLicenses);
         }
 
         private static IImmutableDictionary<Uri, string> GetLicenseMappings(System.IO.Abstractions.IFileSystem fileSystem, string? licenseMapping)
@@ -307,27 +319,12 @@ namespace NuGetLicense
 
         private static string[] GetIgnoredPackages(System.IO.Abstractions.IFileSystem fileSystem, string? ignoredPackages)
         {
-            if (ignoredPackages == null)
-            {
-                return Array.Empty<string>();
-            }
-
-            return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(ignoredPackages))!;
+            return ParseStringArrayOrFile(fileSystem, ignoredPackages);
         }
 
         private static string[] GetExcludedProjects(System.IO.Abstractions.IFileSystem fileSystem, string? excludedProjects)
         {
-            if (excludedProjects == null)
-            {
-                return Array.Empty<string>();
-            }
-
-            if (fileSystem.File.Exists(excludedProjects))
-            {
-                return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(excludedProjects))!;
-            }
-
-            return [excludedProjects];
+            return ParseStringArrayOrFile(fileSystem, excludedProjects);
         }
 
         private static string[] GetInputFiles(System.IO.Abstractions.IFileSystem fileSystem, string? inputFile, string? inputJsonFile)
