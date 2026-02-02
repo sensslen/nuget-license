@@ -1,6 +1,6 @@
 # Exclude Projects (`--exclude-projects-matching`)
 
-The `-exclude-projects` or `--exclude-projects-matching` option is used to specify projects to exclude from analysis. This is useful for excluding test projects when analyzing a solution.
+The `-exclude-projects` or `--exclude-projects-matching` option is used to specify projects to exclude from analysis. Common use cases include excluding test projects, sample projects, or build tools from the analysis when working with a solution file.
 
 ## Input Format
 
