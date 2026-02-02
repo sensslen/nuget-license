@@ -213,6 +213,226 @@ namespace NuGetLicense.Test
         }
 
         [Test]
+        public async Task HandleAsync_WithAllowedLicensesAsInlineList_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string allowedLicenses = "MIT;Apache-2.0;BSD-3-Clause";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                AllowedLicenses = allowedLicenses
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithIgnoredPackagesAsInlineList_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string ignoredPackages = "MyCompany.*;TestPackage;LegacyLib*";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                IgnoredPackages = ignoredPackages
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithExcludedProjectsAsInlineList_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string excludedProjects = "*Test*;SampleProject;Legacy*";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                ExcludedProjects = excludedProjects
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithInvalidJsonInAllowedLicensesFile_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string allowedLicensesFile = "/test/allowed.json";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+            _fileSystem.AddFile(allowedLicensesFile, new MockFileData("invalid json content"));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                AllowedLicenses = allowedLicensesFile
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act & Assert
+            InvalidOperationException? ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await _handler.HandleAsync(options));
+            Assert.That(ex!.Message, Does.Contain("Failed to parse JSON file"));
+            Assert.That(ex.Message, Does.Contain(allowedLicensesFile));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithNullJsonInAllowedLicensesFile_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string allowedLicensesFile = "/test/allowed.json";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+            _fileSystem.AddFile(allowedLicensesFile, new MockFileData("null"));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                AllowedLicenses = allowedLicensesFile
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act & Assert
+            InvalidOperationException? ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await _handler.HandleAsync(options));
+            Assert.That(ex!.Message, Does.Contain("expected an array of strings but got null"));
+            Assert.That(ex.Message, Does.Contain(allowedLicensesFile));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithInvalidJsonInIgnoredPackagesFile_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string ignoredPackagesFile = "/test/ignored.json";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+            _fileSystem.AddFile(ignoredPackagesFile, new MockFileData("{invalid}"));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                IgnoredPackages = ignoredPackagesFile
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act & Assert
+            InvalidOperationException? ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await _handler.HandleAsync(options));
+            Assert.That(ex!.Message, Does.Contain("Failed to parse JSON file"));
+            Assert.That(ex.Message, Does.Contain(ignoredPackagesFile));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithInvalidJsonInExcludedProjectsFile_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string excludedProjectsFile = "/test/excluded.json";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+            _fileSystem.AddFile(excludedProjectsFile, new MockFileData("not valid json"));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                ExcludedProjects = excludedProjectsFile
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act & Assert
+            InvalidOperationException? ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await _handler.HandleAsync(options));
+            Assert.That(ex!.Message, Does.Contain("Failed to parse JSON file"));
+            Assert.That(ex.Message, Does.Contain(excludedProjectsFile));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithEmptyInlineList_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string emptyList = "";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                AllowedLicenses = emptyList
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert - empty string should result in empty array, which should complete successfully
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithWhitespaceInInlineList_TrimsCorrectly()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string listWithWhitespace = " MIT ; Apache-2.0 ; BSD-3-Clause ";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                AllowedLicenses = listWithWhitespace
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert - whitespace should be trimmed and parsing should succeed
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
         public async Task HandleAsync_WithDownloadLicenseInformation_CreatesDirectory()
         {
             // Arrange

@@ -177,7 +177,13 @@ namespace NuGetLicense
             }
 
             // Parse as semicolon-separated inline values
-            return value.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            string[] parts = value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            // Trim each part manually for .NET Framework compatibility
+            for (int i = 0; i < parts.Length; i++)
+            {
+                parts[i] = parts[i].Trim();
+            }
+            return parts;
         }
 
         private string[] GetAllowedLicenses(string? allowedLicenses)
