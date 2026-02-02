@@ -216,7 +216,7 @@ namespace NuGetLicense
 
             return inputJsonFile != null
                 ? JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(inputJsonFile))!
-                : throw new ArgumentException("Please provide an input file using --input or --input-file-json");
+                : throw new ArgumentException("Please provide an input file using --input or --json-input");
         }
 
         private static IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(
