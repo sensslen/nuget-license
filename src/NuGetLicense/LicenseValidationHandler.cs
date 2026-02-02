@@ -177,7 +177,7 @@ namespace NuGetLicense
             {
                 parts[i] = parts[i].Trim();
             }
-            return parts;
+            return Array.FindAll(parts, part => part.Length > 0);
         }
 
         private string[] GetAllowedLicenses(string? allowedLicenses)
