@@ -116,11 +116,9 @@ namespace NuGetLicense
 
         private Stream GetOutputStream(string? destinationFile)
         {
-            if (destinationFile is null)
-            {
-                return _outputStream;
-            }
-            return _fileSystem.File.Open(_fileSystem.Path.GetFullPath(destinationFile), FileMode.Create, FileAccess.Write, FileShare.None);
+            return destinationFile is null
+                ? _outputStream
+                : _fileSystem.File.Open(_fileSystem.Path.GetFullPath(destinationFile), FileMode.Create, FileAccess.Write, FileShare.None);
         }
 
         private async Task WriteValidationExceptions(IReadOnlyCollection<Exception> validationExceptions)
@@ -164,20 +162,16 @@ namespace NuGetLicense
                 {
                     string fileContent = _fileSystem.File.ReadAllText(value);
                     string[]? result = JsonSerializer.Deserialize<string[]>(fileContent);
-                    if (result == null)
-                    {
-                        throw new InvalidOperationException($"File '{value}' contains invalid JSON: expected an array of strings but got null.");
-                    }
-                    return result;
+                    return result ?? throw new ArgumentException($"File '{value}' contains invalid JSON: expected an array of strings but got null.");
                 }
                 catch (JsonException ex)
                 {
-                    throw new InvalidOperationException($"Failed to parse JSON file '{value}': {ex.Message}", ex);
+                    throw new ArgumentException($"Failed to parse JSON file '{value}': {ex.Message}", ex);
                 }
             }
 
             // Parse as semicolon-separated inline values
-            string[] parts = value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = value.Split([';'], StringSplitOptions.RemoveEmptyEntries);
             // Trim each part manually for .NET Framework compatibility
             for (int i = 0; i < parts.Length; i++)
             {
@@ -220,12 +214,9 @@ namespace NuGetLicense
                 return [inputFile];
             }
 
-            if (inputJsonFile != null)
-            {
-                return JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(inputJsonFile))!;
-            }
-
-            throw new ArgumentException("Please provide an input file using --input or --input-file-json");
+            return inputJsonFile != null
+                ? JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(inputJsonFile))!
+                : throw new ArgumentException("Please provide an input file using --input or --input-file-json");
         }
 
         private static IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(

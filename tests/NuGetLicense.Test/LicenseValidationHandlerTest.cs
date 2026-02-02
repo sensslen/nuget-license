@@ -303,7 +303,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act & Assert
-            InvalidOperationException? ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            ArgumentException? ex = Assert.ThrowsAsync<ArgumentException>(async () =>
                 await _handler.HandleAsync(options));
             Assert.That(ex!.Message, Does.Contain("Failed to parse JSON file"));
             Assert.That(ex.Message, Does.Contain(allowedLicensesFile));
@@ -328,7 +328,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act & Assert
-            InvalidOperationException? ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            ArgumentException? ex = Assert.ThrowsAsync<ArgumentException>(async () =>
                 await _handler.HandleAsync(options));
             Assert.That(ex!.Message, Does.Contain("expected an array of strings but got null"));
             Assert.That(ex.Message, Does.Contain(allowedLicensesFile));
@@ -353,7 +353,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act & Assert
-            InvalidOperationException? ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            ArgumentException? ex = Assert.ThrowsAsync<ArgumentException>(async () =>
                 await _handler.HandleAsync(options));
             Assert.That(ex!.Message, Does.Contain("Failed to parse JSON file"));
             Assert.That(ex.Message, Does.Contain(ignoredPackagesFile));
@@ -378,7 +378,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act & Assert
-            InvalidOperationException? ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            ArgumentException? ex = Assert.ThrowsAsync<ArgumentException>(async () =>
                 await _handler.HandleAsync(options));
             Assert.That(ex!.Message, Does.Contain("Failed to parse JSON file"));
             Assert.That(ex.Message, Does.Contain(excludedProjectsFile));
