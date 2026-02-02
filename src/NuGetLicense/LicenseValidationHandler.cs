@@ -65,7 +65,7 @@ namespace NuGetLicense
             string[] allowedLicensesArray = GetAllowedLicenses(options.AllowedLicenses);
             CustomPackageInformation[] overridePackageInformationArray = GetOverridePackageInformation(options.OverridePackageInformation);
             IFileDownloader? licenseDownloader = GetFileDownloader(options.DownloadLicenseInformation);
-            IOutputFormatter output = GetOutputFormatter(options.OutputType, options.ReturnErrorsOnly, options.IncludeIgnoredPackages);
+            IOutputFormatter output = LicenseValidationHandler.GetOutputFormatter(options.OutputType, options.ReturnErrorsOnly, options.IncludeIgnoredPackages);
 
             var projectCollector = new ProjectsCollector(_solutionPersistance);
             var projectReader = new ReferencedPackageReader(_msBuild, new LockFileFactory(), _packagesConfigReader);
@@ -77,9 +77,9 @@ namespace NuGetLicense
 
             string[] excludedProjectsArray = GetExcludedProjects(options.ExcludedProjects);
             IEnumerable<string> projects = (await inputFiles.SelectManyAsync(projectCollector.GetProjectsAsync)).Where(p => !Array.Exists(excludedProjectsArray, ignored => p.Like(ignored)));
-            IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects, projectReader, options.IncludeTransitive, options.TargetFramework, options.IncludeSharedProjects, out IReadOnlyCollection<Exception>? projectReaderExceptions);
+            IEnumerable<ProjectWithReferencedPackages> packagesForProject = LicenseValidationHandler.GetPackagesPerProject(projects, projectReader, options.IncludeTransitive, options.TargetFramework, options.IncludeSharedProjects, out IReadOnlyCollection<Exception>? projectReaderExceptions);
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
-                packagesForProject.SelectMany(p => GetPackageInformations(p, overridePackageInformationArray, cancellationToken));
+                packagesForProject.SelectMany(p => LicenseValidationHandler.GetPackageInformations(p, overridePackageInformationArray, cancellationToken));
             var results = (await validator.Validate(downloadedLicenseInformation, cancellationToken)).ToList();
 
             if (projectReaderExceptions.Count > 0)
@@ -212,7 +212,7 @@ namespace NuGetLicense
             throw new FileNotFoundException("Please provide an input file");
         }
 
-        private IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(
+        private static IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(
             IEnumerable<string> projects,
             ReferencedPackageReader reader,
             bool includeTransitive,
@@ -259,7 +259,7 @@ namespace NuGetLicense
             ]);
         }
 
-        private async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformations(
+        private static async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformations(
             ProjectWithReferencedPackages projectWithReferences,
             IEnumerable<CustomPackageInformation> overridePackageInformation,
             [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellation)
@@ -267,25 +267,17 @@ namespace NuGetLicense
             ISettings settings = Settings.LoadDefaultSettings(projectWithReferences.Project);
             var sourceProvider = new PackageSourceProvider(settings);
 
-            WrappedSourceRepositoryProvider? sourceRepositoryProvider = null;
-            try
-            {
-                sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
-                var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
-                var informationReader = new PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
+            using var sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
+            var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
+            var informationReader = new PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
 
-                await foreach (ReferencedPackageWithContext package in informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project, projectWithReferences.ReferencedPackages), cancellation))
-                {
-                    yield return package;
-                }
-            }
-            finally
+            await foreach (ReferencedPackageWithContext package in informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project, projectWithReferences.ReferencedPackages), cancellation))
             {
-                sourceRepositoryProvider?.Dispose();
+                yield return package;
             }
         }
 
-        private IOutputFormatter GetOutputFormatter(OutputType outputType, bool returnErrorsOnly, bool includeIgnoredPackages)
+        private static IOutputFormatter GetOutputFormatter(OutputType outputType, bool returnErrorsOnly, bool includeIgnoredPackages)
         {
             return outputType switch
             {
