@@ -23,6 +23,7 @@
     <PackageReference Include="NuGet.ProjectModel" Version="7.0.1" />
     <PackageReference Include="NuGet.Frameworks" Version="7.0.1" ExcludeAssets="runtime" PrivateAssets="all" />
     <PackageReference Include="Tethys.SPDX.ExpressionParser" Version="2.1.3" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions" Version="22.1.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">

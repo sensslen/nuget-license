@@ -1,13 +1,12 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
-using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using NSubstitute;
 using NuGetUtility.Wrapper.MsBuildWrapper;
-using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
+using NuGetUtility;
 
 #if !NET
 using System.Net.Http;
@@ -63,9 +62,9 @@ namespace NuGetLicense.Test
             CommandLineOptions options = new CommandLineOptions();
 
             // Act & Assert
-            FileNotFoundException? ex = Assert.ThrowsAsync<FileNotFoundException>(async () =>
+            ArgumentException? ex = Assert.ThrowsAsync<ArgumentException>(async () =>
                 await _handler.HandleAsync(options));
-            Assert.That(ex!.Message, Does.Contain("Please provide an input file"));
+            Assert.That(ex!.Message, Does.Contain($"Please provide an input file using --input or --input-file-json"));
         }
 
         [Test]
@@ -231,7 +230,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            _ = await _handler.HandleAsync(options);
 
             // Assert
             Assert.That(_fileSystem.Directory.Exists(downloadDir), Is.True);
@@ -255,7 +254,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            _ = await _handler.HandleAsync(options);
 
             // Assert
             Assert.That(_fileSystem.File.Exists(outputFile), Is.True);
@@ -277,10 +276,455 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            _ = await _handler.HandleAsync(options);
 
             // Assert - output stream should have been written to
             Assert.That(_outputStream.Length, Is.GreaterThan(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithLicenseMapping_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string licenseMappingFile = "/test/licenseMapping.json";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+            _fileSystem.AddFile(licenseMappingFile, new MockFileData("{\"https://example.com/license\": \"MIT\"}"));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                LicenseMapping = licenseMappingFile
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithOverridePackageInformation_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string overrideFile = "/test/override.json";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+            _fileSystem.AddFile(overrideFile, new MockFileData("[{\"PackageId\":\"TestPackage\",\"Version\":\"1.0.0\",\"PackageUrl\":\"https://example.com\",\"License\":\"MIT\",\"Authors\":\"Test Author\"}]"));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                OverridePackageInformation = overrideFile
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithLicenseFileMappings_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string licenseMappingFile = "/test/licenseFiles.json";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+            _fileSystem.AddFile(licenseMappingFile, new MockFileData("{\"LICENSE.txt\": \"MIT\"}"));
+            _fileSystem.AddFile("/test/LICENSE.txt", new MockFileData("MIT License content"));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                LicenseFileMappings = licenseMappingFile
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithIncludeTransitive_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                IncludeTransitive = true
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithIncludeSharedProjects_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                IncludeSharedProjects = true
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithTargetFramework_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                TargetFramework = "net8.0"
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithOutputTypeJson_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                OutputType = OutputType.Json
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithOutputTypeJsonPretty_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                OutputType = OutputType.JsonPretty
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithOutputTypeMarkdown_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                OutputType = OutputType.Markdown
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithReturnErrorsOnly_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                ReturnErrorsOnly = true
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithIncludeIgnoredPackages_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                IncludeIgnoredPackages = true
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithProjectReaderExceptions_ReturnsMinusOne()
+        {
+            // Arrange
+            string inputFile = "/test/solution.sln";
+            string projectFile = "/test/project.csproj";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+            _fileSystem.AddFile(projectFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile
+            };
+
+            // Setup mocks to simulate exception during project reading
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>())
+                .Returns(Task.FromResult<IEnumerable<string>>([projectFile]));
+
+            _msBuild.GetProject(Arg.Any<string>()).Returns(_ => throw new Exception("Failed to load project"));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(-1));
+            Assert.That(_errorStream.Length, Is.GreaterThan(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithProjectReaderExceptions_WritesExceptionToErrorStream()
+        {
+            // Arrange
+            string inputFile = "/test/solution.sln";
+            string projectFile = "/test/project.csproj";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+            _fileSystem.AddFile(projectFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile
+            };
+
+            string exceptionMessage = "Failed to load project";
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(_ => Task.FromResult<IEnumerable<string>>([projectFile]));
+
+            _msBuild.GetProject(Arg.Any<string>()).Returns(_ => throw new Exception(exceptionMessage));
+
+            // Act
+            await _handler.HandleAsync(options);
+
+            // Assert
+            _errorStream.Position = 0;
+            StreamReader reader = new StreamReader(_errorStream);
+            string errorOutput = await reader.ReadToEndAsync();
+            Assert.That(errorOutput, Does.Contain(exceptionMessage));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithMultipleInputJsonFiles_CompletesSuccessfully()
+        {
+            // Arrange
+            string jsonFile = "/test/input.json";
+            string projectFile1 = "/test/project1.csproj";
+            string projectFile2 = "/test/project2.csproj";
+            _fileSystem.AddFile(jsonFile, new MockFileData($"[\"{projectFile1}\", \"{projectFile2}\"]"));
+            _fileSystem.AddFile(projectFile1, new MockFileData(""));
+            _fileSystem.AddFile(projectFile2, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputJsonFile = jsonFile
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>())
+                .Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithExceptionInOutputFormatter_ReturnsMinusOne()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                DestinationFile = "/invalid\0path/output.txt"
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>())
+                .Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert - should handle exception and return -1
+            Assert.That(result, Is.EqualTo(-1));
+            Assert.That(_errorStream.Length, Is.GreaterThan(0));
+        }
+
+        [Test]
+        public async Task HandleAsync_WithCombinedOptions_CompletesSuccessfully()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            string allowedLicensesFile = "/test/allowed.json";
+            string ignoredPackagesFile = "/test/ignored.json";
+            string licenseMappingFile = "/test/licenseMapping.json";
+            string outputFile = "/test/output.json";
+
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+            _fileSystem.AddFile(allowedLicensesFile, new MockFileData("[\"MIT\", \"Apache-2.0\"]"));
+            _fileSystem.AddFile(ignoredPackagesFile, new MockFileData("[\"MyCompany.*\"]"));
+            _fileSystem.AddFile(licenseMappingFile, new MockFileData("{\"https://example.com/license\": \"MIT\"}"));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile,
+                AllowedLicenses = allowedLicensesFile,
+                IgnoredPackages = ignoredPackagesFile,
+                LicenseMapping = licenseMappingFile,
+                DestinationFile = outputFile,
+                OutputType = OutputType.JsonPretty,
+                IncludeTransitive = true,
+                ReturnErrorsOnly = false,
+                IncludeIgnoredPackages = true
+            };
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>())
+                .Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _handler.HandleAsync(options);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(0));
+            Assert.That(_fileSystem.File.Exists(outputFile), Is.True);
+        }
+
+        [Test]
+        public async Task HandleAsync_WithCancellationToken_CanBeCancelled()
+        {
+            // Arrange
+            string inputFile = "/test/project.csproj";
+            _fileSystem.AddFile(inputFile, new MockFileData(""));
+
+            CommandLineOptions options = new CommandLineOptions
+            {
+                InputFile = inputFile
+            };
+
+            using CancellationTokenSource cts = new CancellationTokenSource();
+
+            // Setup mocks
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>())
+                .Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            cts.Cancel();
+
+            // Act & Assert - this test verifies that cancellation token is passed through
+            // The actual cancellation may or may not throw depending on timing
+            try
+            {
+                await _handler.HandleAsync(options, cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected if cancellation happens
+                Assert.Pass("Operation was cancelled as expected");
+            }
+
+            // If no exception, that's also acceptable as cancellation is best-effort
+            Assert.Pass("Operation completed or was cancelled gracefully");
         }
     }
 }

@@ -67,7 +67,7 @@ namespace NuGetLicense
             IFileDownloader? licenseDownloader = GetFileDownloader(options.DownloadLicenseInformation);
             IOutputFormatter output = LicenseValidationHandler.GetOutputFormatter(options.OutputType, options.ReturnErrorsOnly, options.IncludeIgnoredPackages);
 
-            var projectCollector = new ProjectsCollector(_solutionPersistance);
+            var projectCollector = new ProjectsCollector(_solutionPersistance, _fileSystem);
             var projectReader = new ReferencedPackageReader(_msBuild, new LockFileFactory(), _packagesConfigReader);
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicensesArray,
@@ -209,7 +209,7 @@ namespace NuGetLicense
                 return JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(inputJsonFile))!;
             }
 
-            throw new FileNotFoundException("Please provide an input file");
+            throw new ArgumentException("Please provide an input file using --input or --input-file-json");
         }
 
         private static IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(
