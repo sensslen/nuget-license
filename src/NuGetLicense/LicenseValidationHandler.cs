@@ -259,19 +259,30 @@ namespace NuGetLicense
             ]);
         }
 
-        private IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformations(
+        private async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformations(
             ProjectWithReferencedPackages projectWithReferences,
             IEnumerable<CustomPackageInformation> overridePackageInformation,
-            CancellationToken cancellation)
+            [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellation)
         {
             ISettings settings = Settings.LoadDefaultSettings(projectWithReferences.Project);
             var sourceProvider = new PackageSourceProvider(settings);
 
-            using var sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
-            var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
-            var informationReader = new PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
+            WrappedSourceRepositoryProvider? sourceRepositoryProvider = null;
+            try
+            {
+                sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
+                var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
+                var informationReader = new PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
 
-            return informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project, projectWithReferences.ReferencedPackages), cancellation);
+                await foreach (ReferencedPackageWithContext package in informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project, projectWithReferences.ReferencedPackages), cancellation))
+                {
+                    yield return package;
+                }
+            }
+            finally
+            {
+                sourceRepositoryProvider?.Dispose();
+            }
         }
 
         private IOutputFormatter GetOutputFormatter(OutputType outputType, bool returnErrorsOnly, bool includeIgnoredPackages)
