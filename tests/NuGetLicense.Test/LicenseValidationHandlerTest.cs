@@ -64,7 +64,7 @@ namespace NuGetLicense.Test
             // Act & Assert
             ArgumentException? ex = Assert.ThrowsAsync<ArgumentException>(async () =>
                 await _handler.HandleAsync(options));
-            Assert.That(ex!.Message, Does.Contain($"Please provide an input file using --input or --input-json"));
+            Assert.That(ex!.Message, Does.Contain("Please provide an input file using --input or --json-input"));
         }
 
         [Test]
