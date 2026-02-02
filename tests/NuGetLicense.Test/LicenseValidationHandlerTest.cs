@@ -3,10 +3,10 @@
 
 using System.IO.Abstractions.TestingHelpers;
 using NSubstitute;
-using NuGetUtility.Wrapper.MsBuildWrapper;
-using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
-using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility;
+using NuGetUtility.Wrapper.MsBuildWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
+using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
 
 #if !NET
 using System.Net.Http;
@@ -64,7 +64,7 @@ namespace NuGetLicense.Test
             // Act & Assert
             ArgumentException? ex = Assert.ThrowsAsync<ArgumentException>(async () =>
                 await _handler.HandleAsync(options));
-            Assert.That(ex!.Message, Does.Contain($"Please provide an input file using --input or --input-file-json"));
+            Assert.That(ex!.Message, Does.Contain($"Please provide an input file using --input or --input-json"));
         }
 
         [Test]
