@@ -1,6 +1,7 @@
 ﻿// Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.IO.Abstractions;
 using AutoFixture;
 using NSubstitute;
 using NuGetUtility.ReferencedPackagesReader;
@@ -23,9 +24,11 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _fixture = new Fixture();
             _solutionPersistanceWrapper = Substitute.For<ISolutionPersistanceWrapper>();
-            _uut = new ProjectsCollector(_solutionPersistanceWrapper);
+            _fileSystem = Substitute.For<IFileSystem>();
+            _uut = new ProjectsCollector(_solutionPersistanceWrapper, _fileSystem);
         }
         private ISolutionPersistanceWrapper _solutionPersistanceWrapper = null!;
+        private IFileSystem _fileSystem = null!;
         private ProjectsCollector _uut = null!;
         private Fixture _fixture = null!;
         private readonly VerifySettings _osPlatformSpecificVerifySettings;
