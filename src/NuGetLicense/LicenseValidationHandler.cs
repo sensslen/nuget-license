@@ -116,11 +116,9 @@ namespace NuGetLicense
 
         private Stream GetOutputStream(string? destinationFile)
         {
-            if (destinationFile is null)
-            {
-                return _outputStream;
-            }
-            return _fileSystem.File.Open(_fileSystem.Path.GetFullPath(destinationFile), FileMode.Create, FileAccess.Write, FileShare.None);
+            return destinationFile is null
+                ? _outputStream
+                : _fileSystem.File.Open(_fileSystem.Path.GetFullPath(destinationFile), FileMode.Create, FileAccess.Write, FileShare.None);
         }
 
         private async Task WriteValidationExceptions(IReadOnlyCollection<Exception> validationExceptions)
@@ -150,14 +148,41 @@ namespace NuGetLicense
             return JsonSerializer.Deserialize<CustomPackageInformation[]>(_fileSystem.File.ReadAllText(overridePackageInformation), serializerOptions)!;
         }
 
-        private string[] GetAllowedLicenses(string? allowedLicenses)
+        private string[] ParseStringArrayOrFile(string? value)
         {
-            if (allowedLicenses == null)
+            if (value == null)
             {
                 return Array.Empty<string>();
             }
 
-            return JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(allowedLicenses))!;
+            // Check if the value is a path to an existing file
+            if (_fileSystem.File.Exists(value))
+            {
+                try
+                {
+                    string fileContent = _fileSystem.File.ReadAllText(value);
+                    string[]? result = JsonSerializer.Deserialize<string[]>(fileContent);
+                    return result ?? throw new ArgumentException($"File '{value}' contains invalid JSON: expected an array of strings but got null.");
+                }
+                catch (JsonException ex)
+                {
+                    throw new ArgumentException($"Failed to parse JSON file '{value}': {ex.Message}", ex);
+                }
+            }
+
+            // Parse as semicolon-separated inline values
+            string[] parts = value.Split([';'], StringSplitOptions.RemoveEmptyEntries);
+            // Trim each part manually for .NET Framework compatibility
+            for (int i = 0; i < parts.Length; i++)
+            {
+                parts[i] = parts[i].Trim();
+            }
+            return Array.FindAll(parts, part => part.Length > 0);
+        }
+
+        private string[] GetAllowedLicenses(string? allowedLicenses)
+        {
+            return ParseStringArrayOrFile(allowedLicenses);
         }
 
         private IImmutableDictionary<Uri, string> GetLicenseMappings(string? licenseMapping)
@@ -174,27 +199,12 @@ namespace NuGetLicense
 
         private string[] GetIgnoredPackages(string? ignoredPackages)
         {
-            if (ignoredPackages == null)
-            {
-                return Array.Empty<string>();
-            }
-
-            return JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(ignoredPackages))!;
+            return ParseStringArrayOrFile(ignoredPackages);
         }
 
         private string[] GetExcludedProjects(string? excludedProjects)
         {
-            if (excludedProjects == null)
-            {
-                return Array.Empty<string>();
-            }
-
-            if (_fileSystem.File.Exists(excludedProjects))
-            {
-                return JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(excludedProjects))!;
-            }
-
-            return [excludedProjects];
+            return ParseStringArrayOrFile(excludedProjects);
         }
 
         private string[] GetInputFiles(string? inputFile, string? inputJsonFile)
@@ -204,12 +214,9 @@ namespace NuGetLicense
                 return [inputFile];
             }
 
-            if (inputJsonFile != null)
-            {
-                return JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(inputJsonFile))!;
-            }
-
-            throw new ArgumentException("Please provide an input file using --input or --input-file-json");
+            return inputJsonFile != null
+                ? JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(inputJsonFile))!
+                : throw new ArgumentException("Please provide an input file using --input or --json-input");
         }
 
         private static IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(

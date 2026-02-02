@@ -35,48 +35,48 @@ namespace NuGetLicense
 
             var allowedLicensesOption = new Option<string?>("-a", "--allowed-license-types")
             {
-                Description = "File in json format that contains an array of all allowed license types"
+                Description = "Specifies allowed license types. You can provide either a JSON file containing an array of license types, or a semicolon-separated list of license identifiers (e.g., \"MIT;Apache-2.0;BSD-3-Clause\")."
             };
 
             var ignoredPackagesOption = new Option<string?>("-ignore", "--ignored-packages")
             {
-                Description = "File in json format that contains an array of nuget package names to ignore (e.g. useful for nuget packages built in-house). Note that even though the packages are ignored, their transitive dependencies are not. Wildcard characters (*) are supported to specify ranges of ignored packages."
+                Description = "Specifies package names to ignore during validation. You can provide either a JSON file containing an array of package names, or a semicolon-separated list (e.g., \"Package1;Package2\"). Wildcards (*) are supported. Note that even though packages are ignored, their transitive dependencies are not."
             };
 
             var licenseMappingOption = new Option<string?>("-mapping", "--licenseurl-to-license-mappings")
             {
-                Description = "File in json format that contains a dictionary to map license urls to licenses."
+                Description = "Specifies a JSON file containing a dictionary to map license URLs to license types."
             };
 
             var overridePackageInformationOption = new Option<string?>("-override", "--override-package-information")
             {
-                Description = "File in json format that contains a list of package and license information which should be used in favor of the online version. This option can be used to override the license type of packages that e.g. specify the license as file."
+                Description = "Specifies a JSON file containing package and license information to use instead of the online version. This option can be used to override the license type of packages that specify the license as a file."
             };
 
             var downloadLicenseInformationOption = new Option<string?>("-d", "--license-information-download-location")
             {
-                Description = "When set, the application downloads all licenses given using a license URL to the specified folder.",
+                Description = "Specifies a folder where the application will download all licenses provided via license URLs."
             };
 
             var outputTypeOption = new Option<OutputType>("-o", "--output")
             {
-                Description = "This parameter allows to choose between tabular and json output.",
+                Description = "Specifies the output format. Valid values are Table, Markdown, Json, or JsonPretty (default: Table).",
                 DefaultValueFactory = _ => OutputType.Table
             };
 
             var returnErrorsOnlyOption = new Option<bool>("-err", "--error-only")
             {
-                Description = "If this option is set and there are license validation errors, only the errors are returned as result. Otherwise all validation results are always returned."
+                Description = "When set, only validation errors are returned as result. Otherwise, all validation results are always returned."
             };
 
             var includeIgnoredPackagesOption = new Option<bool>("-include-ignored", "--include-ignored-packages")
             {
-                Description = "If this option is set, the packages that are ignored from validation are still included in the output."
+                Description = "When set, packages that are ignored from validation are still included in the output."
             };
 
             var excludedProjectsOption = new Option<string?>("-exclude-projects", "--exclude-projects-matching")
             {
-                Description = "This option allows to specify project name(s) to exclude from the analysis. This can be useful to exclude test projects from the analysis when supplying a solution file as input. Wildcard characters (*) are supported to specify ranges of ignored projects. The input can either be a file name containing a list of project names in json format or a plain string that is then used as a single entry."
+                Description = "Specifies project names to exclude from the analysis. You can provide either a JSON file containing an array of project names, or a semicolon-separated list (e.g., \"*Test*;Legacy*\"). Wildcards (*) are supported. This is useful to exclude test projects when supplying a solution file as input."
             };
 
             var includeSharedProjectsOption = new Option<bool>("-isp", "--include-shared-projects")

@@ -58,16 +58,16 @@ nuget-license [options]
 | `-i`, `--input <FILE>` | Project or solution file to analyze. |
 | `-ji`, `--json-input <FILE>` | JSON file with an array of project/solution files to analyze. See [docs/input-json.md](docs/input-json.md). |
 | `-t`, `--include-transitive` | Include transitive dependencies. |
-| `-a`, `--allowed-license-types <FILE>` | JSON file listing allowed license types. See [docs/allowed-licenses-json.md](docs/allowed-licenses-json.md). |
-| `-ignore`, `--ignored-packages <FILE>` | JSON file listing package names to ignore (supports wildcards). See [docs/ignored-packages-json.md](docs/ignored-packages-json.md). |
-| `-mapping`, `--licenseurl-to-license-mappings <FILE>` | JSON dictionary mapping license URLs to license types. See [docs/licenseurl-mappings-json.md](docs/licenseurl-mappings-json.md). |
-| `-file-mapping`, `--licensefile-to-license-mappings <FILE>` | JSON dictionary mapping license files to license types. Paths are relative to the JSON file. See [docs/licensefile-mappings-json.md](docs/licensefile-mappings-json.md). |
-| `-override`, `--override-package-information <FILE>` | JSON list to override package/license info. See [docs/override-package-json.md](docs/override-package-json.md). |
-| `-d`, `--license-information-download-location <FOLDER>` | Download all license files to the specified folder. |
-| `-o`, `--output <TYPE>` | Output format: `Table`, `Markdown`, `Json` or `JsonPretty` (default: Table). See [docs/output-json.md](docs/output-json.md) for JSON format details. |
-| `-err`, `--error-only` | Only show validation errors. |
-| `-include-ignored`, `--include-ignored-packages` | Include ignored packages in output. |
-| `-exclude-projects`, `--exclude-projects-matching <PATTERN\|FILE>` | Exclude projects by name or pattern (supports wildcards or JSON file). See [docs/exclude-projects-json.md](docs/exclude-projects-json.md). |
+| `-a`, `--allowed-license-types <FILE\|LIST>` | Specifies allowed license types. You can provide either a JSON file listing allowed license types (see [docs/allowed-licenses-json.md](docs/allowed-licenses-json.md)), or a semicolon-separated list (e.g., `"MIT;Apache-2.0;BSD-3-Clause"`). |
+| `-ignore`, `--ignored-packages <FILE\|LIST>` | Specifies package names to ignore during validation (supports wildcards). You can provide either a JSON file (see [docs/ignored-packages-json.md](docs/ignored-packages-json.md)), or a semicolon-separated list (e.g., `"Package1;Package2"`). |
+| `-mapping`, `--licenseurl-to-license-mappings <FILE>` | Specifies a JSON dictionary mapping license URLs to license types. See [docs/licenseurl-mappings-json.md](docs/licenseurl-mappings-json.md). |
+| `-file-mapping`, `--licensefile-to-license-mappings <FILE>` | Specifies a JSON dictionary mapping license files to license types. Paths are relative to the JSON file. See [docs/licensefile-mappings-json.md](docs/licensefile-mappings-json.md). |
+| `-override`, `--override-package-information <FILE>` | Specifies a JSON list to override package/license information. See [docs/override-package-json.md](docs/override-package-json.md). |
+| `-d`, `--license-information-download-location <FOLDER>` | Specifies a folder where all license files will be downloaded. |
+| `-o`, `--output <TYPE>` | Specifies the output format: `Table`, `Markdown`, `Json` or `JsonPretty` (default: Table). See [docs/output-json.md](docs/output-json.md) for JSON format details. |
+| `-err`, `--error-only` | When set, only validation errors are shown. |
+| `-include-ignored`, `--include-ignored-packages` | When set, ignored packages are included in the output. |
+| `-exclude-projects`, `--exclude-projects-matching <FILE\|LIST>` | Specifies projects to exclude from analysis. You can provide either a JSON file (see [docs/exclude-projects-json.md](docs/exclude-projects-json.md)), or a semicolon-separated list (e.g., `"*Test*;Legacy*"`). Wildcards (`*`) are supported. |
 | `-isp`, `--include-shared-projects` | Include shared projects (`.shproj`). |
 | `-f`, `--target-framework <TFM>` | Analyze for a specific Target Framework Moniker. |
 | `-fo`, `--file-output <FILE>` | Write output to a file instead of console. |
@@ -128,8 +128,26 @@ nuget-license -i MySolution.sln
 
 ### Use a custom allowed license list
 
+Using a JSON file:
 ```ps
 nuget-license -i MyProject.csproj -a allowed-licenses.json
+```
+
+Using inline semicolon-separated values:
+```ps
+nuget-license -i MyProject.csproj -a "MIT;Apache-2.0;BSD-3-Clause"
+```
+
+### Ignore specific packages
+
+Using a JSON file:
+```ps
+nuget-license -i MyProject.csproj -ignore ignored-packages.json
+```
+
+Using inline semicolon-separated values (supports wildcards):
+```ps
+nuget-license -i MyProject.csproj -ignore "InternalPackage1;InternalPackage2;Test*"
 ```
 
 ### Generate pretty JSON output
