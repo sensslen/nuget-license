@@ -119,6 +119,20 @@ namespace NuGetLicense
 
             rootCommand.SetAction(async (parseResult, cancellationToken) =>
             {
+                string? inputFile = parseResult.GetValue(inputFileOption);
+                string? inputJsonFile = parseResult.GetValue(inputJsonFileOption);
+
+                // Check if mandatory parameters are provided
+                if (inputFile == null && inputJsonFile == null)
+                {
+                    Console.Error.WriteLine("Error: Please provide an input file using --input or --json-input");
+                    Console.Error.WriteLine();
+                    // Show help by parsing and invoking with --help argument
+                    ParseResult helpResult = rootCommand.Parse(new[] { "--help" });
+                    await helpResult.InvokeAsync();
+                    return 1;
+                }
+
                 var options = new CommandLineOptions
                 {
                     InputFile = parseResult.GetValue(inputFileOption),

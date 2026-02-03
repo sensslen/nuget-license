@@ -39,9 +39,13 @@ namespace NuGetLicense
                 return [inputFile];
             }
 
-            return inputJsonFile != null
-                ? JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(inputJsonFile))!
-                : throw new ArgumentException("Please provide an input file using --input or --json-input");
+            if (inputJsonFile != null)
+            {
+                return JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(inputJsonFile))!;
+            }
+
+            // This should not be reached because validation is done at command line parsing level
+            throw new ArgumentException("Please provide an input file using --input or --json-input");
         }
 
         public string[] GetAllowedLicenses(string? allowedLicenses)
