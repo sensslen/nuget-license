@@ -44,7 +44,8 @@ namespace NuGetLicense
                 return JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(inputJsonFile))!;
             }
 
-            // This should not be reached because validation is done at command line parsing level
+            // Defensive check: validation should already be done at command line parsing level,
+            // but throw exception if called directly or if validation is bypassed
             throw new ArgumentException("Please provide an input file using --input or --json-input");
         }
 

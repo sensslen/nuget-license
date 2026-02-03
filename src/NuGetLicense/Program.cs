@@ -135,8 +135,8 @@ namespace NuGetLicense
 
                 var options = new CommandLineOptions
                 {
-                    InputFile = parseResult.GetValue(inputFileOption),
-                    InputJsonFile = parseResult.GetValue(inputJsonFileOption),
+                    InputFile = inputFile,
+                    InputJsonFile = inputJsonFile,
                     IncludeTransitive = parseResult.GetValue(includeTransitiveOption),
                     AllowedLicenses = parseResult.GetValue(allowedLicensesOption),
                     IgnoredPackages = parseResult.GetValue(ignoredPackagesOption),
