@@ -145,16 +145,17 @@ namespace NuGetLicense
                 var msBuild = new MsBuildAbstraction();
                 IPackagesConfigReader packagesConfigReader = GetPackagesConfigReader();
 
-                var handler = new LicenseValidationHandler(
+                var optionsParser = new CommandLineOptionsParser(fileSystem, httpClient);
+                var orchestrator = new LicenseValidationOrchestrator(
                     fileSystem,
-                    httpClient,
                     solutionPersistance,
                     msBuild,
                     packagesConfigReader,
+                    optionsParser,
                     Console.OpenStandardOutput(),
                     Console.OpenStandardError());
 
-                return await handler.HandleAsync(options, cancellationToken);
+                return await orchestrator.ValidateAsync(options, cancellationToken);
             });
 
             return rootCommand;
