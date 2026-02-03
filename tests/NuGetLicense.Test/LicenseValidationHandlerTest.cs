@@ -24,7 +24,7 @@ namespace NuGetLicense.Test
         private IPackagesConfigReader _packagesConfigReader = null!;
         private MemoryStream _outputStream = null!;
         private MemoryStream _errorStream = null!;
-        private LicenseValidationHandler _handler = null!;
+        private ILicenseValidationOrchestrator _orchestrator = null!;
 
         [SetUp]
         public void SetUp()
@@ -37,12 +37,13 @@ namespace NuGetLicense.Test
             _outputStream = new MemoryStream();
             _errorStream = new MemoryStream();
 
-            _handler = new LicenseValidationHandler(
+            var optionsParser = new CommandLineOptionsParser(_fileSystem, _httpClient);
+            _orchestrator = new LicenseValidationOrchestrator(
                 _fileSystem,
-                _httpClient,
                 _solutionPersistance,
                 _msBuild,
                 _packagesConfigReader,
+                optionsParser,
                 _outputStream,
                 _errorStream);
         }
@@ -63,7 +64,7 @@ namespace NuGetLicense.Test
 
             // Act & Assert
             ArgumentException? ex = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await _handler.HandleAsync(options));
+                await _orchestrator.ValidateAsync(options));
             Assert.That(ex!.Message, Does.Contain("Please provide an input file using --input or --json-input"));
         }
 
@@ -83,7 +84,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -107,7 +108,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -132,7 +133,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -157,7 +158,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -182,7 +183,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -206,7 +207,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -230,7 +231,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -254,7 +255,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -278,7 +279,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -304,7 +305,7 @@ namespace NuGetLicense.Test
 
             // Act & Assert
             ArgumentException? ex = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await _handler.HandleAsync(options));
+                await _orchestrator.ValidateAsync(options));
             Assert.That(ex!.Message, Does.Contain("Failed to parse JSON file"));
             Assert.That(ex.Message, Does.Contain(allowedLicensesFile));
         }
@@ -329,7 +330,7 @@ namespace NuGetLicense.Test
 
             // Act & Assert
             ArgumentException? ex = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await _handler.HandleAsync(options));
+                await _orchestrator.ValidateAsync(options));
             Assert.That(ex!.Message, Does.Contain("expected an array of strings but got null"));
             Assert.That(ex.Message, Does.Contain(allowedLicensesFile));
         }
@@ -354,7 +355,7 @@ namespace NuGetLicense.Test
 
             // Act & Assert
             ArgumentException? ex = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await _handler.HandleAsync(options));
+                await _orchestrator.ValidateAsync(options));
             Assert.That(ex!.Message, Does.Contain("Failed to parse JSON file"));
             Assert.That(ex.Message, Does.Contain(ignoredPackagesFile));
         }
@@ -379,7 +380,7 @@ namespace NuGetLicense.Test
 
             // Act & Assert
             ArgumentException? ex = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await _handler.HandleAsync(options));
+                await _orchestrator.ValidateAsync(options));
             Assert.That(ex!.Message, Does.Contain("Failed to parse JSON file"));
             Assert.That(ex.Message, Does.Contain(excludedProjectsFile));
         }
@@ -402,7 +403,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert - empty string should result in empty array, which should complete successfully
             Assert.That(result, Is.EqualTo(0));
@@ -426,7 +427,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert - whitespace should be trimmed and parsing should succeed
             Assert.That(result, Is.EqualTo(0));
@@ -450,7 +451,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            _ = await _handler.HandleAsync(options);
+            _ = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(_fileSystem.Directory.Exists(downloadDir), Is.True);
@@ -474,7 +475,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            _ = await _handler.HandleAsync(options);
+            _ = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(_fileSystem.File.Exists(outputFile), Is.True);
@@ -496,7 +497,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            _ = await _handler.HandleAsync(options);
+            _ = await _orchestrator.ValidateAsync(options);
 
             // Assert - output stream should have been written to
             Assert.That(_outputStream.Length, Is.GreaterThan(0));
@@ -521,7 +522,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -546,7 +547,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -572,7 +573,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -595,7 +596,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -618,7 +619,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -641,7 +642,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -664,7 +665,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -687,7 +688,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -710,7 +711,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -733,7 +734,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -756,7 +757,7 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -783,7 +784,7 @@ namespace NuGetLicense.Test
             _msBuild.GetProject(Arg.Any<string>()).Returns(_ => throw new Exception("Failed to load project"));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(-1));
@@ -810,7 +811,7 @@ namespace NuGetLicense.Test
             _msBuild.GetProject(Arg.Any<string>()).Returns(_ => throw new Exception(exceptionMessage));
 
             // Act
-            await _handler.HandleAsync(options);
+            await _orchestrator.ValidateAsync(options);
 
             // Assert
             _errorStream.Position = 0;
@@ -840,7 +841,7 @@ namespace NuGetLicense.Test
                 .Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -864,7 +865,7 @@ namespace NuGetLicense.Test
                 .Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert - should handle exception and return -1
             Assert.That(result, Is.EqualTo(-1));
@@ -904,7 +905,7 @@ namespace NuGetLicense.Test
                 .Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _handler.HandleAsync(options);
+            int result = await _orchestrator.ValidateAsync(options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -935,7 +936,7 @@ namespace NuGetLicense.Test
             // The actual cancellation may or may not throw depending on timing
             try
             {
-                await _handler.HandleAsync(options, cts.Token);
+                await _orchestrator.ValidateAsync(options, cts.Token);
             }
             catch (OperationCanceledException)
             {
