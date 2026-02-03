@@ -7,6 +7,7 @@ using FileLicenseMatcher;
 using NuGetUtility;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
+using RichardSzalay.MockHttp;
 using LicenseOutput = NuGetLicense.Output;
 
 #if !NET
@@ -19,6 +20,7 @@ namespace NuGetLicense.Test
     internal class CommandLineOptionsParserTest
     {
         private MockFileSystem _fileSystem = null!;
+        private MockHttpMessageHandler _mockHttp = null!;
         private HttpClient _httpClient = null!;
         private CommandLineOptionsParser _parser = null!;
 
@@ -26,7 +28,8 @@ namespace NuGetLicense.Test
         public void SetUp()
         {
             _fileSystem = new MockFileSystem();
-            _httpClient = new HttpClient();
+            _mockHttp = new MockHttpMessageHandler();
+            _httpClient = _mockHttp.ToHttpClient();
             _parser = new CommandLineOptionsParser(_fileSystem, _httpClient);
         }
 
@@ -34,6 +37,7 @@ namespace NuGetLicense.Test
         public void TearDown()
         {
             _httpClient?.Dispose();
+            _mockHttp?.Dispose();
         }
 
         [TestFixture]

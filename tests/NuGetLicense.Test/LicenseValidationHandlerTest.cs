@@ -7,6 +7,7 @@ using NuGetUtility;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
+using RichardSzalay.MockHttp;
 
 #if !NET
 using System.Net.Http;
@@ -18,6 +19,7 @@ namespace NuGetLicense.Test
     internal class LicenseValidationHandlerTest
     {
         private MockFileSystem _fileSystem = null!;
+        private MockHttpMessageHandler _mockHttp = null!;
         private HttpClient _httpClient = null!;
         private ISolutionPersistanceWrapper _solutionPersistance = null!;
         private IMsBuildAbstraction _msBuild = null!;
@@ -30,7 +32,8 @@ namespace NuGetLicense.Test
         public void SetUp()
         {
             _fileSystem = new MockFileSystem();
-            _httpClient = new HttpClient();
+            _mockHttp = new MockHttpMessageHandler();
+            _httpClient = _mockHttp.ToHttpClient();
             _solutionPersistance = Substitute.For<ISolutionPersistanceWrapper>();
             _msBuild = Substitute.For<IMsBuildAbstraction>();
             _packagesConfigReader = Substitute.For<IPackagesConfigReader>();
@@ -54,6 +57,7 @@ namespace NuGetLicense.Test
             _outputStream?.Dispose();
             _errorStream?.Dispose();
             _httpClient?.Dispose();
+            _mockHttp?.Dispose();
         }
 
         [Test]
