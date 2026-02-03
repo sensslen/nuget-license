@@ -85,10 +85,10 @@ namespace NuGetLicense
 
         public IFileLicenseMatcher GetLicenseMatcher(string? licenseFileMappings)
         {
-            var spdxLicemseMatcher = new FileLicenseMatcher.SPDX.FastLicenseMatcher(Spdx.Licenses.SpdxLicenseStore.Licenses);
+            var spdxLicenseMatcher = new FileLicenseMatcher.SPDX.FastLicenseMatcher(Spdx.Licenses.SpdxLicenseStore.Licenses);
             if (licenseFileMappings is null)
             {
-                return spdxLicemseMatcher;
+                return spdxLicenseMatcher;
             }
 
             string containingDirectory = _fileSystem.Path.GetDirectoryName(_fileSystem.Path.GetFullPath(licenseFileMappings))!;
@@ -97,7 +97,7 @@ namespace NuGetLicense
 
             return new FileLicenseMatcher.Combine.LicenseMatcher([
                 new FileLicenseMatcher.Compare.LicenseMatcher(_fileSystem, fullPathMappings),
-                spdxLicemseMatcher
+                spdxLicenseMatcher
             ]);
         }
 
