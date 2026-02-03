@@ -192,19 +192,20 @@ namespace NuGetLicense.Test
             var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.Cancel();
 
-            // Act
+            // Act & Assert
+            // The operation should either complete successfully or throw OperationCanceledException
+            // Both are acceptable because cancellation is cooperative and timing-dependent
             try
             {
-                await _orchestrator.ValidateAsync(options, cancellationTokenSource.Token);
+                int result = await _orchestrator.ValidateAsync(options, cancellationTokenSource.Token);
+                // If we get here, the operation completed before cancellation was observed
+                Assert.Pass("Operation completed successfully before cancellation was observed");
             }
             catch (OperationCanceledException)
             {
-                // Expected when cancellation is honored
-                Assert.Pass("Operation completed or was cancelled gracefully");
+                // This is the expected behavior when cancellation is honored
+                Assert.Pass("Operation was successfully cancelled");
             }
-
-            // If we get here without exception, the operation completed before cancellation
-            Assert.Pass("Operation completed before cancellation");
         }
 
         [Test]

@@ -78,9 +78,18 @@ namespace NuGetLicense
                 return Array.Empty<CustomPackageInformation>();
             }
 
-            var serializerOptions = new JsonSerializerOptions();
-            serializerOptions.Converters.Add(new NuGetVersionJsonConverter());
-            return JsonSerializer.Deserialize<CustomPackageInformation[]>(_fileSystem.File.ReadAllText(overridePackageInformation), serializerOptions)!;
+            try
+            {
+                string fileContent = _fileSystem.File.ReadAllText(overridePackageInformation);
+                var serializerOptions = new JsonSerializerOptions();
+                serializerOptions.Converters.Add(new NuGetVersionJsonConverter());
+                CustomPackageInformation[]? result = JsonSerializer.Deserialize<CustomPackageInformation[]>(fileContent, serializerOptions);
+                return result ?? throw new ArgumentException($"File '{overridePackageInformation}' contains invalid JSON: expected an array of package information but got null.");
+            }
+            catch (JsonException ex)
+            {
+                throw new ArgumentException($"Failed to parse override package information file '{overridePackageInformation}': {ex.Message}", ex);
+            }
         }
 
         public IFileLicenseMatcher GetLicenseMatcher(string? licenseFileMappings)
