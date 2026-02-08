@@ -33,6 +33,11 @@ namespace NuGetLicense
                 Description = "If set, the whole license tree is followed in order to determine all nuget's used by the projects"
             };
 
+            var skipInvalidProjectsOption = new Option<bool>("-t", "--include-transitive")
+            {
+                Description = "If set, will skip any invalid projects not supported (for example, .pyproj projects)"
+            };
+
             var allowedLicensesOption = new Option<string?>("-a", "--allowed-license-types")
             {
                 Description = "Specifies allowed license types. You can provide either a JSON file containing an array of license types, or a semicolon-separated list of license identifiers (e.g., \"MIT;Apache-2.0;BSD-3-Clause\")."
@@ -103,6 +108,7 @@ namespace NuGetLicense
             rootCommand.Options.Add(inputFileOption);
             rootCommand.Options.Add(inputJsonFileOption);
             rootCommand.Options.Add(includeTransitiveOption);
+            rootCommand.Options.Add(skipInvalidProjectsOption);
             rootCommand.Options.Add(allowedLicensesOption);
             rootCommand.Options.Add(ignoredPackagesOption);
             rootCommand.Options.Add(licenseMappingOption);
@@ -138,6 +144,7 @@ namespace NuGetLicense
                     InputFile = inputFile,
                     InputJsonFile = inputJsonFile,
                     IncludeTransitive = parseResult.GetValue(includeTransitiveOption),
+                    SkipInvalidProjects = parseResult.GetValue(skipInvalidProjectsOption),
                     AllowedLicenses = parseResult.GetValue(allowedLicensesOption),
                     IgnoredPackages = parseResult.GetValue(ignoredPackagesOption),
                     LicenseMapping = parseResult.GetValue(licenseMappingOption),

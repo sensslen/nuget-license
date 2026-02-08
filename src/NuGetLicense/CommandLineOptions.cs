@@ -13,6 +13,7 @@ namespace NuGetLicense
         public string? InputFile { get; set; }
         public string? InputJsonFile { get; set; }
         public bool IncludeTransitive { get; set; }
+        public bool SkipInvalidProjects { get; set; }
         public string? AllowedLicenses { get; set; }
         public string? IgnoredPackages { get; set; }
         public string? LicenseMapping { get; set; }

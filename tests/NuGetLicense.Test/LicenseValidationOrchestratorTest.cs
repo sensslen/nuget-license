@@ -216,6 +216,7 @@ namespace NuGetLicense.Test
             {
                 InputFile = "/test/project.csproj",
                 IncludeTransitive = true,
+                SkipInvalidProjects = false,
                 TargetFramework = "net8.0",
                 IncludeSharedProjects = true,
                 AllowedLicenses = "MIT",
