@@ -161,6 +161,13 @@ namespace NuGetLicense
                         encounteredExceptions.Add(ipfe);
                     }
                 }
+                catch (ReferencedPackageReaderException rpre) when (rpre.Message.Contains("not compatible with"))
+                {
+                    if (!skipInvalidProjects)
+                    {
+                        encounteredExceptions.Add(rpre);
+                    }
+                }
                 catch (Exception e)
                 {
                     encounteredExceptions.Add(e);

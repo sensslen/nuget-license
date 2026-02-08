@@ -33,7 +33,7 @@ namespace NuGetLicense
                 Description = "If set, the whole license tree is followed in order to determine all nuget's used by the projects"
             };
 
-            var skipInvalidProjectsOption = new Option<bool>("-t", "--include-transitive")
+            var skipInvalidProjectsOption = new Option<bool>("-skip", "--skip-invalid-projects")
             {
                 Description = "If set, will skip any invalid projects not supported (for example, .pyproj projects)"
             };
