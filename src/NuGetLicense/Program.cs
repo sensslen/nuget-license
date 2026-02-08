@@ -19,14 +19,14 @@ namespace NuGetLicense
         public static async Task<int> Main(string[] args)
         {
             var app = new CommandLineApplication<CommandLineOptions>();
-            
+
             app.Conventions
                 .UseDefaultConventions()
                 .UseConstructorInjection(GetServiceProvider());
 
             app.OnExecuteAsync(async (cancellationToken) =>
             {
-                var options = app.Model;
+                CommandLineOptions options = app.Model;
 
                 // Check if mandatory parameters are provided
                 if (options.InputFile == null && options.InputJsonFile == null)
