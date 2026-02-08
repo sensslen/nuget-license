@@ -20,9 +20,7 @@ namespace NuGetLicense
         {
             var app = new CommandLineApplication<CommandLineOptions>();
 
-            app.Conventions
-                .UseDefaultConventions()
-                .UseConstructorInjection(GetServiceProvider());
+            app.Conventions.UseDefaultConventions();
 
             app.OnExecuteAsync(async (cancellationToken) =>
             {
@@ -68,13 +66,6 @@ namespace NuGetLicense
             }
         }
 
-        private static IServiceProvider GetServiceProvider()
-        {
-            // For now, we don't need dependency injection
-            // Return an empty service provider
-            return new EmptyServiceProvider();
-        }
-
         private static IPackagesConfigReader GetPackagesConfigReader()
         {
 #if NETFRAMEWORK
@@ -82,14 +73,6 @@ namespace NuGetLicense
 #else
             return OperatingSystem.IsWindows() ? new WindowsPackagesConfigReader() : new FailingPackagesConfigReader();
 #endif
-        }
-
-        private class EmptyServiceProvider : IServiceProvider
-        {
-            public object? GetService(Type serviceType)
-            {
-                return null;
-            }
         }
     }
 }
