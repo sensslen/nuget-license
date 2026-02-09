@@ -3,6 +3,14 @@
 
 using McMaster.Extensions.CommandLineUtils;
 using NuGetUtility;
+using NuGetUtility.Wrapper.MsBuildWrapper;
+using NuGetUtility.ReferencedPackagesReader;
+using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
+
+#if !NET
+using System.Net.Http;
+#endif
 
 namespace NuGetLicense
 {
@@ -59,5 +67,44 @@ namespace NuGetLicense
 
         [Option("-file-mapping|--licensefile-to-license-mappings", Description = "File in json format that contains a dictionary to map license files to licenses.")]
         public string? LicenseFileMappings { get; set; }
+
+        public async Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken cancellationToken)
+        {
+            // Check if mandatory parameters are provided
+            if (InputFile == null && InputJsonFile == null)
+            {
+                Console.Error.WriteLine("Error: Please provide an input file using --input or --json-input");
+                Console.Error.WriteLine();
+                app.ShowHelp();
+                return 1;
+            }
+
+            using var httpClient = new HttpClient();
+            var fileSystem = new System.IO.Abstractions.FileSystem();
+            var solutionPersistance = new SolutionPersistanceWrapper();
+            var msBuild = new MsBuildAbstraction();
+            IPackagesConfigReader packagesConfigReader = GetPackagesConfigReader();
+
+            var optionsParser = new CommandLineOptionsParser(fileSystem, httpClient);
+            var orchestrator = new LicenseValidationOrchestrator(
+                fileSystem,
+                solutionPersistance,
+                msBuild,
+                packagesConfigReader,
+                optionsParser,
+                Console.OpenStandardOutput(),
+                Console.OpenStandardError());
+
+            return await orchestrator.ValidateAsync(this, cancellationToken);
+        }
+
+        private static IPackagesConfigReader GetPackagesConfigReader()
+        {
+#if NETFRAMEWORK
+            return new WindowsPackagesConfigReader();
+#else
+            return OperatingSystem.IsWindows() ? new WindowsPackagesConfigReader() : new FailingPackagesConfigReader();
+#endif
+        }
     }
 }
