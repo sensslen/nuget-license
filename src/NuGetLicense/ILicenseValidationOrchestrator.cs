@@ -1,8 +1,6 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
-using NuGetLicense.LicenseValidator;
-
 namespace NuGetLicense
 {
     /// <summary>
@@ -16,6 +14,6 @@ namespace NuGetLicense
         /// <param name="options">The parsed command line options.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Exit code: 0 for success, number of validation errors, or -1 for exceptions.</returns>
-        Task<int> ValidateAsync(CommandLineOptions options, CancellationToken cancellationToken = default);
+        Task<int> ValidateAsync(ICommandLineOptions options, CancellationToken cancellationToken = default);
     }
 }

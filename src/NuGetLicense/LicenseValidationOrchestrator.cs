@@ -5,9 +5,7 @@ using System.Collections.Immutable;
 using System.IO.Abstractions;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
-using NuGetLicense.LicenseValidator;
 using NuGetLicense.Output;
-using NuGetUtility;
 using NuGetUtility.Extensions;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.ProjectFiltering;
@@ -53,7 +51,7 @@ namespace NuGetLicense
             _errorStream = errorStream;
         }
 
-        public async Task<int> ValidateAsync(CommandLineOptions options, CancellationToken cancellationToken = default)
+        public async Task<int> ValidateAsync(ICommandLineOptions options, CancellationToken cancellationToken = default)
         {
             string[] inputFiles = _optionsParser.GetInputFiles(options.InputFile, options.InputJsonFile);
             string[] ignoredPackagesArray = _optionsParser.GetIgnoredPackages(options.IgnoredPackages);

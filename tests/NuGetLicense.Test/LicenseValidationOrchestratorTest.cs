@@ -3,7 +3,6 @@
 
 using System.Collections.Immutable;
 using System.IO.Abstractions.TestingHelpers;
-using FileLicenseMatcher;
 using NSubstitute;
 using NuGetLicense.LicenseValidator;
 using NuGetUtility;
@@ -60,18 +59,17 @@ namespace NuGetLicense.Test
         public async Task ValidateAsync_CallsOptionsParserWithCorrectArguments()
         {
             // Arrange
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj",
-                AllowedLicenses = "MIT",
-                IgnoredPackages = "TestPkg",
-                ExcludedProjects = "*Test*"
-            };
+            ICommandLineOptions options = Substitute.For<ICommandLineOptions>();
+            options.InputFile.Returns("/test/project.csproj");
+            options.AllowedLicenses.Returns("MIT");
+            options.IgnoredPackages.Returns("TestPkg");
+            options.ExcludedProjects.Returns("*Test*");
+            options.InputJsonFile.Returns(default(string?));
 
             _optionsParser.GetInputFiles(options.InputFile, options.InputJsonFile).Returns(["/test/project.csproj"]);
-            _optionsParser.GetAllowedLicenses(options.AllowedLicenses).Returns(new[] { "MIT" });
-            _optionsParser.GetIgnoredPackages(options.IgnoredPackages).Returns(new[] { "TestPkg" });
-            _optionsParser.GetExcludedProjects(options.ExcludedProjects).Returns(new[] { "*Test*" });
+            _optionsParser.GetAllowedLicenses(options.AllowedLicenses).Returns(["MIT"]);
+            _optionsParser.GetIgnoredPackages(options.IgnoredPackages).Returns(["TestPkg"]);
+            _optionsParser.GetExcludedProjects(options.ExcludedProjects).Returns(["*Test*"]);
             _optionsParser.GetLicenseMappings(null).Returns(ImmutableDictionary<Uri, string>.Empty);
             _optionsParser.GetOverridePackageInformation(null).Returns(Array.Empty<CustomPackageInformation>());
             _optionsParser.GetFileDownloader(null).Returns(new NopFileDownloader());
@@ -94,10 +92,8 @@ namespace NuGetLicense.Test
         public async Task ValidateAsync_WithNoProjects_ReturnsZero()
         {
             // Arrange
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj"
-            };
+            ICommandLineOptions options = Substitute.For<ICommandLineOptions>();
+            options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
@@ -115,11 +111,9 @@ namespace NuGetLicense.Test
             // Arrange
             string destinationFile = "/test/output.txt";
             _fileSystem.AddDirectory("/test");
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj",
-                DestinationFile = destinationFile
-            };
+            ICommandLineOptions options = Substitute.For<ICommandLineOptions>();
+            options.InputFile.Returns("/test/project.csproj");
+            options.DestinationFile.Returns(destinationFile);
 
             SetupDefaultMocks();
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
@@ -136,10 +130,9 @@ namespace NuGetLicense.Test
         public async Task ValidateAsync_WithoutDestinationFile_WritesToOutputStream()
         {
             // Arrange
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj"
-            };
+            ICommandLineOptions options = Substitute.For<ICommandLineOptions>();
+            options.InputFile.Returns("/test/project.csproj");
+            options.DestinationFile.Returns((string?)null);
 
             SetupDefaultMocks();
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
@@ -156,10 +149,8 @@ namespace NuGetLicense.Test
         public async Task ValidateAsync_WithExceptionInOutputFormatter_ReturnsMinusOne()
         {
             // Arrange
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj"
-            };
+            ICommandLineOptions options = Substitute.For<ICommandLineOptions>();
+            options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
@@ -178,53 +169,37 @@ namespace NuGetLicense.Test
         }
 
         [Test]
-        public async Task ValidateAsync_WithCancellationToken_CanBeCancelled()
+        public void ValidateAsync_WithCancellationToken_CanBeCancelled()
         {
             // Arrange
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj"
-            };
+            ICommandLineOptions options = Substitute.For<ICommandLineOptions>();
+            options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
-            var cancellationTokenSource = new CancellationTokenSource();
+            using var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.Cancel();
 
-            // Act & Assert
-            // The operation should either complete successfully or throw OperationCanceledException
-            // Both are acceptable because cancellation is cooperative and timing-dependent
-            try
-            {
-                int result = await _orchestrator.ValidateAsync(options, cancellationTokenSource.Token);
-                // If we get here, the operation completed before cancellation was observed
-                Assert.Pass("Operation completed successfully before cancellation was observed");
-            }
-            catch (OperationCanceledException)
-            {
-                // This is the expected behavior when cancellation is honored
-                Assert.Pass("Operation was successfully cancelled");
-            }
+            Assert.That(_orchestrator.ValidateAsync(options, cancellationTokenSource.Token).Wait(2000), Is.True);
         }
 
         [Test]
         public async Task ValidateAsync_UsesAllConfiguredOptions()
         {
             // Arrange
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj",
-                IncludeTransitive = true,
-                TargetFramework = "net8.0",
-                IncludeSharedProjects = true,
-                AllowedLicenses = "MIT",
-                IgnoredPackages = "TestPkg",
-                ExcludedProjects = "*Test*",
-                ReturnErrorsOnly = true,
-                IncludeIgnoredPackages = true,
-                OutputType = OutputType.Json
-            };
+            ICommandLineOptions options = Substitute.For<ICommandLineOptions>();
+            options.InputFile.Returns("/test/project.csproj");
+            options.IncludeTransitive.Returns(true);
+            options.TargetFramework.Returns("net8.0");
+            options.IncludeSharedProjects.Returns(true);
+            options.AllowedLicenses.Returns("MIT");
+            options.IgnoredPackages.Returns("TestPkg");
+            options.ExcludedProjects.Returns("*Test*");
+            options.ReturnErrorsOnly.Returns(true);
+            options.IncludeIgnoredPackages.Returns(true);
+            options.OutputType.Returns(OutputType.Json);
+            options.InputJsonFile.Returns((string?)null);
 
             SetupDefaultMocks();
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
