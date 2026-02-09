@@ -3,7 +3,6 @@
 
 using System.Collections.Immutable;
 using System.IO.Abstractions.TestingHelpers;
-using FileLicenseMatcher;
 using NSubstitute;
 using NuGetLicense.LicenseValidator;
 using NuGetUtility;
@@ -26,6 +25,7 @@ namespace NuGetLicense.Test
         private ICommandLineOptionsParser _optionsParser = null!;
         private MemoryStream _outputStream = null!;
         private MemoryStream _errorStream = null!;
+        private ICommandLineOptions _options = null!;
         private LicenseValidationOrchestrator _orchestrator = null!;
 
         [SetUp]
@@ -38,6 +38,9 @@ namespace NuGetLicense.Test
             _optionsParser = Substitute.For<ICommandLineOptionsParser>();
             _outputStream = new MemoryStream();
             _errorStream = new MemoryStream();
+            _options = Substitute.For<ICommandLineOptions>();
+
+            _options.DestinationFile.Returns(default(string?));
 
             _orchestrator = new LicenseValidationOrchestrator(
                 _fileSystem,
@@ -60,18 +63,15 @@ namespace NuGetLicense.Test
         public async Task ValidateAsync_CallsOptionsParserWithCorrectArguments()
         {
             // Arrange
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj",
-                AllowedLicenses = "MIT",
-                IgnoredPackages = "TestPkg",
-                ExcludedProjects = "*Test*"
-            };
+            _options.InputFile.Returns("/test/project.csproj");
+            _options.AllowedLicenses.Returns("MIT");
+            _options.IgnoredPackages.Returns("TestPkg");
+            _options.ExcludedProjects.Returns("*Test*");
 
-            _optionsParser.GetInputFiles(options.InputFile, options.InputJsonFile).Returns(["/test/project.csproj"]);
-            _optionsParser.GetAllowedLicenses(options.AllowedLicenses).Returns(new[] { "MIT" });
-            _optionsParser.GetIgnoredPackages(options.IgnoredPackages).Returns(new[] { "TestPkg" });
-            _optionsParser.GetExcludedProjects(options.ExcludedProjects).Returns(new[] { "*Test*" });
+            _optionsParser.GetInputFiles(_options.InputFile, _options.InputJsonFile).Returns(["/test/project.csproj"]);
+            _optionsParser.GetAllowedLicenses(_options.AllowedLicenses).Returns(["MIT"]);
+            _optionsParser.GetIgnoredPackages(_options.IgnoredPackages).Returns(["TestPkg"]);
+            _optionsParser.GetExcludedProjects(_options.ExcludedProjects).Returns(["*Test*"]);
             _optionsParser.GetLicenseMappings(null).Returns(ImmutableDictionary<Uri, string>.Empty);
             _optionsParser.GetOverridePackageInformation(null).Returns(Array.Empty<CustomPackageInformation>());
             _optionsParser.GetFileDownloader(null).Returns(new NopFileDownloader());
@@ -81,29 +81,26 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            await _orchestrator.ValidateAsync(options);
+            await _orchestrator.ValidateAsync(_options);
 
             // Assert
-            _optionsParser.Received(1).GetInputFiles(options.InputFile, options.InputJsonFile);
-            _optionsParser.Received(1).GetAllowedLicenses(options.AllowedLicenses);
-            _optionsParser.Received(1).GetIgnoredPackages(options.IgnoredPackages);
-            _optionsParser.Received(1).GetExcludedProjects(options.ExcludedProjects);
+            _optionsParser.Received(1).GetInputFiles(_options.InputFile, _options.InputJsonFile);
+            _optionsParser.Received(1).GetAllowedLicenses(_options.AllowedLicenses);
+            _optionsParser.Received(1).GetIgnoredPackages(_options.IgnoredPackages);
+            _optionsParser.Received(1).GetExcludedProjects(_options.ExcludedProjects);
         }
 
         [Test]
         public async Task ValidateAsync_WithNoProjects_ReturnsZero()
         {
             // Arrange
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj"
-            };
+            _options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _orchestrator.ValidateAsync(options);
+            int result = await _orchestrator.ValidateAsync(_options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -115,17 +112,14 @@ namespace NuGetLicense.Test
             // Arrange
             string destinationFile = "/test/output.txt";
             _fileSystem.AddDirectory("/test");
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj",
-                DestinationFile = destinationFile
-            };
+            _options.InputFile.Returns("/test/project.csproj");
+            _options.DestinationFile.Returns(destinationFile);
 
             SetupDefaultMocks();
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _orchestrator.ValidateAsync(options);
+            int result = await _orchestrator.ValidateAsync(_options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -136,16 +130,13 @@ namespace NuGetLicense.Test
         public async Task ValidateAsync_WithoutDestinationFile_WritesToOutputStream()
         {
             // Arrange
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj"
-            };
+            _options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            int result = await _orchestrator.ValidateAsync(options);
+            int result = await _orchestrator.ValidateAsync(_options);
 
             // Assert
             Assert.That(result, Is.EqualTo(0));
@@ -156,10 +147,7 @@ namespace NuGetLicense.Test
         public async Task ValidateAsync_WithExceptionInOutputFormatter_ReturnsMinusOne()
         {
             // Arrange
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj"
-            };
+            _options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
@@ -170,7 +158,7 @@ namespace NuGetLicense.Test
             _optionsParser.GetOutputFormatter(OutputType.Table, false, false).Returns(throwingFormatter);
 
             // Act
-            int result = await _orchestrator.ValidateAsync(options);
+            int result = await _orchestrator.ValidateAsync(_options);
 
             // Assert
             Assert.That(result, Is.EqualTo(-1));
@@ -178,66 +166,48 @@ namespace NuGetLicense.Test
         }
 
         [Test]
-        public async Task ValidateAsync_WithCancellationToken_CanBeCancelled()
+        public void ValidateAsync_WithCancellationToken_CanBeCancelled()
         {
             // Arrange
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj"
-            };
+            _options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
-            var cancellationTokenSource = new CancellationTokenSource();
+            using var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.Cancel();
 
-            // Act & Assert
-            // The operation should either complete successfully or throw OperationCanceledException
-            // Both are acceptable because cancellation is cooperative and timing-dependent
-            try
-            {
-                int result = await _orchestrator.ValidateAsync(options, cancellationTokenSource.Token);
-                // If we get here, the operation completed before cancellation was observed
-                Assert.Pass("Operation completed successfully before cancellation was observed");
-            }
-            catch (OperationCanceledException)
-            {
-                // This is the expected behavior when cancellation is honored
-                Assert.Pass("Operation was successfully cancelled");
-            }
+            Assert.That(_orchestrator.ValidateAsync(_options, cancellationTokenSource.Token).Wait(2000), Is.True);
         }
 
         [Test]
         public async Task ValidateAsync_UsesAllConfiguredOptions()
         {
             // Arrange
-            CommandLineOptions options = new CommandLineOptions
-            {
-                InputFile = "/test/project.csproj",
-                IncludeTransitive = true,
-                TargetFramework = "net8.0",
-                IncludeSharedProjects = true,
-                AllowedLicenses = "MIT",
-                IgnoredPackages = "TestPkg",
-                ExcludedProjects = "*Test*",
-                ReturnErrorsOnly = true,
-                IncludeIgnoredPackages = true,
-                OutputType = OutputType.Json
-            };
+            _options.InputFile.Returns("/test/project.csproj");
+            _options.IncludeTransitive.Returns(true);
+            _options.TargetFramework.Returns("net8.0");
+            _options.IncludeSharedProjects.Returns(true);
+            _options.AllowedLicenses.Returns("MIT");
+            _options.IgnoredPackages.Returns("TestPkg");
+            _options.ExcludedProjects.Returns("*Test*");
+            _options.ReturnErrorsOnly.Returns(true);
+            _options.IncludeIgnoredPackages.Returns(true);
+            _options.OutputType.Returns(OutputType.Json);
+            _options.InputJsonFile.Returns(default(string?));
 
             SetupDefaultMocks();
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             // Act
-            await _orchestrator.ValidateAsync(options);
+            await _orchestrator.ValidateAsync(_options);
 
             // Assert
-            _optionsParser.Received(1).GetInputFiles(options.InputFile, options.InputJsonFile);
-            _optionsParser.Received(1).GetAllowedLicenses(options.AllowedLicenses);
-            _optionsParser.Received(1).GetIgnoredPackages(options.IgnoredPackages);
-            _optionsParser.Received(1).GetExcludedProjects(options.ExcludedProjects);
-            _optionsParser.Received(1).GetOutputFormatter(options.OutputType, options.ReturnErrorsOnly, options.IncludeIgnoredPackages);
+            _optionsParser.Received(1).GetInputFiles(_options.InputFile, _options.InputJsonFile);
+            _optionsParser.Received(1).GetAllowedLicenses(_options.AllowedLicenses);
+            _optionsParser.Received(1).GetIgnoredPackages(_options.IgnoredPackages);
+            _optionsParser.Received(1).GetExcludedProjects(_options.ExcludedProjects);
+            _optionsParser.Received(1).GetOutputFormatter(_options.OutputType, _options.ReturnErrorsOnly, _options.IncludeIgnoredPackages);
         }
 
         private void SetupDefaultMocks()

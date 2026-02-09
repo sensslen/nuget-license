@@ -188,7 +188,7 @@ csharp_space_between_square_brackets = false
 
 # License header
 file_header_template = Licensed to the projects contributors.\nThe license conditions are provided in the LICENSE file located in the project root
-csharp_style_namespace_declarations = block_scoped:silent
+csharp_style_namespace_declarations = block_scoped:suggestion
 csharp_style_prefer_method_group_conversion = true:silent
 csharp_style_prefer_top_level_statements = true:silent
 csharp_style_prefer_null_check_over_type_check = true:suggestion

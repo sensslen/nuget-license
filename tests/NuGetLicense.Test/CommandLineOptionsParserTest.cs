@@ -121,7 +121,7 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetAllowedLicenses(allowedLicenses);
 
                 // Assert
-                Assert.That(result, Is.EqualTo(new[] { "MIT", "Apache-2.0", "BSD-3-Clause" }));
+                Assert.That(result, Is.EqualTo(["MIT", "Apache-2.0", "BSD-3-Clause"]));
             }
 
             [Test]
@@ -149,7 +149,7 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetAllowedLicenses(allowedLicenses);
 
                 // Assert
-                Assert.That(result, Is.EqualTo(new[] { "MIT", "Apache-2.0", "BSD-3-Clause" }));
+                Assert.That(result, Is.EqualTo(["MIT", "Apache-2.0", "BSD-3-Clause"]));
             }
 
             [Test]
@@ -189,7 +189,7 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetIgnoredPackages(ignoredPackages);
 
                 // Assert
-                Assert.That(result, Is.EqualTo(new[] { "Package1", "Package2", "Package3" }));
+                Assert.That(result, Is.EqualTo(["Package1", "Package2", "Package3"]));
             }
 
             [Test]
@@ -231,7 +231,7 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetExcludedProjects(excludedProjects);
 
                 // Assert
-                Assert.That(result, Is.EqualTo(new[] { "*Test*", "*.Test", "Legacy*" }));
+                Assert.That(result, Is.EqualTo(["*Test*", "*.Test", "Legacy*"]));
             }
 
             [Test]
