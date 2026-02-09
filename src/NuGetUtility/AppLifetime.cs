@@ -8,8 +8,8 @@ namespace NuGetUtility
     /// </summary>
     public class AppLifetime
     {
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-        private readonly ManualResetEventSlim _doneEvent = new ManualResetEventSlim();
+        private readonly CancellationTokenSource _cts = new();
+        private readonly ManualResetEventSlim _doneEvent = new();
 
         public AppLifetime()
         {
