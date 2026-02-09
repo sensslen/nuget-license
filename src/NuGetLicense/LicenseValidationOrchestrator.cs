@@ -70,7 +70,7 @@ namespace NuGetLicense
                 ignoredPackagesArray);
 
             string[] excludedProjectsArray = _optionsParser.GetExcludedProjects(options.ExcludedProjects);
-            IEnumerable<string> projects = (await inputFiles.SelectManyAsync(projectCollector.GetProjectsAsync)).Where(p => !Array.Exists(excludedProjectsArray, ignored => p.Like(ignored)));
+            string[] projects = (await inputFiles.SelectManyAsync(projectCollector.GetProjectsAsync)).Where(p => excludedProjectsArray.All(m =>  !p.Like(m) && !_fileSystem.Path.GetFileName(p).Like(m))).ToArray();
             IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects, projectReader, options.IncludeTransitive, options.TargetFramework, options.IncludeSharedProjects, out IReadOnlyCollection<Exception> projectReaderExceptions);
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
                 packagesForProject.SelectMany(p => GetPackageInformations(p, overridePackageInformationArray, cancellationToken));
