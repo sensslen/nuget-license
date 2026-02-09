@@ -89,7 +89,7 @@ namespace NuGetLicense.LicenseValidator
             string? license = null,
             ValidationError? error = null)
         {
-            var newValue = error is not null
+            LicenseValidationResult newValue = error is not null
                 ? new LicenseValidationResult(
                     info.Identity.Id,
                     info.Identity.Version,
