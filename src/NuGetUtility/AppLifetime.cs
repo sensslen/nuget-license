@@ -51,7 +51,7 @@ namespace NuGetUtility
                 }
             }
 
-            _doneEvent.Wait();
+            _doneEvent.Wait(TimeSpan.FromSeconds(5));
         }
 
         public void Done(int result)
