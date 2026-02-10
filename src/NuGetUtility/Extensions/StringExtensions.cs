@@ -37,7 +37,7 @@ namespace NuGetUtility.Extensions
 
             // Extract the filename in a cross-platform way by finding the last path separator
             int lastSeparatorIndex = Math.Max(path.LastIndexOf('/'), path.LastIndexOf('\\'));
-            string fileName = lastSeparatorIndex >= 0 ? path.Substring(lastSeparatorIndex + 1) : path;
+            string fileName = lastSeparatorIndex >= 0 ? path[(lastSeparatorIndex + 1)..] : path;
             return fileName.Like(pattern);
         }
     }
