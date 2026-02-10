@@ -72,7 +72,7 @@ namespace NuGetUtility.Test.Extensions
             {
                 string path = "C:\\Projects\\MyProject\\MyProject.csproj";
                 string pattern = "C:\\Projects\\*\\*.csproj";
-                
+
                 Assert.That(path.PathLike(pattern), Is.True);
             }
 
@@ -81,7 +81,7 @@ namespace NuGetUtility.Test.Extensions
             {
                 string path = "C:\\Projects\\MyProject\\MyProject.csproj";
                 string pattern = "*.csproj";
-                
+
                 Assert.That(path.PathLike(pattern), Is.True);
             }
 
@@ -90,7 +90,7 @@ namespace NuGetUtility.Test.Extensions
             {
                 string path = "C:\\Projects\\MyProject\\MyProject.csproj";
                 string pattern = "*.vbproj";
-                
+
                 Assert.That(path.PathLike(pattern), Is.False);
             }
 
