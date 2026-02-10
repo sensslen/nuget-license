@@ -79,40 +79,40 @@ namespace NuGetLicense.LicenseValidator
             ValidationError error,
             string? license = null)
         {
-            AddOrUpdateLicense(result, info, origin, license, error);
+            var newValue = new LicenseValidationResult(
+                info.Identity.Id,
+                info.Identity.Version,
+                info.ProjectUrl?.ToString(),
+                license,
+                info.LicenseUrl?.AbsoluteUri,
+                info.Copyright,
+                info.Authors,
+                info.Description,
+                info.Summary,
+                origin,
+                new List<ValidationError> { error });
+            result.AddOrUpdate(new LicenseNameAndVersion(info.Identity.Id, info.Identity.Version),
+                newValue,
+                (key, oldValue) => UpdateResult(oldValue, newValue));
         }
 
         private static void AddOrUpdateLicense(
             ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
             IPackageMetadata info,
             LicenseInformationOrigin origin,
-            string? license = null,
-            ValidationError? error = null)
+            string? license = null)
         {
-            LicenseValidationResult newValue = error is not null
-                ? new LicenseValidationResult(
-                    info.Identity.Id,
-                    info.Identity.Version,
-                    info.ProjectUrl?.ToString(),
-                    license,
-                    info.LicenseUrl?.AbsoluteUri,
-                    info.Copyright,
-                    info.Authors,
-                    info.Description,
-                    info.Summary,
-                    origin,
-                    new List<ValidationError> { error })
-                : new LicenseValidationResult(
-                    info.Identity.Id,
-                    info.Identity.Version,
-                    info.ProjectUrl?.ToString(),
-                    license,
-                    info.LicenseUrl?.AbsoluteUri,
-                    info.Copyright,
-                    info.Authors,
-                    info.Description,
-                    info.Summary,
-                    origin);
+            var newValue = new LicenseValidationResult(
+                info.Identity.Id,
+                info.Identity.Version,
+                info.ProjectUrl?.ToString(),
+                license,
+                info.LicenseUrl?.AbsoluteUri,
+                info.Copyright,
+                info.Authors,
+                info.Description,
+                info.Summary,
+                origin);
             result.AddOrUpdate(new LicenseNameAndVersion(info.Identity.Id, info.Identity.Version),
                 newValue,
                 (key, oldValue) => UpdateResult(oldValue, newValue));
