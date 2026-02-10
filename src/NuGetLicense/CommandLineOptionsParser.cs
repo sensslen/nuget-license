@@ -34,12 +34,12 @@ namespace NuGetLicense
 
         public string[] GetInputFiles(string? inputFile, string? inputJsonFile)
         {
-            if (inputFile != null)
+            if (inputFile is not null)
             {
                 return [inputFile];
             }
 
-            if (inputJsonFile != null)
+            if (inputJsonFile is not null)
             {
                 return JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(inputJsonFile))!;
             }
@@ -66,7 +66,7 @@ namespace NuGetLicense
 
         public IImmutableDictionary<Uri, string> GetLicenseMappings(string? licenseMapping)
         {
-            if (licenseMapping == null)
+            if (licenseMapping is null)
             {
                 return UrlToLicenseMapping.Default;
             }
@@ -78,7 +78,7 @@ namespace NuGetLicense
 
         public CustomPackageInformation[] GetOverridePackageInformation(string? overridePackageInformation)
         {
-            if (overridePackageInformation == null)
+            if (overridePackageInformation is null)
             {
                 return Array.Empty<CustomPackageInformation>();
             }
@@ -117,7 +117,7 @@ namespace NuGetLicense
 
         public IFileDownloader GetFileDownloader(string? downloadLicenseInformation)
         {
-            if (downloadLicenseInformation == null)
+            if (downloadLicenseInformation is null)
             {
                 return new NopFileDownloader();
             }
@@ -144,7 +144,7 @@ namespace NuGetLicense
 
         private string[] ParseStringArrayOrFile(string? value)
         {
-            if (value == null)
+            if (value is null)
             {
                 return Array.Empty<string>();
             }

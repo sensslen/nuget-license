@@ -8,7 +8,7 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
 {
     public class FileDownloader : IFileDownloader
     {
-        private readonly SemaphoreSlim _parallelDownloadLimiter = new SemaphoreSlim(10, 10);
+        private readonly SemaphoreSlim _parallelDownloadLimiter = new(10, 10);
         private readonly HttpClient _client;
         private readonly string _downloadDirectory;
         private readonly ConcurrentDictionary<Uri, Task<string>> _downloadedLicenses = new();

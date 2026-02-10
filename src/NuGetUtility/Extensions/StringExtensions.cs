@@ -16,7 +16,7 @@ namespace NuGetUtility.Extensions
         public static bool Like(this string str, string pattern)
         {
             return new Regex(
-                "^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$",
+                $"^{Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".")}$",
                 RegexOptions.IgnoreCase | RegexOptions.Singleline,
                 TimeSpan.FromMilliseconds(100)
             ).IsMatch(str);

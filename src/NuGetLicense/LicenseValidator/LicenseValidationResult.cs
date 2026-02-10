@@ -23,16 +23,6 @@ namespace NuGetLicense.LicenseValidator
         public string? LicenseUrl { get; set; } = LicenseUrl;
         public LicenseInformationOrigin LicenseInformationOrigin { get; set; } = LicenseInformationOrigin;
 
-        public override string ToString() => $"{nameof(LicenseValidationResult)} {{{nameof(PackageId)} = {PackageId}, " +
-                                                                                 $"{nameof(PackageVersion)} = {PackageVersion}, " +
-                                                                                 $"{nameof(PackageProjectUrl)} = {PackageProjectUrl}, " +
-                                                                                 $"{nameof(Copyright)} = {Copyright}, " +
-                                                                                 $"{nameof(Authors)} = {Authors}, " +
-                                                                                 $"{nameof(Description)} = {Description}, " +
-                                                                                 $"{nameof(Summary)} = {Summary}, " +
-                                                                                 $"{nameof(ValidationErrors)} = [{string.Join(",", ValidationErrors)}], " +
-                                                                                 $"{nameof(License)} = {License}, " +
-                                                                                 $"{nameof(LicenseUrl)} = {LicenseUrl}, " +
-                                                                                 $"{nameof(LicenseInformationOrigin)} = {LicenseInformationOrigin}}}";
+        public override string ToString() => $"{nameof(LicenseValidationResult)} {{{nameof(PackageId)} = {PackageId}, {nameof(PackageVersion)} = {PackageVersion}, {nameof(PackageProjectUrl)} = {PackageProjectUrl}, {nameof(Copyright)} = {Copyright}, {nameof(Authors)} = {Authors}, {nameof(Description)} = {Description}, {nameof(Summary)} = {Summary}, {nameof(ValidationErrors)} = [{string.Join(",", ValidationErrors)}], {nameof(License)} = {License}, {nameof(LicenseUrl)} = {LicenseUrl}, {nameof(LicenseInformationOrigin)} = {LicenseInformationOrigin}}}";
     }
 }
