@@ -25,11 +25,11 @@ namespace NuGetUtility.ReferencedPackagesReader
             _packagesConfigReader = packagesConfigReader;
         }
 
-        public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive, string? targetFramework = null)
+        public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive, string? targetFramework = null, bool excludePublishFalse = false)
         {
             IProject project = _msBuild.GetProject(projectPath);
 
-            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, targetFramework, out IEnumerable<PackageIdentity>? dependencies))
+            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, targetFramework, excludePublishFalse, out IEnumerable<PackageIdentity>? dependencies))
             {
                 return dependencies;
             }
@@ -45,6 +45,7 @@ namespace NuGetUtility.ReferencedPackagesReader
         private bool TryGetInstalledPackagesFromAssetsFile(bool includeTransitive,
             IProject project,
             string? targetFramework,
+            bool excludePublishFalse,
             [NotNullWhen(true)] out IEnumerable<PackageIdentity>? installedPackages)
         {
             installedPackages = null;
@@ -74,6 +75,13 @@ namespace NuGetUtility.ReferencedPackagesReader
                 {
                     referencedLibraries.AddRange(GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target));
                 }
+            }
+
+            if (excludePublishFalse)
+            {
+                // Remove packages with Publish=false metadata from the evaluated PackageReferences.
+                HashSet<string> excludedPackages = GetPackagesExcludedFromPublish(project, targetFramework);
+                referencedLibraries.RemoveWhere(library => excludedPackages.Contains(library.Name));
             }
 
             installedPackages = referencedLibraries.Select(r => new PackageIdentity(r.Name, r.Version));
@@ -131,6 +139,26 @@ namespace NuGetUtility.ReferencedPackagesReader
             }
 
             return true;
+        }
+
+        private static HashSet<string> GetPackagesExcludedFromPublish(IProject project, string? targetFramework)
+        {
+            // Publish metadata is not available in project.assets.json, so resolve it via MSBuild items.
+            IEnumerable<PackageReferenceMetadata> packageReferences = targetFramework is null
+                ? project.GetPackageReferences()
+                : project.GetPackageReferencesForTarget(targetFramework);
+
+            HashSet<string> excludedPackages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (PackageReferenceMetadata packageReference in packageReferences ?? Array.Empty<PackageReferenceMetadata>())
+            {
+                if (packageReference.Metadata.TryGetValue("Publish", out string? value) &&
+                    string.Equals(value, "false", StringComparison.OrdinalIgnoreCase))
+                {
+                    excludedPackages.Add(packageReference.PackageName);
+                }
+            }
+
+            return excludedPackages;
         }
     }
 }

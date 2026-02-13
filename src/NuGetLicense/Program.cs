@@ -116,6 +116,11 @@ namespace NuGetLicense
                 Description = "File in json format that contains a dictionary to map license files to licenses."
             };
 
+            var excludePublishFalseOption = new Option<bool>("--exclude-publish-false")
+            {
+                Description = "If set, packages with <Publish>false</Publish> metadata are excluded from analysis."
+            };
+
             var rootCommand = new RootCommand("A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects.");
             rootCommand.Options.Add(inputFileOption);
             rootCommand.Options.Add(inputJsonFileOption);
@@ -133,6 +138,7 @@ namespace NuGetLicense
             rootCommand.Options.Add(targetFrameworkOption);
             rootCommand.Options.Add(destinationFileOption);
             rootCommand.Options.Add(licenseFileMappingsOption);
+            rootCommand.Options.Add(excludePublishFalseOption);
 
             rootCommand.SetAction(async (parseResult, cancellationToken) =>
             {
@@ -152,6 +158,7 @@ namespace NuGetLicense
                 string? targetFramework = parseResult.GetValue(targetFrameworkOption);
                 string? destinationFile = parseResult.GetValue(destinationFileOption);
                 string? licenseFileMappings = parseResult.GetValue(licenseFileMappingsOption);
+                bool excludePublishFalse = parseResult.GetValue(excludePublishFalseOption);
 
                 using var httpClient = new HttpClient();
                 var fileSystem = new System.IO.Abstractions.FileSystem();
@@ -175,7 +182,7 @@ namespace NuGetLicense
 
                 string[] excludedProjectsArray = GetExcludedProjects(fileSystem, excludedProjects);
                 IEnumerable<string> projects = (await inputFiles.SelectManyAsync(projectCollector.GetProjectsAsync)).Where(p => !Array.Exists(excludedProjectsArray, ignored => p.Like(ignored)));
-                IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects, projectReader, includeTransitive, targetFramework, includeSharedProjects, out IReadOnlyCollection<Exception>? projectReaderExceptions);
+                IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects, projectReader, includeTransitive, targetFramework, excludePublishFalse, includeSharedProjects, out IReadOnlyCollection<Exception>? projectReaderExceptions);
                 IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
                     packagesForProject.SelectMany(p => GetPackageInformations(p, overridePackageInformationArray, cancellationToken));
                 var results = (await validator.Validate(downloadedLicenseInformation, cancellationToken)).ToList();
@@ -350,6 +357,7 @@ namespace NuGetLicense
             ReferencedPackageReader reader,
             bool includeTransitive,
             string? targetFramework,
+            bool excludePublishFalse,
             bool includeSharedProjects,
             out IReadOnlyCollection<Exception> exceptions)
         {
@@ -362,7 +370,7 @@ namespace NuGetLicense
             {
                 try
                 {
-                    IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, includeTransitive, targetFramework);
+                    IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, includeTransitive, targetFramework, excludePublishFalse);
                     result.Add(new ProjectWithReferencedPackages(project, installedPackages));
                 }
                 catch (Exception e)
