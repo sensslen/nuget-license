@@ -71,7 +71,7 @@ namespace NuGetLicense
 
             string[] excludedProjectsArray = _optionsParser.GetExcludedProjects(options.ExcludedProjects);
             IEnumerable<string> projects = (await inputFiles.SelectManyAsync(projectCollector.GetProjectsAsync)).Where(p => !Array.Exists(excludedProjectsArray, ignored => p.PathLike(ignored)));
-            IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects, projectReader, options.IncludeTransitive, options.TargetFramework, options.IncludeSharedProjects, out IReadOnlyCollection<Exception> projectReaderExceptions);
+            IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects, projectReader, options.IncludeTransitive, options.TargetFramework, options.ExcludePublishFalse, options.IncludeSharedProjects, out IReadOnlyCollection<Exception> projectReaderExceptions);
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
                 packagesForProject.SelectMany(p => GetPackageInformations(p, overridePackageInformationArray, cancellationToken));
             var results = (await validator.Validate(downloadedLicenseInformation, cancellationToken)).ToList();
@@ -135,6 +135,7 @@ namespace NuGetLicense
             ReferencedPackageReader reader,
             bool includeTransitive,
             string? targetFramework,
+            bool excludePublishFalse,
             bool includeSharedProjects,
             out IReadOnlyCollection<Exception> exceptions)
         {
@@ -147,7 +148,7 @@ namespace NuGetLicense
             {
                 try
                 {
-                    IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, includeTransitive, targetFramework);
+                    IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, includeTransitive, targetFramework, excludePublishFalse);
                     result.Add(new ProjectWithReferencedPackages(project, installedPackages));
                 }
                 catch (Exception e)

@@ -1,6 +1,7 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.Collections.Generic;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using NSubstitute;
@@ -44,6 +45,8 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 return true;
             });
             _projectMock.FullPath.Returns(_projectPath);
+            _projectMock.GetPackageReferences().Returns(Array.Empty<PackageReferenceMetadata>());
+            _projectMock.GetPackageReferencesForTarget(Arg.Any<string>()).Returns(Array.Empty<PackageReferenceMetadata>());
             _lockFileFactory.GetFromFile(_assetsFilePath).Returns(_lockFileMock);
             _lockFileMock.PackageSpec.Returns(_packageSpecMock);
             _packageSpecMock.IsValid().Returns(true);
@@ -299,6 +302,40 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             IEnumerable<PackageIdentity> packages = _uut.GetInstalledPackages(_projectPath, includeTransitive);
 
             Assert.That(packages, Is.EquivalentTo(expectedPackages));
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_ExcludePackages_With_PublishFalse_Metadata()
+        {
+            string excludedPackage = _fixture.Create<string>();
+            string includedPackage = _fixture.Create<string>();
+
+            ILockFileLibrary excludedLibrary = Substitute.For<ILockFileLibrary>();
+            excludedLibrary.Name.Returns(excludedPackage);
+            excludedLibrary.Version.Returns(Substitute.For<INuGetVersion>());
+
+            ILockFileLibrary includedLibrary = Substitute.For<ILockFileLibrary>();
+            includedLibrary.Name.Returns(includedPackage);
+            includedLibrary.Version.Returns(Substitute.For<INuGetVersion>());
+
+            ILockFileTarget target = Substitute.For<ILockFileTarget>();
+            target.Libraries.Returns(new[] { excludedLibrary, includedLibrary });
+            target.TargetFramework.Returns(_targetFrameworks.First());
+            _lockFileMock.Targets.Returns(new[] { target });
+
+            _projectMock.GetPackageReferences().Returns(new[]
+            {
+                new PackageReferenceMetadata(excludedPackage, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["Publish"] = "false"
+                }),
+                new PackageReferenceMetadata(includedPackage, new Dictionary<string, string>())
+            });
+
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
+
+            Assert.That(result.Select(p => p.Id), Does.Not.Contain(excludedPackage));
+            Assert.That(result.Select(p => p.Id), Does.Contain(includedPackage));
         }
     }
 }
