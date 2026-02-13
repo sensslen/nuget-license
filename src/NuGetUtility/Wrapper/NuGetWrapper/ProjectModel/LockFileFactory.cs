@@ -7,7 +7,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
     public class LockFileFactory : ILockFileFactory
     {
-        private readonly LockFileFormat _format = new LockFileFormat();
+        private readonly LockFileFormat _format = new();
 
         public ILockFile GetFromFile(string path)
         {

@@ -1,6 +1,8 @@
 ﻿// Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.IO.Abstractions;
+using System.IO.Abstractions.TestingHelpers;
 using AutoFixture;
 using NSubstitute;
 using NuGetUtility.ReferencedPackagesReader;
@@ -23,9 +25,11 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _fixture = new Fixture();
             _solutionPersistanceWrapper = Substitute.For<ISolutionPersistanceWrapper>();
-            _uut = new ProjectsCollector(_solutionPersistanceWrapper);
+            _fileSystem = new MockFileSystem();
+            _uut = new ProjectsCollector(_solutionPersistanceWrapper, _fileSystem);
         }
         private ISolutionPersistanceWrapper _solutionPersistanceWrapper = null!;
+        private IFileSystem _fileSystem = null!;
         private ProjectsCollector _uut = null!;
         private Fixture _fixture = null!;
         private readonly VerifySettings _osPlatformSpecificVerifySettings;
@@ -37,7 +41,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public async Task GetProjects_Should_ReturnProjectsAsListDirectly(string projectFile)
         {
             IEnumerable<string> result = await _uut.GetProjectsAsync(projectFile);
-            Assert.That(result, Is.EqualTo([Path.GetFullPath(projectFile)]));
+            Assert.That(result, Is.EqualTo([_fileSystem.Path.GetFullPath(projectFile)]));
             await _solutionPersistanceWrapper.DidNotReceive().GetProjectsFromSolutionAsync(Arg.Any<string>());
         }
 
@@ -49,7 +53,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _ = await _uut.GetProjectsAsync(solutionFile);
 
-            await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(Path.GetFullPath(solutionFile));
+            await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(_fileSystem.Path.GetFullPath(solutionFile));
         }
 
         [TestCase("A.sln")]
@@ -63,7 +67,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             IEnumerable<string> result = await _uut.GetProjectsAsync(solutionFile);
             Assert.That(result, Is.Empty);
 
-            await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(Path.GetFullPath(solutionFile));
+            await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(_fileSystem.Path.GetFullPath(solutionFile));
         }
 
         [TestCase("A.sln")]
@@ -78,7 +82,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             IEnumerable<string> result = await _uut.GetProjectsAsync(solutionFile);
             Assert.That(result, Is.Empty);
 
-            await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(Path.GetFullPath(solutionFile));
+            await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(_fileSystem.Path.GetFullPath(solutionFile));
         }
 
         [TestCase("A.sln")]
@@ -92,9 +96,9 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _solutionPersistanceWrapper.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(projects));
 
             IEnumerable<string> result = await _uut.GetProjectsAsync(solutionFile);
-            Assert.That(result, Is.EqualTo(projects.Select(Path.GetFullPath)));
+            Assert.That(result, Is.EqualTo(projects.Select(_fileSystem.Path.GetFullPath)));
 
-            await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(Path.GetFullPath(solutionFile));
+            await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(_fileSystem.Path.GetFullPath(solutionFile));
         }
 
         [TestCase("A.sln")]
@@ -112,9 +116,9 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 .Returns(existingProjects.Concat(missingProjects).Shuffle(54321));
 
             IEnumerable<string> result = await _uut.GetProjectsAsync(solutionFile);
-            Assert.That(result, Is.EquivalentTo(existingProjects.Select(Path.GetFullPath)));
+            Assert.That(result, Is.EquivalentTo(existingProjects.Select(_fileSystem.Path.GetFullPath)));
 
-            await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(Path.GetFullPath(solutionFile));
+            await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(_fileSystem.Path.GetFullPath(solutionFile));
         }
 
         [Test]
@@ -123,9 +127,9 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             var solutionPersistance = new SolutionPersistanceWrapper();
             string solutionFolder = Path.GetFullPath("../../../../targets");
             string solutionFileName = "Projects.sln";
-            IEnumerable<string> result = await solutionPersistance.GetProjectsFromSolutionAsync(Path.Combine(solutionFolder, solutionFileName));
+            IEnumerable<string> result = await solutionPersistance.GetProjectsFromSolutionAsync(_fileSystem.Path.Combine(solutionFolder, solutionFileName));
 
-            Assert.That(result.Select(Path.IsPathRooted), Is.All.True);
+            Assert.That(result.Select(_fileSystem.Path.IsPathRooted), Is.All.True);
 
             await Verify(string.Join(",", result.Select(p => GetPathRelativeTo(solutionFolder, p))), _osPlatformSpecificVerifySettings);
         }
@@ -136,38 +140,38 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             var solutionPersistance = new SolutionPersistanceWrapper();
             string solutionFolder = Path.GetFullPath("../../../../targets/slnx");
             string solutionFileName = "slnx.slnx";
-            IEnumerable<string> result = await solutionPersistance.GetProjectsFromSolutionAsync(Path.Combine(solutionFolder, solutionFileName));
+            IEnumerable<string> result = await solutionPersistance.GetProjectsFromSolutionAsync(_fileSystem.Path.Combine(solutionFolder, solutionFileName));
 
-            Assert.That(result.Select(Path.IsPathRooted), Is.All.True);
+            Assert.That(result.Select(_fileSystem.Path.IsPathRooted), Is.All.True);
 
             await Verify(string.Join(",", result.Select(p => GetPathRelativeTo(solutionFolder, p))), _osPlatformSpecificVerifySettings);
         }
 
-        private static void CreateFiles(IEnumerable<string> files)
+        private void CreateFiles(IEnumerable<string> files)
         {
             foreach (string file in files)
             {
-                File.WriteAllBytes(file, Array.Empty<byte>());
+                _fileSystem.File.WriteAllBytes(file, Array.Empty<byte>());
             }
         }
 
-        private static string GetPathRelativeTo(string relativeTo, string path)
+        private string GetPathRelativeTo(string relativeTo, string path)
 #if NETFRAMEWORK
         {
             // Require trailing backslash for path
-            relativeTo = relativeTo.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-            relativeTo += Path.DirectorySeparatorChar;
+            relativeTo = relativeTo.TrimEnd(_fileSystem.Path.DirectorySeparatorChar, _fileSystem.Path.AltDirectorySeparatorChar);
+            relativeTo += _fileSystem.Path.DirectorySeparatorChar;
 
             Uri baseUri = new Uri(relativeTo);
             Uri fullUri = new Uri(path);
 
             Uri relativeUri = baseUri.MakeRelativeUri(fullUri);
 
-            return relativeUri.ToString().Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            return relativeUri.ToString().Replace(_fileSystem.Path.AltDirectorySeparatorChar, _fileSystem.Path.DirectorySeparatorChar);
 
         }
 #else
-            => Path.GetRelativePath(relativeTo, path);
+            => _fileSystem.Path.GetRelativePath(relativeTo, path);
 #endif
     }
 }

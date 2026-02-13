@@ -11,7 +11,7 @@ namespace NuGetUtility.Output.Table
     public class TablePrinter
     {
         private readonly int[] _lengths;
-        private readonly List<string[][]> _rows = new List<string[][]>();
+        private readonly List<string[][]> _rows = new();
         private readonly Stream _stream;
         private readonly string[] _titles;
         private readonly bool _printMarkdown;

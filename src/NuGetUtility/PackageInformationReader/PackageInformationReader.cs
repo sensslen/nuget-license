@@ -55,7 +55,7 @@ namespace NuGetUtility.PackageInformationReader
         private PackageSearchResult TryGetPackageInformationFromGlobalPackageFolder(PackageIdentity package)
         {
             IPackageMetadata? metadata = _globalPackagesFolderUtility.GetPackage(package);
-            if (metadata != null)
+            if (metadata is not null)
             {
                 return new PackageSearchResult(metadata);
             }
@@ -70,18 +70,18 @@ namespace NuGetUtility.PackageInformationReader
             foreach (ISourceRepository repository in repositories)
             {
                 IPackageMetadataResource? resource = await TryGetPackageMetadataResource(repository, cancellation);
-                if (resource == null)
+                if (resource is null)
                 {
                     continue;
                 }
 
                 IPackageMetadata? updatedPackageMetadata = await resource.TryGetMetadataAsync(package, cancellation);
-                if (updatedPackageMetadata != null)
+                if (updatedPackageMetadata is not null)
                 {
                     if (updatedPackageMetadata.LicenseMetadata?.Type == LicenseType.File)
                     {
                         IPackageDownloader? downloader = await TryGetPackageDownloaderAsync(repository, package, cancellation);
-                        if (downloader != null)
+                        if (downloader is not null)
                         {
                             return new PackageSearchResult(new LicenseAugmentedPackageMetadata(updatedPackageMetadata, await downloader.ReadAsync(updatedPackageMetadata.LicenseMetadata.License, cancellation)));
                         }

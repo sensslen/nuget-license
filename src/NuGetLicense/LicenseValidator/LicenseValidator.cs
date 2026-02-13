@@ -48,11 +48,11 @@ namespace NuGetLicense.LicenseValidator
                         info.PackageInfo,
                         LicenseInformationOrigin.Ignored);
                 }
-                else if (info.PackageInfo.LicenseMetadata != null)
+                else if (info.PackageInfo.LicenseMetadata is not null)
                 {
                     await ValidateLicenseByMetadataAsync(info.PackageInfo, info.Context, result, token);
                 }
-                else if (info.PackageInfo.LicenseUrl != null)
+                else if (info.PackageInfo.LicenseUrl is not null)
                 {
                     await ValidateLicenseByUrl(info.PackageInfo, info.Context, result, token);
                 }
@@ -268,7 +268,7 @@ namespace NuGetLicense.LicenseValidator
                 && licenseUrl.Segments.Length >= 5
                 && licenseUrl.Segments[3] == "blob/")
             {
-                return new Uri(licenseUrl.ToString() + "?raw=true");
+                return new Uri($"{licenseUrl}?raw=true");
             }
             return licenseUrl;
         }

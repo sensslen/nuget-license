@@ -7,7 +7,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
     internal sealed class CachingDisposableSourceRepository : IDisposableSourceRepository
     {
-        private readonly SourceCacheContext _cacheContext = new SourceCacheContext();
+        private readonly SourceCacheContext _cacheContext = new();
         private readonly SourceRepository _sourceRepository;
         private IPackageMetadataResource? _packageMetadataResource;
         private IFindPackageByIdResource? _findPackageByIdResource;
@@ -25,7 +25,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 
         public async Task<IPackageMetadataResource?> GetPackageMetadataResourceAsync(CancellationToken token)
         {
-            if (_packageMetadataResource != null)
+            if (_packageMetadataResource is not null)
             {
                 return _packageMetadataResource;
             }
@@ -38,7 +38,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 
         public async Task<IFindPackageByIdResource?> GetPackageArchiveReaderAsync(CancellationToken token)
         {
-            if (_findPackageByIdResource != null)
+            if (_findPackageByIdResource is not null)
             {
                 return _findPackageByIdResource;
             }

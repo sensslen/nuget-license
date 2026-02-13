@@ -397,3 +397,4 @@ coverage/**
 lcov.info
 launchSettings.json
 tests/**/*.received.*
+.nuget/
