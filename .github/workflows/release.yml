@@ -33,7 +33,7 @@ jobs:
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release
 
       - name: test
-        uses: josepho0918/vstest-action@207c4bf50a9e2483cb86bb0a34cb92ffa49931ec
+        uses: josepho0918/vstest-action@869aaf86054cd2209d5dac0a2ee724893f8e7513
         with:
           testAssembly: "NuGet*.Test.dll"
           searchFolder: "tests/*/bin/Release/net9.0/"
