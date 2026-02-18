@@ -112,7 +112,7 @@ jobs:
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=TestWindows
 
       - name: test
-        uses: josepho0918/vstest-action@207c4bf50a9e2483cb86bb0a34cb92ffa49931ec
+        uses: josepho0918/vstest-action@49545306a05a7f73af67a484cb0fced37cddff8c
         with:
           testAssembly: "NuGet*.Test.dll"
           searchFolder: "tests/*/bin/TestWindows/${{ matrix.framework }}/"
