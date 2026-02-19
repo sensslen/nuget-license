@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MyCSharp.HttpUserAgentParser" Version="3.0.28" />
+    <PackageReference Include="MyCSharp.HttpUserAgentParser" Version="3.1.2" />
   </ItemGroup>
 
 </Project>
