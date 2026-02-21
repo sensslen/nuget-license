@@ -81,7 +81,7 @@ jobs:
           dotnet-version: | 
             10.0.x
       
-      - uses: browser-actions/setup-chrome@v2.1.0
+      - uses: browser-actions/setup-chrome@v2.1.1
       
       - name: restore
         run: dotnet restore
