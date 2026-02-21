@@ -27,7 +27,7 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      - uses: browser-actions/setup-chrome@v2.1.0
+      - uses: browser-actions/setup-chrome@v2.1.1
 
       - name: build
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release
