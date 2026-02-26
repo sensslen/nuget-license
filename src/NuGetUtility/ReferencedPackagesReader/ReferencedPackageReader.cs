@@ -28,6 +28,19 @@ namespace NuGetUtility.ReferencedPackagesReader
             _packagesConfigReader = packagesConfigReader;
         }
 
+        /// <summary>
+        /// Gets installed NuGet packages for the specified project.
+        /// </summary>
+        /// <param name="projectPath">Path to the project file.</param>
+        /// <param name="includeTransitive">True to include transitive dependencies; otherwise, false.</param>
+        /// <param name="targetFramework">
+        /// Target framework moniker to evaluate. If null, all available target frameworks are evaluated.
+        /// </param>
+        /// <param name="excludePublishFalse">
+        /// True to exclude packages with Publish="false" metadata. When transitive dependencies are included,
+        /// packages reachable only through those excluded roots are also excluded.
+        /// </param>
+        /// <returns>Resolved package identities from project assets or packages.config.</returns>
         public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive, string? targetFramework = null, bool excludePublishFalse = false)
         {
             IProject project = _msBuild.GetProject(projectPath);
