@@ -2,6 +2,7 @@
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using System.Text.Json;
 using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.MsBuildWrapper;
@@ -160,17 +161,29 @@ namespace NuGetUtility.ReferencedPackagesReader
                 return excludedPackages;
             }
 
+            string[] targetFrameworkArray = targetFrameworks.ToArray();
+
             Dictionary<string, HashSet<string>> dependencyGraph;
             try
             {
-                dependencyGraph = BuildDependencyGraphFromAssetsFile(resolvedAssetsPath, targetFrameworks);
+                dependencyGraph = BuildDependencyGraphFromAssetsFile(resolvedAssetsPath, targetFrameworkArray);
             }
-            catch (IOException)
+            catch (IOException exception)
             {
+                Trace.TraceWarning(
+                    "Failed to analyze transitive Publish=false exclusions due to I/O error. AssetsPath={0}, TargetFrameworks={1}, Exception={2}",
+                    resolvedAssetsPath,
+                    string.Join(",", targetFrameworkArray),
+                    exception);
                 return excludedPackages;
             }
-            catch (JsonException)
+            catch (JsonException exception)
             {
+                Trace.TraceWarning(
+                    "Failed to analyze transitive Publish=false exclusions due to invalid assets JSON. AssetsPath={0}, TargetFrameworks={1}, Exception={2}",
+                    resolvedAssetsPath,
+                    string.Join(",", targetFrameworkArray),
+                    exception);
                 return excludedPackages;
             }
 
@@ -199,6 +212,9 @@ namespace NuGetUtility.ReferencedPackagesReader
         private static Dictionary<string, HashSet<string>> BuildDependencyGraphFromAssetsFile(string assetsPath,
             IEnumerable<string> targetFrameworks)
         {
+            // This method intentionally parses project.assets.json directly. ILockFile is used for package
+            // enumeration, but it does not provide a simple package-to-package dependency graph for the
+            // selected targets required by Publish=false transitive path filtering.
             HashSet<string> targetFrameworkSet = new HashSet<string>(targetFrameworks, StringComparer.OrdinalIgnoreCase);
             Dictionary<string, HashSet<string>> dependencyGraph = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
