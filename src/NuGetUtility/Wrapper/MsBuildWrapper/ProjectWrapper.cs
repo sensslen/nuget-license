@@ -58,10 +58,18 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
                 [TargetFrameworkProperty] = targetFramework
             };
 
-            Project targetProject = new Project(_project.FullPath, properties, _project.ToolsVersion, _project.ProjectCollection);
-
-            return targetProject.GetItems(PackageReferenceItemType)
-                .Select(item => new PackageReferenceMetadata(item.EvaluatedInclude, CreateMetadata(item)));
+            using ProjectCollection projectCollection = new ProjectCollection();
+            Project targetProject = new Project(_project.FullPath, properties, _project.ToolsVersion, projectCollection);
+            try
+            {
+                return targetProject.GetItems(PackageReferenceItemType)
+                    .Select(item => new PackageReferenceMetadata(item.EvaluatedInclude, CreateMetadata(item)))
+                    .ToList();
+            }
+            finally
+            {
+                projectCollection.UnloadProject(targetProject);
+            }
         }
 
         public string FullPath => _project.FullPath;

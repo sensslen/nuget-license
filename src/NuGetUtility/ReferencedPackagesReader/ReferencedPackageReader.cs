@@ -155,7 +155,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             IEnumerable<string> targetFrameworks)
         {
             HashSet<string> excludedPackages = new HashSet<string>(publishFalseDirectDependencies, StringComparer.OrdinalIgnoreCase);
-            if (assetsPath is null || assetsPath.Length == 0 || !File.Exists(assetsPath))
+            if (assetsPath is not { Length: > 0 } resolvedAssetsPath || !File.Exists(resolvedAssetsPath))
             {
                 return excludedPackages;
             }
@@ -163,7 +163,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             Dictionary<string, HashSet<string>> dependencyGraph;
             try
             {
-                dependencyGraph = BuildDependencyGraphFromAssetsFile(assetsPath!, targetFrameworks);
+                dependencyGraph = BuildDependencyGraphFromAssetsFile(resolvedAssetsPath, targetFrameworks);
             }
             catch (IOException)
             {
