@@ -72,10 +72,11 @@ namespace NuGetUtility.ReferencedPackagesReader
 
             var referencedLibraries = new HashSet<ILockFileLibrary>();
             List<ILockFileTarget> selectedTargets;
+            string? normalizedTargetFramework = NormalizeTargetFramework(targetFramework);
 
-            if (targetFramework is not null)
+            if (normalizedTargetFramework is not null)
             {
-                selectedTargets = assetsFile.Targets!.Where(t => t.TargetFramework.Equals(targetFramework)).ToList();
+                selectedTargets = assetsFile.Targets!.Where(t => t.TargetFramework.Equals(normalizedTargetFramework)).ToList();
                 if (!selectedTargets.Any())
                 {
                     throw new ReferencedPackageReaderException($"Target framework {targetFramework} not found.");
@@ -94,7 +95,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             if (excludePublishFalse)
             {
                 // Remove packages with Publish=false metadata from the evaluated PackageReferences.
-                HashSet<string> excludedPackages = GetPackagesExcludedFromPublish(project, targetFramework);
+                HashSet<string> excludedPackages = GetPackagesExcludedFromPublish(project, normalizedTargetFramework);
                 if (includeTransitive && excludedPackages.Any())
                 {
                     IEnumerable<string> directDependencies = GetDirectDependenciesForTargets(assetsFile, selectedTargets);
@@ -242,7 +243,7 @@ namespace NuGetUtility.ReferencedPackagesReader
 
             foreach (JsonProperty target in targetsElement.EnumerateObject())
             {
-                if (!targetFrameworkSet.Contains(target.Name) || target.Value.ValueKind != JsonValueKind.Object)
+                if (!IsMatchingTarget(targetFrameworkSet, target.Name) || target.Value.ValueKind != JsonValueKind.Object)
                 {
                     continue;
                 }
@@ -282,6 +283,23 @@ namespace NuGetUtility.ReferencedPackagesReader
             return dependencyGraph;
         }
 
+        private static bool IsMatchingTarget(HashSet<string> targetFrameworkSet, string targetName)
+        {
+            if (targetFrameworkSet.Contains(targetName))
+            {
+                return true;
+            }
+
+            int separatorIndex = targetName.IndexOf('/');
+            if (separatorIndex <= 0)
+            {
+                return false;
+            }
+
+            string baseTargetFramework = targetName.Substring(0, separatorIndex);
+            return targetFrameworkSet.Contains(baseTargetFramework);
+        }
+
         private static HashSet<string> GetReachablePackages(Dictionary<string, HashSet<string>> dependencyGraph,
             IEnumerable<string> roots)
         {
@@ -314,6 +332,22 @@ namespace NuGetUtility.ReferencedPackagesReader
         {
             int separatorIndex = packageKey.IndexOf('/');
             return separatorIndex > 0 ? packageKey.Substring(0, separatorIndex) : packageKey;
+        }
+
+        private static string? NormalizeTargetFramework(string? targetFramework)
+        {
+            if (targetFramework is null)
+            {
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(targetFramework))
+            {
+                return targetFramework;
+            }
+
+            int separatorIndex = targetFramework.IndexOf('/');
+            return separatorIndex > 0 ? targetFramework.Substring(0, separatorIndex) : targetFramework;
         }
 
         private bool TryLoadAssetsFile(IProject project,

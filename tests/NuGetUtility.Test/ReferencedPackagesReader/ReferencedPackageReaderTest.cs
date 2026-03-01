@@ -498,6 +498,84 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             }
         }
 
+        [Test]
+        public void GetInstalledPackages_Should_Exclude_TransitiveDependency_For_RidQualified_TargetKey()
+        {
+            string tempAssetsPath = Path.GetTempFileName();
+            try
+            {
+                _assetsFilePath = tempAssetsPath;
+                _lockFileFactory.GetFromFile(tempAssetsPath).Returns(_lockFileMock);
+                File.WriteAllText(tempAssetsPath,
+                    """
+                    {
+                      "targets": {
+                        "net10.0/win-x64": {
+                          "PackageA/1.0.0": {
+                            "type": "package"
+                          },
+                          "PackageB/1.0.0": {
+                            "type": "package",
+                            "dependencies": {
+                              "PackageC": "1.0.0"
+                            }
+                          },
+                          "PackageC/1.0.0": {
+                            "type": "package"
+                          }
+                        }
+                      }
+                    }
+                    """);
+
+                INuGetFramework targetFramework = Substitute.For<INuGetFramework>();
+                targetFramework.ToString().Returns("net10.0");
+
+                ILockFileTarget target = Substitute.For<ILockFileTarget>();
+                target.TargetFramework.Returns(targetFramework);
+                ILockFileLibrary[] targetLibraries =
+                {
+                    CreateLibrary("PackageA"),
+                    CreateLibrary("PackageB"),
+                    CreateLibrary("PackageC")
+                };
+                target.Libraries.Returns(targetLibraries);
+                _lockFileMock.Targets.Returns(new[] { target });
+
+                ITargetFrameworkInformation targetFrameworkInformation = Substitute.For<ITargetFrameworkInformation>();
+                targetFrameworkInformation.FrameworkName.Returns(targetFramework);
+                ILibraryDependency[] directDependencies =
+                {
+                    CreateDependency("PackageA"),
+                    CreateDependency("PackageB")
+                };
+                targetFrameworkInformation.Dependencies.Returns(directDependencies);
+                _packageSpecMock.TargetFrameworks.Returns(new[] { targetFrameworkInformation });
+
+                _projectMock.GetPackageReferences().Returns(new[]
+                {
+                    new PackageReferenceMetadata("PackageA", new Dictionary<string, string>()),
+                    new PackageReferenceMetadata("PackageB", new Dictionary<string, string>
+                    {
+                        ["Publish"] = "false"
+                    })
+                });
+
+                IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
+
+                Assert.That(result.Select(p => p.Id), Does.Contain("PackageA"));
+                Assert.That(result.Select(p => p.Id), Does.Not.Contain("PackageB"));
+                Assert.That(result.Select(p => p.Id), Does.Not.Contain("PackageC"));
+            }
+            finally
+            {
+                if (File.Exists(tempAssetsPath))
+                {
+                    File.Delete(tempAssetsPath);
+                }
+            }
+        }
+
         private static ILibraryDependency CreateDependency(string packageName)
         {
             ILibraryDependency dependency = Substitute.For<ILibraryDependency>();
