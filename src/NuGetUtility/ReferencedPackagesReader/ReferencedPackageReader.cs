@@ -89,29 +89,40 @@ namespace NuGetUtility.ReferencedPackagesReader
 
             foreach (ILockFileTarget target in selectedTargets)
             {
-                referencedLibraries.AddRange(GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target));
-            }
+                HashSet<ILockFileLibrary> targetReferencedLibraries =
+                    new HashSet<ILockFileLibrary>(GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target));
 
-            if (excludePublishFalse)
-            {
-                // Remove packages with Publish=false metadata from the evaluated PackageReferences.
-                HashSet<string> excludedPackages = GetPackagesExcludedFromPublish(project, normalizedTargetFramework);
-                if (includeTransitive && excludedPackages.Any())
+                if (excludePublishFalse)
                 {
-                    IEnumerable<string> directDependencies = GetDirectDependenciesForTargets(assetsFile, selectedTargets);
-                    IEnumerable<string> targetFrameworks = selectedTargets
-                        .Select(t => t.TargetFramework.ToString())
-                        .Where(t => !string.IsNullOrEmpty(t))
-                        .Cast<string>();
-                    HashSet<string> recursivelyExcludedPackages = GetPackagesExcludedFromPublishDependencyPaths(
-                        assetsPath,
-                        directDependencies,
-                        excludedPackages,
-                        targetFrameworks);
-                    excludedPackages.UnionWith(recursivelyExcludedPackages);
+                    string? targetFrameworkForPublishMetadata = normalizedTargetFramework;
+                    if (targetFrameworkForPublishMetadata is null)
+                    {
+                        targetFrameworkForPublishMetadata = NormalizeTargetFramework(target.TargetFramework.ToString());
+                    }
+
+                    // Remove packages with Publish=false metadata from the evaluated PackageReferences for this target only.
+                    HashSet<string> excludedPackages = GetPackagesExcludedFromPublish(project, targetFrameworkForPublishMetadata);
+                    if (includeTransitive && excludedPackages.Any())
+                    {
+                        IEnumerable<string> directDependencies = GetDirectDependenciesForTargets(assetsFile, new[] { target });
+
+                        string? targetFrameworkIdentifier = NormalizeTargetFramework(target.TargetFramework.ToString());
+                        IEnumerable<string> targetFrameworks = targetFrameworkIdentifier is null
+                            ? Array.Empty<string>()
+                            : new[] { targetFrameworkIdentifier };
+
+                        HashSet<string> recursivelyExcludedPackages = GetPackagesExcludedFromPublishDependencyPaths(
+                            assetsPath,
+                            directDependencies,
+                            excludedPackages,
+                            targetFrameworks);
+                        excludedPackages.UnionWith(recursivelyExcludedPackages);
+                    }
+
+                    targetReferencedLibraries.RemoveWhere(library => excludedPackages.Contains(library.Name));
                 }
 
-                referencedLibraries.RemoveWhere(library => excludedPackages.Contains(library.Name));
+                referencedLibraries.AddRange(targetReferencedLibraries);
             }
 
             installedPackages = referencedLibraries.Select(r => new PackageIdentity(r.Name, r.Version));

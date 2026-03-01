@@ -340,6 +340,63 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
+        public void GetInstalledPackages_Should_Apply_PublishFalse_PerTarget_When_TargetFramework_IsNull()
+        {
+            const string packageName = "PackageConditional";
+
+            INuGetFramework net80 = Substitute.For<INuGetFramework>();
+            net80.ToString().Returns("net8.0");
+
+            INuGetFramework net90 = Substitute.For<INuGetFramework>();
+            net90.ToString().Returns("net9.0");
+
+            ILockFileTarget targetNet80 = Substitute.For<ILockFileTarget>();
+            targetNet80.TargetFramework.Returns(net80);
+            targetNet80.Libraries.Returns(new[] { CreateLibrary(packageName) });
+
+            ILockFileTarget targetNet90 = Substitute.For<ILockFileTarget>();
+            targetNet90.TargetFramework.Returns(net90);
+            targetNet90.Libraries.Returns(new[] { CreateLibrary(packageName) });
+
+            _lockFileMock.Targets.Returns(new[] { targetNet80, targetNet90 });
+
+            ITargetFrameworkInformation net80Info = Substitute.For<ITargetFrameworkInformation>();
+            net80Info.FrameworkName.Returns(net80);
+            net80Info.Dependencies.Returns(new[] { CreateDependency(packageName) });
+
+            ITargetFrameworkInformation net90Info = Substitute.For<ITargetFrameworkInformation>();
+            net90Info.FrameworkName.Returns(net90);
+            net90Info.Dependencies.Returns(new[] { CreateDependency(packageName) });
+
+            _packageSpecMock.TargetFrameworks.Returns(new[] { net80Info, net90Info });
+
+            _projectMock.GetPackageReferences().Returns(new[]
+            {
+                new PackageReferenceMetadata(packageName, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["Publish"] = "false"
+                })
+            });
+
+            _projectMock.GetPackageReferencesForTarget("net8.0").Returns(new[]
+            {
+                new PackageReferenceMetadata(packageName, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["Publish"] = "false"
+                })
+            });
+
+            _projectMock.GetPackageReferencesForTarget("net9.0").Returns(Array.Empty<PackageReferenceMetadata>());
+
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
+
+            Assert.That(result.Select(p => p.Id), Does.Contain(packageName));
+            _projectMock.Received(1).GetPackageReferencesForTarget("net8.0");
+            _projectMock.Received(1).GetPackageReferencesForTarget("net9.0");
+            _projectMock.DidNotReceive().GetPackageReferences();
+        }
+
+        [Test]
         public void GetInstalledPackages_Should_Keep_SharedTransitiveDependency_If_ReachableFrom_PublishableRoot()
         {
             string tempAssetsPath = Path.GetTempFileName();
