@@ -12,5 +12,9 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
         bool TryGetAssetsPath([NotNullWhen(true)] out string assetsFile);
 
         IEnumerable<string> GetEvaluatedIncludes();
+
+        IEnumerable<PackageReferenceMetadata> GetPackageReferences();
+
+        IEnumerable<PackageReferenceMetadata> GetPackageReferencesForTarget(string targetFramework);
     }
 }
