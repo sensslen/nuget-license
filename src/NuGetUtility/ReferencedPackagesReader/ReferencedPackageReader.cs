@@ -3,7 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics;
-using System.Text.Json;
+using NuGet.Frameworks;
+using NuGet.ProjectModel;
 using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
@@ -72,11 +73,13 @@ namespace NuGetUtility.ReferencedPackagesReader
 
             var referencedLibraries = new HashSet<ILockFileLibrary>();
             List<ILockFileTarget> selectedTargets;
-            string? normalizedTargetFramework = NormalizeTargetFramework(targetFramework);
+            NuGetFramework? requestedTargetFramework = ParseTargetFrameworkOrNull(targetFramework);
 
-            if (normalizedTargetFramework is not null)
+            if (requestedTargetFramework is not null)
             {
-                selectedTargets = assetsFile.Targets!.Where(t => t.TargetFramework.Equals(normalizedTargetFramework)).ToList();
+                selectedTargets = assetsFile.Targets!
+                    .Where(t => IsMatchingTarget(requestedTargetFramework, t.TargetFramework))
+                    .ToList();
                 if (!selectedTargets.Any())
                 {
                     throw new ReferencedPackageReaderException($"Target framework {targetFramework} not found.");
@@ -94,11 +97,7 @@ namespace NuGetUtility.ReferencedPackagesReader
 
                 if (excludePublishFalse)
                 {
-                    string? targetFrameworkForPublishMetadata = normalizedTargetFramework;
-                    if (targetFrameworkForPublishMetadata is null)
-                    {
-                        targetFrameworkForPublishMetadata = NormalizeTargetFramework(target.TargetFramework.ToString());
-                    }
+                    string? targetFrameworkForPublishMetadata = requestedTargetFramework?.GetShortFolderName() ?? target.TargetFramework.ToString();
 
                     // Remove packages with Publish=false metadata from the evaluated PackageReferences for this target only.
                     HashSet<string> excludedPackages = GetPackagesExcludedFromPublish(project, targetFrameworkForPublishMetadata);
@@ -106,9 +105,9 @@ namespace NuGetUtility.ReferencedPackagesReader
                     {
                         IEnumerable<string> directDependencies = GetDirectDependenciesForTargets(assetsFile, new[] { target });
 
-                        string? targetFrameworkIdentifier = NormalizeTargetFramework(target.TargetFramework.ToString());
-                        IEnumerable<string> targetFrameworks = targetFrameworkIdentifier is null
-                            ? Array.Empty<string>()
+                        NuGetFramework? targetFrameworkIdentifier = ParseTargetFrameworkOrNull(target.TargetFramework.ToString());
+                        IEnumerable<NuGetFramework> targetFrameworks = targetFrameworkIdentifier is null
+                            ? Array.Empty<NuGetFramework>()
                             : new[] { targetFrameworkIdentifier };
 
                         HashSet<string> recursivelyExcludedPackages = GetPackagesExcludedFromPublishDependencyPaths(
@@ -178,7 +177,7 @@ namespace NuGetUtility.ReferencedPackagesReader
         private static HashSet<string> GetPackagesExcludedFromPublishDependencyPaths(string? assetsPath,
             IEnumerable<string> directDependencies,
             ISet<string> publishFalseDirectDependencies,
-            IEnumerable<string> targetFrameworks)
+            IEnumerable<NuGetFramework> targetFrameworks)
         {
             HashSet<string> excludedPackages = new HashSet<string>(publishFalseDirectDependencies, StringComparer.OrdinalIgnoreCase);
             if (assetsPath is not { Length: > 0 } resolvedAssetsPath || !File.Exists(resolvedAssetsPath))
@@ -186,7 +185,7 @@ namespace NuGetUtility.ReferencedPackagesReader
                 return excludedPackages;
             }
 
-            string[] targetFrameworkArray = targetFrameworks.ToArray();
+            NuGetFramework[] targetFrameworkArray = targetFrameworks.ToArray();
 
             Dictionary<string, HashSet<string>> dependencyGraph;
             try
@@ -198,16 +197,16 @@ namespace NuGetUtility.ReferencedPackagesReader
                 Trace.TraceWarning(
                     "Failed to analyze transitive Publish=false exclusions due to I/O error. AssetsPath={0}, TargetFrameworks={1}, Exception={2}",
                     resolvedAssetsPath,
-                    string.Join(",", targetFrameworkArray),
+                    string.Join(",", targetFrameworkArray.Select(t => t.GetShortFolderName())),
                     exception);
                 return excludedPackages;
             }
-            catch (JsonException exception)
+            catch (FormatException exception)
             {
                 Trace.TraceWarning(
-                    "Failed to analyze transitive Publish=false exclusions due to invalid assets JSON. AssetsPath={0}, TargetFrameworks={1}, Exception={2}",
+                    "Failed to analyze transitive Publish=false exclusions due to invalid assets data. AssetsPath={0}, TargetFrameworks={1}, Exception={2}",
                     resolvedAssetsPath,
-                    string.Join(",", targetFrameworkArray),
+                    string.Join(",", targetFrameworkArray.Select(t => t.GetShortFolderName())),
                     exception);
                 return excludedPackages;
             }
@@ -235,57 +234,51 @@ namespace NuGetUtility.ReferencedPackagesReader
         }
 
         private static Dictionary<string, HashSet<string>> BuildDependencyGraphFromAssetsFile(string assetsPath,
-            IEnumerable<string> targetFrameworks)
+            IEnumerable<NuGetFramework> targetFrameworks)
         {
-            // This method intentionally parses project.assets.json directly. ILockFile is used for package
-            // enumeration, but it does not provide a simple package-to-package dependency graph for the
-            // selected targets required by Publish=false transitive path filtering.
-            HashSet<string> targetFrameworkSet = new HashSet<string>(targetFrameworks, StringComparer.OrdinalIgnoreCase);
+            LockFile lockFile = new LockFileFormat().Read(assetsPath);
+            HashSet<NuGetFramework> targetFrameworkSet = new HashSet<NuGetFramework>(targetFrameworks);
             Dictionary<string, HashSet<string>> dependencyGraph = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
-            using FileStream stream = File.OpenRead(assetsPath);
-            using JsonDocument json = JsonDocument.Parse(stream);
-
-            if (!json.RootElement.TryGetProperty("targets", out JsonElement targetsElement) ||
-                targetsElement.ValueKind != JsonValueKind.Object)
+            foreach (LockFileTarget target in lockFile.Targets)
             {
-                return dependencyGraph;
-            }
-
-            foreach (JsonProperty target in targetsElement.EnumerateObject())
-            {
-                if (!IsMatchingTarget(targetFrameworkSet, target.Name) || target.Value.ValueKind != JsonValueKind.Object)
+                if (!IsMatchingTarget(targetFrameworkSet, target.TargetFramework))
                 {
                     continue;
                 }
 
-                foreach (JsonProperty package in target.Value.EnumerateObject())
+                foreach (LockFileTargetLibrary library in target.Libraries)
                 {
-                    if (!package.Value.TryGetProperty("type", out JsonElement typeElement) ||
-                        !string.Equals(typeElement.GetString(), PackageTypeIdentifier, StringComparison.OrdinalIgnoreCase))
+                    if (!string.Equals(library.Type, PackageTypeIdentifier, StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
 
-                    string packageName = ParsePackageNameFromTargetKey(package.Name);
-                    if (!dependencyGraph.TryGetValue(packageName, out HashSet<string>? dependencies))
+                    string? packageName = library.Name;
+                    if (packageName is null)
+                    {
+                        continue;
+                    }
+
+                    string packageNameValue = packageName.Trim();
+                    if (packageNameValue.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    if (!dependencyGraph.TryGetValue(packageNameValue, out HashSet<string>? dependencies))
                     {
                         dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                        dependencyGraph[packageName] = dependencies;
+                        dependencyGraph[packageNameValue] = dependencies;
                     }
 
-                    if (!package.Value.TryGetProperty("dependencies", out JsonElement dependencyElement) ||
-                        dependencyElement.ValueKind != JsonValueKind.Object)
+                    foreach (var dependency in library.Dependencies)
                     {
-                        continue;
-                    }
-
-                    foreach (JsonProperty dependency in dependencyElement.EnumerateObject())
-                    {
-                        dependencies.Add(dependency.Name);
-                        if (!dependencyGraph.ContainsKey(dependency.Name))
+                        string dependencyName = dependency.Id;
+                        dependencies.Add(dependencyName);
+                        if (!dependencyGraph.ContainsKey(dependencyName))
                         {
-                            dependencyGraph[dependency.Name] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                            dependencyGraph[dependencyName] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                         }
                     }
                 }
@@ -294,21 +287,15 @@ namespace NuGetUtility.ReferencedPackagesReader
             return dependencyGraph;
         }
 
-        private static bool IsMatchingTarget(HashSet<string> targetFrameworkSet, string targetName)
+        private static bool IsMatchingTarget(NuGetFramework expectedTargetFramework, Wrapper.NuGetWrapper.Frameworks.INuGetFramework targetFramework)
         {
-            if (targetFrameworkSet.Contains(targetName))
-            {
-                return true;
-            }
+            NuGetFramework parsedTargetFramework = ParseTargetFramework(targetFramework);
+            return NuGetFrameworkFullComparer.Instance.Equals(expectedTargetFramework, parsedTargetFramework);
+        }
 
-            int separatorIndex = targetName.IndexOf('/');
-            if (separatorIndex <= 0)
-            {
-                return false;
-            }
-
-            string baseTargetFramework = targetName.Substring(0, separatorIndex);
-            return targetFrameworkSet.Contains(baseTargetFramework);
+        private static bool IsMatchingTarget(HashSet<NuGetFramework> targetFrameworkSet, NuGetFramework targetFramework)
+        {
+            return targetFrameworkSet.Any(target => NuGetFrameworkFullComparer.Instance.Equals(target, targetFramework));
         }
 
         private static HashSet<string> GetReachablePackages(Dictionary<string, HashSet<string>> dependencyGraph,
@@ -339,13 +326,24 @@ namespace NuGetUtility.ReferencedPackagesReader
             return visited;
         }
 
-        private static string ParsePackageNameFromTargetKey(string packageKey)
+        private static NuGetFramework ParseTargetFramework(Wrapper.NuGetWrapper.Frameworks.INuGetFramework targetFramework)
         {
-            int separatorIndex = packageKey.IndexOf('/');
-            return separatorIndex > 0 ? packageKey.Substring(0, separatorIndex) : packageKey;
+            string? targetFrameworkString = targetFramework.ToString();
+            if (targetFrameworkString is null)
+            {
+                throw new ReferencedPackageReaderException("Failed to parse target framework from lock file target.");
+            }
+
+            string targetFrameworkValue = targetFrameworkString.Trim();
+            if (targetFrameworkValue.Length == 0)
+            {
+                throw new ReferencedPackageReaderException("Failed to parse target framework from lock file target.");
+            }
+
+            return NuGetFramework.Parse(targetFrameworkValue);
         }
 
-        private static string? NormalizeTargetFramework(string? targetFramework)
+        private static NuGetFramework? ParseTargetFrameworkOrNull(string? targetFramework)
         {
             if (targetFramework is null)
             {
@@ -354,11 +352,10 @@ namespace NuGetUtility.ReferencedPackagesReader
 
             if (string.IsNullOrWhiteSpace(targetFramework))
             {
-                return targetFramework;
+                return null;
             }
 
-            int separatorIndex = targetFramework.IndexOf('/');
-            return separatorIndex > 0 ? targetFramework.Substring(0, separatorIndex) : targetFramework;
+            return NuGetFramework.Parse(targetFramework.Trim());
         }
 
         private bool TryLoadAssetsFile(IProject project,
