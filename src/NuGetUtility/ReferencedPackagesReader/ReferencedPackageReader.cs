@@ -187,10 +187,10 @@ namespace NuGetUtility.ReferencedPackagesReader
 
             NuGetFramework[] targetFrameworkArray = targetFrameworks.ToArray();
 
-            Dictionary<string, HashSet<string>> dependencyGraph;
+            Dictionary<string, HashSet<string>> packageDependencies;
             try
             {
-                dependencyGraph = BuildDependencyGraphFromAssetsFile(resolvedAssetsPath, targetFrameworkArray);
+                packageDependencies = BuildDependencyMapFromAssetsFile(resolvedAssetsPath, targetFrameworkArray);
             }
             catch (IOException exception)
             {
@@ -211,7 +211,7 @@ namespace NuGetUtility.ReferencedPackagesReader
                 return excludedPackages;
             }
 
-            if (dependencyGraph.Count == 0)
+            if (packageDependencies.Count == 0)
             {
                 return excludedPackages;
             }
@@ -220,9 +220,9 @@ namespace NuGetUtility.ReferencedPackagesReader
                 directDependencies.Where(package => !publishFalseDirectDependencies.Contains(package)),
                 StringComparer.OrdinalIgnoreCase);
 
-            HashSet<string> reachableFromPublishableRoots = GetReachablePackages(dependencyGraph, publishableRoots);
+            HashSet<string> reachableFromPublishableRoots = GetReachablePackages(packageDependencies, publishableRoots);
 
-            foreach (string packageName in dependencyGraph.Keys)
+            foreach (string packageName in packageDependencies.Keys)
             {
                 if (!reachableFromPublishableRoots.Contains(packageName))
                 {
@@ -233,12 +233,12 @@ namespace NuGetUtility.ReferencedPackagesReader
             return excludedPackages;
         }
 
-        private static Dictionary<string, HashSet<string>> BuildDependencyGraphFromAssetsFile(string assetsPath,
+        private static Dictionary<string, HashSet<string>> BuildDependencyMapFromAssetsFile(string assetsPath,
             IEnumerable<NuGetFramework> targetFrameworks)
         {
             LockFile lockFile = new LockFileFormat().Read(assetsPath);
             HashSet<NuGetFramework> targetFrameworkSet = new HashSet<NuGetFramework>(targetFrameworks);
-            Dictionary<string, HashSet<string>> dependencyGraph = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, HashSet<string>> packageDependencies = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
             foreach (LockFileTarget target in lockFile.Targets)
             {
@@ -266,25 +266,25 @@ namespace NuGetUtility.ReferencedPackagesReader
                         continue;
                     }
 
-                    if (!dependencyGraph.TryGetValue(packageNameValue, out HashSet<string>? dependencies))
+                    if (!packageDependencies.TryGetValue(packageNameValue, out HashSet<string>? dependencies))
                     {
                         dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                        dependencyGraph[packageNameValue] = dependencies;
+                        packageDependencies[packageNameValue] = dependencies;
                     }
 
                     foreach (var dependency in library.Dependencies)
                     {
                         string dependencyName = dependency.Id;
                         dependencies.Add(dependencyName);
-                        if (!dependencyGraph.ContainsKey(dependencyName))
+                        if (!packageDependencies.ContainsKey(dependencyName))
                         {
-                            dependencyGraph[dependencyName] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                            packageDependencies[dependencyName] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                         }
                     }
                 }
             }
 
-            return dependencyGraph;
+            return packageDependencies;
         }
 
         private static bool IsMatchingTarget(NuGetFramework expectedTargetFramework, Wrapper.NuGetWrapper.Frameworks.INuGetFramework targetFramework)
@@ -298,7 +298,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             return targetFrameworkSet.Any(target => NuGetFrameworkFullComparer.Instance.Equals(target, targetFramework));
         }
 
-        private static HashSet<string> GetReachablePackages(Dictionary<string, HashSet<string>> dependencyGraph,
+        private static HashSet<string> GetReachablePackages(Dictionary<string, HashSet<string>> packageDependencies,
             IEnumerable<string> roots)
         {
             HashSet<string> visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -312,7 +312,7 @@ namespace NuGetUtility.ReferencedPackagesReader
                     continue;
                 }
 
-                if (!dependencyGraph.TryGetValue(packageName, out HashSet<string>? dependencies))
+                if (!packageDependencies.TryGetValue(packageName, out HashSet<string>? dependencies))
                 {
                     continue;
                 }
