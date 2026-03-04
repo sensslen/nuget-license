@@ -1,8 +1,8 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using NuGet.Frameworks;
 using NuGet.ProjectModel;
 using NuGetUtility.Extensions;
@@ -277,7 +277,7 @@ namespace NuGetUtility.ReferencedPackagesReader
                         packageDependencies[packageNameValue] = dependencies;
                     }
 
-                    foreach (var dependency in library.Dependencies)
+                    foreach (NuGet.Packaging.Core.PackageDependency dependency in library.Dependencies)
                     {
                         string dependencyName = dependency.Id;
                         dependencies.Add(dependencyName);
@@ -377,12 +377,7 @@ namespace NuGetUtility.ReferencedPackagesReader
 
         private static NuGetFramework ParseTargetFramework(Wrapper.NuGetWrapper.Frameworks.INuGetFramework targetFramework)
         {
-            string? targetFrameworkString = targetFramework.ToString();
-            if (targetFrameworkString is null)
-            {
-                throw new ReferencedPackageReaderException("Failed to parse target framework from lock file target.");
-            }
-
+            string? targetFrameworkString = targetFramework.ToString() ?? throw new ReferencedPackageReaderException("Failed to parse target framework from lock file target.");
             string targetFrameworkValue = targetFrameworkString.Trim();
             if (targetFrameworkValue.Length == 0)
             {
