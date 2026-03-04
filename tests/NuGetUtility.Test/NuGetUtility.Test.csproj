@@ -18,6 +18,11 @@
     <LangVersion>12.0</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <NuGetFrameworksPath Condition="'$(TargetFramework)' == 'net472'">$(PkgNuGet_Frameworks)\lib\net472</NuGetFrameworksPath>
+    <NuGetFrameworksPath Condition="'$(TargetFramework)' != 'net472'">$(PkgNuGet_Frameworks)\lib\net8.0</NuGetFrameworksPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Bogus" Version="35.6.5" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
@@ -46,11 +51,7 @@
     <ProjectReference Include="..\NuGetUtility.Test.Extensions\NuGetUtility.Test.Extensions.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <None Include="$(PkgNuGet_Frameworks)\lib\net472\NuGet.Frameworks.dll" CopyToOutputDirectory="PreserveNewest" Link="NuGet.Frameworks.dll" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
-    <None Include="$(PkgNuGet_Frameworks)\lib\net8.0\NuGet.Frameworks.dll" CopyToOutputDirectory="PreserveNewest" Link="NuGet.Frameworks.dll" />
+  <ItemGroup>
+    <None Include="$(NuGetFrameworksPath)\NuGet.Frameworks.dll" CopyToOutputDirectory="PreserveNewest" Link="NuGet.Frameworks.dll" />
   </ItemGroup>
 </Project>

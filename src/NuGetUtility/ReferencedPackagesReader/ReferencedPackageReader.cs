@@ -74,6 +74,11 @@ namespace NuGetUtility.ReferencedPackagesReader
             var referencedLibraries = new HashSet<ILockFileLibrary>();
             List<ILockFileTarget> selectedTargets;
             NuGetFramework? requestedTargetFramework = ParseTargetFrameworkOrNull(targetFramework);
+            Dictionary<string, HashSet<string>> publishFalsePackagesByFramework = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, string[]> directDependenciesByFramework = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, Dictionary<string, HashSet<string>>> packageDependenciesByFramework = new Dictionary<string, Dictionary<string, HashSet<string>>>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, HashSet<string>> recursiveExclusionsByInput = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+            LockFile? parsedAssetsLockFile = null;
 
             if (requestedTargetFramework is not null)
             {
@@ -98,24 +103,55 @@ namespace NuGetUtility.ReferencedPackagesReader
                 if (excludePublishFalse)
                 {
                     string? targetFrameworkForPublishMetadata = requestedTargetFramework?.GetShortFolderName() ?? target.TargetFramework.ToString();
+                    string targetFrameworkCacheKey = targetFrameworkForPublishMetadata ?? string.Empty;
 
                     // Remove packages with Publish=false metadata from the evaluated PackageReferences for this target only.
-                    HashSet<string> excludedPackages = GetPackagesExcludedFromPublish(project, targetFrameworkForPublishMetadata);
+                    if (!publishFalsePackagesByFramework.TryGetValue(targetFrameworkCacheKey, out HashSet<string>? cachedPublishFalsePackages))
+                    {
+                        cachedPublishFalsePackages = GetPackagesExcludedFromPublish(project, targetFrameworkForPublishMetadata);
+                        publishFalsePackagesByFramework[targetFrameworkCacheKey] = cachedPublishFalsePackages;
+                    }
+
+                    HashSet<string> excludedPackages = new HashSet<string>(cachedPublishFalsePackages, StringComparer.OrdinalIgnoreCase);
                     if (includeTransitive && excludedPackages.Any())
                     {
-                        IEnumerable<string> directDependencies = GetDirectDependenciesForTargets(assetsFile, new[] { target });
+                        if (!directDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out string[]? directDependenciesForFramework))
+                        {
+                            directDependenciesForFramework = GetDirectDependenciesForTargets(assetsFile, new[] { target }).ToArray();
+                            directDependenciesByFramework[targetFrameworkCacheKey] = directDependenciesForFramework;
+                        }
 
                         NuGetFramework? targetFrameworkIdentifier = ParseTargetFrameworkOrNull(target.TargetFramework.ToString());
-                        IEnumerable<NuGetFramework> targetFrameworks = targetFrameworkIdentifier is null
-                            ? Array.Empty<NuGetFramework>()
-                            : new[] { targetFrameworkIdentifier };
+                        if (targetFrameworkIdentifier is not null)
+                        {
+                            if (!packageDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out Dictionary<string, HashSet<string>>? packageDependencies))
+                            {
+                                packageDependencies = GetPackageDependenciesForTargetFramework(
+                                    assetsPath,
+                                    targetFrameworkIdentifier,
+                                    ref parsedAssetsLockFile);
+                                packageDependenciesByFramework[targetFrameworkCacheKey] = packageDependencies;
+                            }
 
-                        HashSet<string> recursivelyExcludedPackages = GetPackagesExcludedFromPublishDependencyPaths(
-                            assetsPath,
-                            directDependencies,
-                            excludedPackages,
-                            targetFrameworks);
-                        excludedPackages.UnionWith(recursivelyExcludedPackages);
+                            if (packageDependencies.Count > 0)
+                            {
+                                string recursiveExclusionCacheKey = BuildExclusionCacheKey(
+                                    targetFrameworkCacheKey,
+                                    directDependenciesForFramework,
+                                    excludedPackages);
+
+                                if (!recursiveExclusionsByInput.TryGetValue(recursiveExclusionCacheKey, out HashSet<string>? recursivelyExcludedPackages))
+                                {
+                                    recursivelyExcludedPackages = GetPackagesExcludedFromPublishDependencyPaths(
+                                        packageDependencies,
+                                        directDependenciesForFramework,
+                                        excludedPackages);
+                                    recursiveExclusionsByInput[recursiveExclusionCacheKey] = recursivelyExcludedPackages;
+                                }
+
+                                excludedPackages.UnionWith(recursivelyExcludedPackages);
+                            }
+                        }
                     }
 
                     targetReferencedLibraries.RemoveWhere(library => excludedPackages.Contains(library.Name));
@@ -174,43 +210,12 @@ namespace NuGetUtility.ReferencedPackagesReader
             return directDependencies;
         }
 
-        private static HashSet<string> GetPackagesExcludedFromPublishDependencyPaths(string? assetsPath,
+        private static HashSet<string> GetPackagesExcludedFromPublishDependencyPaths(
+            Dictionary<string, HashSet<string>> packageDependencies,
             IEnumerable<string> directDependencies,
-            ISet<string> publishFalseDirectDependencies,
-            IEnumerable<NuGetFramework> targetFrameworks)
+            ISet<string> publishFalseDirectDependencies)
         {
             HashSet<string> excludedPackages = new HashSet<string>(publishFalseDirectDependencies, StringComparer.OrdinalIgnoreCase);
-            if (assetsPath is not { Length: > 0 } resolvedAssetsPath || !File.Exists(resolvedAssetsPath))
-            {
-                return excludedPackages;
-            }
-
-            NuGetFramework[] targetFrameworkArray = targetFrameworks.ToArray();
-
-            Dictionary<string, HashSet<string>> packageDependencies;
-            try
-            {
-                packageDependencies = BuildDependencyMapFromAssetsFile(resolvedAssetsPath, targetFrameworkArray);
-            }
-            catch (IOException exception)
-            {
-                Trace.TraceWarning(
-                    "Failed to analyze transitive Publish=false exclusions due to I/O error. AssetsPath={0}, TargetFrameworks={1}, Exception={2}",
-                    resolvedAssetsPath,
-                    string.Join(",", targetFrameworkArray.Select(t => t.GetShortFolderName())),
-                    exception);
-                return excludedPackages;
-            }
-            catch (FormatException exception)
-            {
-                Trace.TraceWarning(
-                    "Failed to analyze transitive Publish=false exclusions due to invalid assets data. AssetsPath={0}, TargetFrameworks={1}, Exception={2}",
-                    resolvedAssetsPath,
-                    string.Join(",", targetFrameworkArray.Select(t => t.GetShortFolderName())),
-                    exception);
-                return excludedPackages;
-            }
-
             if (packageDependencies.Count == 0)
             {
                 return excludedPackages;
@@ -233,11 +238,11 @@ namespace NuGetUtility.ReferencedPackagesReader
             return excludedPackages;
         }
 
-        private static Dictionary<string, HashSet<string>> BuildDependencyMapFromAssetsFile(string assetsPath,
+        private static Dictionary<string, HashSet<string>> BuildDependencyMapFromAssetsFile(LockFile lockFile,
             IEnumerable<NuGetFramework> targetFrameworks)
         {
-            LockFile lockFile = new LockFileFormat().Read(assetsPath);
-            HashSet<NuGetFramework> targetFrameworkSet = new HashSet<NuGetFramework>(targetFrameworks);
+            HashSet<NuGetFramework> targetFrameworkSet = new HashSet<NuGetFramework>(NuGetFrameworkFullComparer.Instance);
+            targetFrameworkSet.UnionWith(targetFrameworks);
             Dictionary<string, HashSet<string>> packageDependencies = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
             foreach (LockFileTarget target in lockFile.Targets)
@@ -287,6 +292,50 @@ namespace NuGetUtility.ReferencedPackagesReader
             return packageDependencies;
         }
 
+        private static Dictionary<string, HashSet<string>> GetPackageDependenciesForTargetFramework(
+            string? assetsPath,
+            NuGetFramework targetFramework,
+            ref LockFile? parsedAssetsLockFile)
+        {
+            if (assetsPath is not { Length: > 0 } resolvedAssetsPath || !File.Exists(resolvedAssetsPath))
+            {
+                return new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            try
+            {
+                parsedAssetsLockFile ??= new LockFileFormat().Read(resolvedAssetsPath);
+                return BuildDependencyMapFromAssetsFile(parsedAssetsLockFile, new[] { targetFramework });
+            }
+            catch (IOException exception)
+            {
+                Trace.TraceWarning(
+                    "Failed to analyze transitive Publish=false exclusions due to I/O error. AssetsPath={0}, TargetFramework={1}, Exception={2}",
+                    resolvedAssetsPath,
+                    targetFramework.GetShortFolderName(),
+                    exception);
+                return new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+            }
+            catch (FormatException exception)
+            {
+                Trace.TraceWarning(
+                    "Failed to analyze transitive Publish=false exclusions due to invalid assets data. AssetsPath={0}, TargetFramework={1}, Exception={2}",
+                    resolvedAssetsPath,
+                    targetFramework.GetShortFolderName(),
+                    exception);
+                return new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+            }
+        }
+
+        private static string BuildExclusionCacheKey(string targetFramework,
+            IEnumerable<string> directDependencies,
+            IEnumerable<string> publishFalseDirectDependencies)
+        {
+            string directDependenciesKey = string.Join(";", directDependencies.OrderBy(dependency => dependency, StringComparer.OrdinalIgnoreCase));
+            string publishFalseDependenciesKey = string.Join(";", publishFalseDirectDependencies.OrderBy(dependency => dependency, StringComparer.OrdinalIgnoreCase));
+            return $"{targetFramework}|{directDependenciesKey}|{publishFalseDependenciesKey}";
+        }
+
         private static bool IsMatchingTarget(NuGetFramework expectedTargetFramework, Wrapper.NuGetWrapper.Frameworks.INuGetFramework targetFramework)
         {
             NuGetFramework parsedTargetFramework = ParseTargetFramework(targetFramework);
@@ -295,7 +344,7 @@ namespace NuGetUtility.ReferencedPackagesReader
 
         private static bool IsMatchingTarget(HashSet<NuGetFramework> targetFrameworkSet, NuGetFramework targetFramework)
         {
-            return targetFrameworkSet.Any(target => NuGetFrameworkFullComparer.Instance.Equals(target, targetFramework));
+            return targetFrameworkSet.Contains(targetFramework);
         }
 
         private static HashSet<string> GetReachablePackages(Dictionary<string, HashSet<string>> packageDependencies,
