@@ -1,12 +1,10 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using NuGet.Frameworks;
-using NuGet.ProjectModel;
 using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.MsBuildWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 
@@ -15,17 +13,22 @@ namespace NuGetUtility.ReferencedPackagesReader
     public class ReferencedPackageReader
     {
         private const string ProjectReferenceIdentifier = "project";
-        private const string PackageTypeIdentifier = "package";
         private readonly ILockFileFactory _lockFileFactory;
+        private readonly INuGetFrameworkUtility _nuGetFrameworkUtility;
+        private readonly IAssetsPackageDependencyReader _assetsPackageDependencyReader;
         private readonly IPackagesConfigReader _packagesConfigReader;
         private readonly IMsBuildAbstraction _msBuild;
 
         public ReferencedPackageReader(IMsBuildAbstraction msBuild,
             ILockFileFactory lockFileFactory,
+            INuGetFrameworkUtility nuGetFrameworkUtility,
+            IAssetsPackageDependencyReader assetsPackageDependencyReader,
             IPackagesConfigReader packagesConfigReader)
         {
             _msBuild = msBuild;
             _lockFileFactory = lockFileFactory;
+            _nuGetFrameworkUtility = nuGetFrameworkUtility;
+            _assetsPackageDependencyReader = assetsPackageDependencyReader;
             _packagesConfigReader = packagesConfigReader;
         }
 
@@ -73,17 +76,16 @@ namespace NuGetUtility.ReferencedPackagesReader
 
             var referencedLibraries = new HashSet<ILockFileLibrary>();
             List<ILockFileTarget> selectedTargets;
-            NuGetFramework? requestedTargetFramework = ParseTargetFrameworkOrNull(targetFramework);
+            string? normalizedRequestedTargetFramework = NormalizeTargetFrameworkOrNull(targetFramework);
             Dictionary<string, HashSet<string>> publishFalsePackagesByFramework = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, string[]> directDependenciesByFramework = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, Dictionary<string, HashSet<string>>> packageDependenciesByFramework = new Dictionary<string, Dictionary<string, HashSet<string>>>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, HashSet<string>> recursiveExclusionsByInput = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
-            LockFile? parsedAssetsLockFile = null;
 
-            if (requestedTargetFramework is not null)
+            if (normalizedRequestedTargetFramework is not null)
             {
                 selectedTargets = assetsFile.Targets!
-                    .Where(t => IsMatchingTarget(requestedTargetFramework, t.TargetFramework))
+                    .Where(t => _nuGetFrameworkUtility.IsEquivalent(normalizedRequestedTargetFramework, t.TargetFramework))
                     .ToList();
                 if (!selectedTargets.Any())
                 {
@@ -102,7 +104,7 @@ namespace NuGetUtility.ReferencedPackagesReader
 
                 if (excludePublishFalse)
                 {
-                    string? targetFrameworkForPublishMetadata = requestedTargetFramework?.GetShortFolderName() ?? target.TargetFramework.ToString();
+                    string targetFrameworkForPublishMetadata = normalizedRequestedTargetFramework ?? _nuGetFrameworkUtility.Normalize(target.TargetFramework);
                     string targetFrameworkCacheKey = targetFrameworkForPublishMetadata ?? string.Empty;
 
                     // Remove packages with Publish=false metadata from the evaluated PackageReferences for this target only.
@@ -121,36 +123,31 @@ namespace NuGetUtility.ReferencedPackagesReader
                             directDependenciesByFramework[targetFrameworkCacheKey] = directDependenciesForFramework;
                         }
 
-                        NuGetFramework? targetFrameworkIdentifier = ParseTargetFrameworkOrNull(target.TargetFramework.ToString());
-                        if (targetFrameworkIdentifier is not null)
+                        if (!packageDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out Dictionary<string, HashSet<string>>? packageDependencies))
                         {
-                            if (!packageDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out Dictionary<string, HashSet<string>>? packageDependencies))
-                            {
-                                packageDependencies = GetPackageDependenciesForTargetFramework(
-                                    assetsPath,
-                                    targetFrameworkIdentifier,
-                                    ref parsedAssetsLockFile);
-                                packageDependenciesByFramework[targetFrameworkCacheKey] = packageDependencies;
-                            }
+                            packageDependencies = _assetsPackageDependencyReader.GetPackageDependenciesForTargetFramework(
+                                assetsPath!,
+                                targetFrameworkCacheKey);
+                            packageDependenciesByFramework[targetFrameworkCacheKey] = packageDependencies;
+                        }
 
-                            if (packageDependencies.Count > 0)
+                        if (packageDependencies.Count > 0)
+                        {
+                            string recursiveExclusionCacheKey = BuildExclusionCacheKey(
+                                targetFrameworkCacheKey,
+                                directDependenciesForFramework,
+                                excludedPackages);
+
+                            if (!recursiveExclusionsByInput.TryGetValue(recursiveExclusionCacheKey, out HashSet<string>? recursivelyExcludedPackages))
                             {
-                                string recursiveExclusionCacheKey = BuildExclusionCacheKey(
-                                    targetFrameworkCacheKey,
+                                recursivelyExcludedPackages = GetPackagesExcludedFromPublishDependencyPaths(
+                                    packageDependencies,
                                     directDependenciesForFramework,
                                     excludedPackages);
-
-                                if (!recursiveExclusionsByInput.TryGetValue(recursiveExclusionCacheKey, out HashSet<string>? recursivelyExcludedPackages))
-                                {
-                                    recursivelyExcludedPackages = GetPackagesExcludedFromPublishDependencyPaths(
-                                        packageDependencies,
-                                        directDependenciesForFramework,
-                                        excludedPackages);
-                                    recursiveExclusionsByInput[recursiveExclusionCacheKey] = recursivelyExcludedPackages;
-                                }
-
-                                excludedPackages.UnionWith(recursivelyExcludedPackages);
+                                recursiveExclusionsByInput[recursiveExclusionCacheKey] = recursivelyExcludedPackages;
                             }
+
+                            excludedPackages.UnionWith(recursivelyExcludedPackages);
                         }
                     }
 
@@ -238,95 +235,6 @@ namespace NuGetUtility.ReferencedPackagesReader
             return excludedPackages;
         }
 
-        private static Dictionary<string, HashSet<string>> BuildDependencyMapFromAssetsFile(LockFile lockFile,
-            IEnumerable<NuGetFramework> targetFrameworks)
-        {
-            HashSet<NuGetFramework> targetFrameworkSet = new HashSet<NuGetFramework>(NuGetFrameworkFullComparer.Instance);
-            targetFrameworkSet.UnionWith(targetFrameworks);
-            Dictionary<string, HashSet<string>> packageDependencies = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (LockFileTarget target in lockFile.Targets)
-            {
-                if (!IsMatchingTarget(targetFrameworkSet, target.TargetFramework))
-                {
-                    continue;
-                }
-
-                foreach (LockFileTargetLibrary library in target.Libraries)
-                {
-                    if (!string.Equals(library.Type, PackageTypeIdentifier, StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    string? packageName = library.Name;
-                    if (packageName is null)
-                    {
-                        continue;
-                    }
-
-                    string packageNameValue = packageName.Trim();
-                    if (packageNameValue.Length == 0)
-                    {
-                        continue;
-                    }
-
-                    if (!packageDependencies.TryGetValue(packageNameValue, out HashSet<string>? dependencies))
-                    {
-                        dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                        packageDependencies[packageNameValue] = dependencies;
-                    }
-
-                    foreach (NuGet.Packaging.Core.PackageDependency dependency in library.Dependencies)
-                    {
-                        string dependencyName = dependency.Id;
-                        dependencies.Add(dependencyName);
-                        if (!packageDependencies.ContainsKey(dependencyName))
-                        {
-                            packageDependencies[dependencyName] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                        }
-                    }
-                }
-            }
-
-            return packageDependencies;
-        }
-
-        private static Dictionary<string, HashSet<string>> GetPackageDependenciesForTargetFramework(
-            string? assetsPath,
-            NuGetFramework targetFramework,
-            ref LockFile? parsedAssetsLockFile)
-        {
-            if (assetsPath is not { Length: > 0 } resolvedAssetsPath || !File.Exists(resolvedAssetsPath))
-            {
-                return new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-            }
-
-            try
-            {
-                parsedAssetsLockFile ??= new LockFileFormat().Read(resolvedAssetsPath);
-                return BuildDependencyMapFromAssetsFile(parsedAssetsLockFile, new[] { targetFramework });
-            }
-            catch (IOException exception)
-            {
-                Trace.TraceWarning(
-                    "Failed to analyze transitive Publish=false exclusions due to I/O error. AssetsPath={0}, TargetFramework={1}, Exception={2}",
-                    resolvedAssetsPath,
-                    targetFramework.GetShortFolderName(),
-                    exception);
-                return new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-            }
-            catch (FormatException exception)
-            {
-                Trace.TraceWarning(
-                    "Failed to analyze transitive Publish=false exclusions due to invalid assets data. AssetsPath={0}, TargetFramework={1}, Exception={2}",
-                    resolvedAssetsPath,
-                    targetFramework.GetShortFolderName(),
-                    exception);
-                return new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-            }
-        }
-
         private static string BuildExclusionCacheKey(string targetFramework,
             IEnumerable<string> directDependencies,
             IEnumerable<string> publishFalseDirectDependencies)
@@ -334,17 +242,6 @@ namespace NuGetUtility.ReferencedPackagesReader
             string directDependenciesKey = string.Join(";", directDependencies.OrderBy(dependency => dependency, StringComparer.OrdinalIgnoreCase));
             string publishFalseDependenciesKey = string.Join(";", publishFalseDirectDependencies.OrderBy(dependency => dependency, StringComparer.OrdinalIgnoreCase));
             return $"{targetFramework}|{directDependenciesKey}|{publishFalseDependenciesKey}";
-        }
-
-        private static bool IsMatchingTarget(NuGetFramework expectedTargetFramework, Wrapper.NuGetWrapper.Frameworks.INuGetFramework targetFramework)
-        {
-            NuGetFramework parsedTargetFramework = ParseTargetFramework(targetFramework);
-            return NuGetFrameworkFullComparer.Instance.Equals(expectedTargetFramework, parsedTargetFramework);
-        }
-
-        private static bool IsMatchingTarget(HashSet<NuGetFramework> targetFrameworkSet, NuGetFramework targetFramework)
-        {
-            return targetFrameworkSet.Contains(targetFramework);
         }
 
         private static HashSet<string> GetReachablePackages(Dictionary<string, HashSet<string>> packageDependencies,
@@ -375,19 +272,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             return visited;
         }
 
-        private static NuGetFramework ParseTargetFramework(Wrapper.NuGetWrapper.Frameworks.INuGetFramework targetFramework)
-        {
-            string? targetFrameworkString = targetFramework.ToString() ?? throw new ReferencedPackageReaderException("Failed to parse target framework from lock file target.");
-            string targetFrameworkValue = targetFrameworkString.Trim();
-            if (targetFrameworkValue.Length == 0)
-            {
-                throw new ReferencedPackageReaderException("Failed to parse target framework from lock file target.");
-            }
-
-            return NuGetFramework.Parse(targetFrameworkValue);
-        }
-
-        private static NuGetFramework? ParseTargetFrameworkOrNull(string? targetFramework)
+        private string? NormalizeTargetFrameworkOrNull(string? targetFramework)
         {
             if (targetFramework is null)
             {
@@ -399,7 +284,7 @@ namespace NuGetUtility.ReferencedPackagesReader
                 return null;
             }
 
-            return NuGetFramework.Parse(targetFramework.Trim());
+            return _nuGetFrameworkUtility.Normalize(targetFramework);
         }
 
         private bool TryLoadAssetsFile(IProject project,

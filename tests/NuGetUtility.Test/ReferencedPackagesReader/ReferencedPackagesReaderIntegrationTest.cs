@@ -3,6 +3,7 @@
 
 using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Wrapper.MsBuildWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 
@@ -20,7 +21,12 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             IPackagesConfigReader packagesConfigReader = OperatingSystem.IsWindows() ? new WindowsPackagesConfigReader() : new FailingPackagesConfigReader();
 #endif
 
-            _uut = new ReferencedPackageReader(new MsBuildAbstraction(), new LockFileFactory(), packagesConfigReader);
+            _uut = new ReferencedPackageReader(
+                new MsBuildAbstraction(),
+                new LockFileFactory(),
+                new NuGetFrameworkUtility(),
+                new AssetsPackageDependencyReader(),
+                packagesConfigReader);
         }
 
         private ReferencedPackageReader? _uut;

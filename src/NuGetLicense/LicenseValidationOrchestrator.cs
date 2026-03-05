@@ -12,6 +12,7 @@ using NuGetUtility.ProjectFiltering;
 using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.MsBuildWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
@@ -62,7 +63,12 @@ namespace NuGetLicense
             IOutputFormatter output = _optionsParser.GetOutputFormatter(options.OutputType, options.ReturnErrorsOnly, options.IncludeIgnoredPackages);
 
             var projectCollector = new ProjectsCollector(_solutionPersistance, _fileSystem);
-            var projectReader = new ReferencedPackageReader(_msBuild, new LockFileFactory(), _packagesConfigReader);
+            var projectReader = new ReferencedPackageReader(
+                _msBuild,
+                new LockFileFactory(),
+                new NuGetFrameworkUtility(),
+                new AssetsPackageDependencyReader(),
+                _packagesConfigReader);
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicensesArray,
                 licenseDownloader,

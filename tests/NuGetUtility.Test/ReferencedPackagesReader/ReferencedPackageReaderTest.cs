@@ -103,7 +103,12 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 }
             }
 
-            _uut = new ReferencedPackageReader(_msBuild, _lockFileFactory, _packagesConfigReader);
+            _uut = new ReferencedPackageReader(
+                _msBuild,
+                _lockFileFactory,
+                new NuGetFrameworkUtility(),
+                new AssetsPackageDependencyReader(),
+                _packagesConfigReader);
         }
 
         private const int TargetFrameworkCount = 5;
