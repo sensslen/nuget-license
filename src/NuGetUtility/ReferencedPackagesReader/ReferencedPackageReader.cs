@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.MsBuildWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 
@@ -13,23 +14,42 @@ namespace NuGetUtility.ReferencedPackagesReader
     {
         private const string ProjectReferenceIdentifier = "project";
         private readonly ILockFileFactory _lockFileFactory;
+        private readonly INuGetFrameworkUtility _nuGetFrameworkUtility;
+        private readonly IAssetsPackageDependencyReader _assetsPackageDependencyReader;
         private readonly IPackagesConfigReader _packagesConfigReader;
         private readonly IMsBuildAbstraction _msBuild;
 
         public ReferencedPackageReader(IMsBuildAbstraction msBuild,
             ILockFileFactory lockFileFactory,
+            INuGetFrameworkUtility nuGetFrameworkUtility,
+            IAssetsPackageDependencyReader assetsPackageDependencyReader,
             IPackagesConfigReader packagesConfigReader)
         {
             _msBuild = msBuild;
             _lockFileFactory = lockFileFactory;
+            _nuGetFrameworkUtility = nuGetFrameworkUtility;
+            _assetsPackageDependencyReader = assetsPackageDependencyReader;
             _packagesConfigReader = packagesConfigReader;
         }
 
-        public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive, string? targetFramework = null)
+        /// <summary>
+        /// Gets installed NuGet packages for the specified project.
+        /// </summary>
+        /// <param name="projectPath">Path to the project file.</param>
+        /// <param name="includeTransitive">True to include transitive dependencies; otherwise, false.</param>
+        /// <param name="targetFramework">
+        /// Target framework moniker to evaluate. If null, all available target frameworks are evaluated.
+        /// </param>
+        /// <param name="excludePublishFalse">
+        /// True to exclude packages with Publish="false" metadata. When transitive dependencies are included,
+        /// packages reachable only through those excluded roots are also excluded.
+        /// </param>
+        /// <returns>Resolved package identities from project assets or packages.config.</returns>
+        public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive, string? targetFramework = null, bool excludePublishFalse = false)
         {
             IProject project = _msBuild.GetProject(projectPath);
 
-            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, targetFramework, out IEnumerable<PackageIdentity>? dependencies))
+            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, targetFramework, excludePublishFalse, out IEnumerable<PackageIdentity>? dependencies))
             {
                 return dependencies;
             }
@@ -45,35 +65,96 @@ namespace NuGetUtility.ReferencedPackagesReader
         private bool TryGetInstalledPackagesFromAssetsFile(bool includeTransitive,
             IProject project,
             string? targetFramework,
+            bool excludePublishFalse,
             [NotNullWhen(true)] out IEnumerable<PackageIdentity>? installedPackages)
         {
             installedPackages = null;
-            if (!TryLoadAssetsFile(project, out ILockFile? assetsFile))
+            if (!TryLoadAssetsFile(project, out ILockFile? assetsFile, out string? assetsPath))
             {
                 return false;
             }
 
             var referencedLibraries = new HashSet<ILockFileLibrary>();
+            List<ILockFileTarget> selectedTargets;
+            string? normalizedRequestedTargetFramework = NormalizeTargetFrameworkOrNull(targetFramework);
+            Dictionary<string, HashSet<string>> publishFalsePackagesByFramework = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, string[]> directDependenciesByFramework = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, Dictionary<string, HashSet<string>>> packageDependenciesByFramework = new Dictionary<string, Dictionary<string, HashSet<string>>>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, HashSet<string>> recursiveExclusionsByInput = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
 
-            if (targetFramework is not null)
+            if (normalizedRequestedTargetFramework is not null)
             {
-                IEnumerable<ILockFileTarget> matchingTargets = assetsFile.Targets!.Where(t => t.TargetFramework.Equals(targetFramework));
-                if (!matchingTargets.Any())
+                selectedTargets = assetsFile.Targets!
+                    .Where(t => _nuGetFrameworkUtility.IsEquivalent(normalizedRequestedTargetFramework, t.TargetFramework))
+                    .ToList();
+                if (!selectedTargets.Any())
                 {
                     throw new ReferencedPackageReaderException($"Target framework {targetFramework} not found.");
-                }
-
-                foreach (ILockFileTarget target in matchingTargets)
-                {
-                    referencedLibraries.AddRange(GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target));
                 }
             }
             else
             {
-                foreach (ILockFileTarget target in assetsFile.Targets!)
+                selectedTargets = assetsFile.Targets!.ToList();
+            }
+
+            foreach (ILockFileTarget target in selectedTargets)
+            {
+                HashSet<ILockFileLibrary> targetReferencedLibraries =
+                    new HashSet<ILockFileLibrary>(GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target));
+
+                if (excludePublishFalse)
                 {
-                    referencedLibraries.AddRange(GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target));
+                    string targetFrameworkForPublishMetadata = normalizedRequestedTargetFramework ?? _nuGetFrameworkUtility.Normalize(target.TargetFramework);
+                    string targetFrameworkCacheKey = targetFrameworkForPublishMetadata ?? string.Empty;
+
+                    // Remove packages with Publish=false metadata from the evaluated PackageReferences for this target only.
+                    if (!publishFalsePackagesByFramework.TryGetValue(targetFrameworkCacheKey, out HashSet<string>? cachedPublishFalsePackages))
+                    {
+                        cachedPublishFalsePackages = GetPackagesExcludedFromPublish(project, targetFrameworkForPublishMetadata);
+                        publishFalsePackagesByFramework[targetFrameworkCacheKey] = cachedPublishFalsePackages;
+                    }
+
+                    HashSet<string> excludedPackages = new HashSet<string>(cachedPublishFalsePackages, StringComparer.OrdinalIgnoreCase);
+                    if (includeTransitive && excludedPackages.Any())
+                    {
+                        if (!directDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out string[]? directDependenciesForFramework))
+                        {
+                            directDependenciesForFramework = GetDirectDependenciesForTargets(assetsFile, new[] { target }).ToArray();
+                            directDependenciesByFramework[targetFrameworkCacheKey] = directDependenciesForFramework;
+                        }
+
+                        if (!packageDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out Dictionary<string, HashSet<string>>? packageDependencies))
+                        {
+                            packageDependencies = _assetsPackageDependencyReader.GetPackageDependenciesForTargetFramework(
+                                assetsPath!,
+                                targetFrameworkCacheKey);
+                            packageDependenciesByFramework[targetFrameworkCacheKey] = packageDependencies;
+                        }
+
+                        if (packageDependencies.Count > 0)
+                        {
+                            string recursiveExclusionCacheKey = BuildExclusionCacheKey(
+                                targetFrameworkCacheKey,
+                                directDependenciesForFramework,
+                                excludedPackages);
+
+                            if (!recursiveExclusionsByInput.TryGetValue(recursiveExclusionCacheKey, out HashSet<string>? recursivelyExcludedPackages))
+                            {
+                                recursivelyExcludedPackages = GetPackagesExcludedFromPublishDependencyPaths(
+                                    packageDependencies,
+                                    directDependenciesForFramework,
+                                    excludedPackages);
+                                recursiveExclusionsByInput[recursiveExclusionCacheKey] = recursivelyExcludedPackages;
+                            }
+
+                            excludedPackages.UnionWith(recursivelyExcludedPackages);
+                        }
+                    }
+
+                    targetReferencedLibraries.RemoveWhere(library => excludedPackages.Contains(library.Name));
                 }
+
+                referencedLibraries.AddRange(targetReferencedLibraries);
             }
 
             installedPackages = referencedLibraries.Select(r => new PackageIdentity(r.Name, r.Version));
@@ -110,14 +191,114 @@ namespace NuGetUtility.ReferencedPackagesReader
             }
         }
 
-        private bool TryLoadAssetsFile(IProject project, [NotNullWhen(true)] out ILockFile? assetsFile)
+        private static IEnumerable<string> GetDirectDependenciesForTargets(ILockFile assetsFile,
+            IEnumerable<ILockFileTarget> selectedTargets)
         {
-            if (!project.TryGetAssetsPath(out string assetsPath))
+            HashSet<string> directDependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (ILockFileTarget target in selectedTargets)
+            {
+                ITargetFrameworkInformation targetFrameworkInformation = GetTargetFrameworkInformation(target, assetsFile);
+                foreach (ILibraryDependency dependency in targetFrameworkInformation.Dependencies)
+                {
+                    directDependencies.Add(dependency.Name);
+                }
+            }
+
+            return directDependencies;
+        }
+
+        private static HashSet<string> GetPackagesExcludedFromPublishDependencyPaths(
+            Dictionary<string, HashSet<string>> packageDependencies,
+            IEnumerable<string> directDependencies,
+            ISet<string> publishFalseDirectDependencies)
+        {
+            HashSet<string> excludedPackages = new HashSet<string>(publishFalseDirectDependencies, StringComparer.OrdinalIgnoreCase);
+            if (packageDependencies.Count == 0)
+            {
+                return excludedPackages;
+            }
+
+            HashSet<string> publishableRoots = new HashSet<string>(
+                directDependencies.Where(package => !publishFalseDirectDependencies.Contains(package)),
+                StringComparer.OrdinalIgnoreCase);
+
+            HashSet<string> reachableFromPublishableRoots = GetReachablePackages(packageDependencies, publishableRoots);
+
+            foreach (string packageName in packageDependencies.Keys)
+            {
+                if (!reachableFromPublishableRoots.Contains(packageName))
+                {
+                    excludedPackages.Add(packageName);
+                }
+            }
+
+            return excludedPackages;
+        }
+
+        private static string BuildExclusionCacheKey(string targetFramework,
+            IEnumerable<string> directDependencies,
+            IEnumerable<string> publishFalseDirectDependencies)
+        {
+            string directDependenciesKey = string.Join(";", directDependencies.OrderBy(dependency => dependency, StringComparer.OrdinalIgnoreCase));
+            string publishFalseDependenciesKey = string.Join(";", publishFalseDirectDependencies.OrderBy(dependency => dependency, StringComparer.OrdinalIgnoreCase));
+            return $"{targetFramework}|{directDependenciesKey}|{publishFalseDependenciesKey}";
+        }
+
+        private static HashSet<string> GetReachablePackages(Dictionary<string, HashSet<string>> packageDependencies,
+            IEnumerable<string> roots)
+        {
+            HashSet<string> visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            Stack<string> stack = new Stack<string>(roots);
+
+            while (stack.Count > 0)
+            {
+                string packageName = stack.Pop();
+                if (!visited.Add(packageName))
+                {
+                    continue;
+                }
+
+                if (!packageDependencies.TryGetValue(packageName, out HashSet<string>? dependencies))
+                {
+                    continue;
+                }
+
+                foreach (string dependency in dependencies)
+                {
+                    stack.Push(dependency);
+                }
+            }
+
+            return visited;
+        }
+
+        private string? NormalizeTargetFrameworkOrNull(string? targetFramework)
+        {
+            if (targetFramework is null)
+            {
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(targetFramework))
+            {
+                return null;
+            }
+
+            return _nuGetFrameworkUtility.Normalize(targetFramework);
+        }
+
+        private bool TryLoadAssetsFile(IProject project,
+            [NotNullWhen(true)] out ILockFile? assetsFile,
+            out string? assetsPath)
+        {
+            if (!project.TryGetAssetsPath(out string projectAssetsPath))
             {
                 assetsFile = null;
+                assetsPath = null;
                 return false;
             }
-            assetsFile = _lockFileFactory.GetFromFile(assetsPath);
+
+            assetsFile = _lockFileFactory.GetFromFile(projectAssetsPath);
 
             if (assetsFile.TryGetErrors(out string[] errors))
             {
@@ -130,7 +311,28 @@ namespace NuGetUtility.ReferencedPackagesReader
                     $"Failed to validate project assets for project {project.FullPath}");
             }
 
+            assetsPath = projectAssetsPath;
             return true;
+        }
+
+        private static HashSet<string> GetPackagesExcludedFromPublish(IProject project, string? targetFramework)
+        {
+            // Publish metadata is not available in project.assets.json, so resolve it via MSBuild items.
+            IEnumerable<PackageReferenceMetadata> packageReferences = targetFramework is null
+                ? project.GetPackageReferences()
+                : project.GetPackageReferencesForTarget(targetFramework);
+
+            HashSet<string> excludedPackages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (PackageReferenceMetadata packageReference in packageReferences ?? Array.Empty<PackageReferenceMetadata>())
+            {
+                if (packageReference.Metadata.TryGetValue("Publish", out string? value) &&
+                    string.Equals(value, "false", StringComparison.OrdinalIgnoreCase))
+                {
+                    excludedPackages.Add(packageReference.PackageName);
+                }
+            }
+
+            return excludedPackages;
         }
     }
 }

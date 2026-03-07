@@ -1,6 +1,8 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.Collections.Generic;
+using System.IO;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using NSubstitute;
@@ -44,6 +46,8 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 return true;
             });
             _projectMock.FullPath.Returns(_projectPath);
+            _projectMock.GetPackageReferences().Returns(Array.Empty<PackageReferenceMetadata>());
+            _projectMock.GetPackageReferencesForTarget(Arg.Any<string>()).Returns(Array.Empty<PackageReferenceMetadata>());
             _lockFileFactory.GetFromFile(_assetsFilePath).Returns(_lockFileMock);
             _lockFileMock.PackageSpec.Returns(_packageSpecMock);
             _packageSpecMock.IsValid().Returns(true);
@@ -99,7 +103,12 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 }
             }
 
-            _uut = new ReferencedPackageReader(_msBuild, _lockFileFactory, _packagesConfigReader);
+            _uut = new ReferencedPackageReader(
+                _msBuild,
+                _lockFileFactory,
+                new NuGetFrameworkUtility(),
+                new AssetsPackageDependencyReader(new NuGetFrameworkUtility()),
+                _packagesConfigReader);
         }
 
         private const int TargetFrameworkCount = 5;
@@ -194,9 +203,22 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void
             GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_Requested_FrameworkIsNotFound()
         {
-            string targetFramework = _fixture.Create<string>();
-            _packageSpecMock.TargetFrameworks
-                .Returns(Enumerable.Empty<ITargetFrameworkInformation>());
+            const string targetFramework = "net10.0";
+
+            ILockFileTarget targetNet80 = Substitute.For<ILockFileTarget>();
+            INuGetFramework frameworkNet80 = Substitute.For<INuGetFramework>();
+            frameworkNet80.ToString().Returns("net8.0");
+            targetNet80.TargetFramework.Returns(frameworkNet80);
+            targetNet80.Libraries.Returns(Array.Empty<ILockFileLibrary>());
+
+            ILockFileTarget targetNet90 = Substitute.For<ILockFileTarget>();
+            INuGetFramework frameworkNet90 = Substitute.For<INuGetFramework>();
+            frameworkNet90.ToString().Returns("net9.0");
+            targetNet90.TargetFramework.Returns(frameworkNet90);
+            targetNet90.Libraries.Returns(Array.Empty<ILockFileLibrary>());
+
+            _lockFileMock.Targets.Returns(new[] { targetNet80, targetNet90 });
+
             ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
                 _uut.GetInstalledPackages(_projectPath, false, targetFramework));
 
@@ -239,11 +261,86 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Test]
         public void GetInstalledPackages_Should_OnlyReturnPackages_For_TargetFramework()
         {
-            string name = _fixture.Create<string>();
-            INuGetFramework targetFramework = _targetFrameworks.Shuffle(new Random(69843456)).First();
-            targetFramework.Equals(name).Returns(true);
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, name);
-            Assert.That(result, Is.EquivalentTo(_referencedPackagesForFramework[targetFramework]));
+            const string requestedTargetFramework = "net8.0";
+
+            ILockFileLibrary net80Library = CreateLibrary("PackageNet80");
+            ILockFileLibrary net90Library = CreateLibrary("PackageNet90");
+
+            ILockFileTarget targetNet80 = Substitute.For<ILockFileTarget>();
+            INuGetFramework frameworkNet80 = Substitute.For<INuGetFramework>();
+            frameworkNet80.ToString().Returns("net8.0");
+            targetNet80.TargetFramework.Returns(frameworkNet80);
+            targetNet80.Libraries.Returns(new[] { net80Library });
+
+            ILockFileTarget targetNet90 = Substitute.For<ILockFileTarget>();
+            INuGetFramework frameworkNet90 = Substitute.For<INuGetFramework>();
+            frameworkNet90.ToString().Returns("net9.0");
+            targetNet90.TargetFramework.Returns(frameworkNet90);
+            targetNet90.Libraries.Returns(new[] { net90Library });
+
+            _lockFileMock.Targets.Returns(new[] { targetNet80, targetNet90 });
+
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, requestedTargetFramework);
+
+            Assert.That(result.Select(package => package.Id), Is.EquivalentTo(new[] { "PackageNet80" }));
+            Assert.That(result.Select(package => package.Id), Does.Not.Contain("PackageNet90"));
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_OnlyReturnPackages_For_Equivalent_TargetFramework_Representation()
+        {
+            const string requestedTargetFramework = "net8.0";
+
+            ILockFileLibrary equivalentTargetLibrary = CreateLibrary("PackageEquivalent");
+            ILockFileLibrary otherTargetLibrary = CreateLibrary("PackageOther");
+
+            ILockFileTarget targetEquivalent = Substitute.For<ILockFileTarget>();
+            INuGetFramework frameworkEquivalent = Substitute.For<INuGetFramework>();
+            frameworkEquivalent.ToString().Returns(".NETCoreApp,Version=v8.0");
+            targetEquivalent.TargetFramework.Returns(frameworkEquivalent);
+            targetEquivalent.Libraries.Returns(new[] { equivalentTargetLibrary });
+
+            ILockFileTarget targetOther = Substitute.For<ILockFileTarget>();
+            INuGetFramework frameworkOther = Substitute.For<INuGetFramework>();
+            frameworkOther.ToString().Returns("net9.0");
+            targetOther.TargetFramework.Returns(frameworkOther);
+            targetOther.Libraries.Returns(new[] { otherTargetLibrary });
+
+            _lockFileMock.Targets.Returns(new[] { targetEquivalent, targetOther });
+
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, requestedTargetFramework);
+
+            Assert.That(result.Select(package => package.Id), Is.EquivalentTo(new[] { "PackageEquivalent" }));
+            Assert.That(result.Select(package => package.Id), Does.Not.Contain("PackageOther"));
+        }
+
+        [TestCase("net8.0")]
+        [TestCase("NET8.0")]
+        [TestCase(" .NETCoreApp,Version=v8.0 ")]
+        [TestCase(".NETCoreApp,Version=v8.0")]
+        public void GetInstalledPackages_Should_OnlyReturnPackages_For_TargetFramework_Variants(string requestedTargetFramework)
+        {
+            ILockFileLibrary variantTargetLibrary = CreateLibrary("PackageVariant");
+            ILockFileLibrary otherTargetLibrary = CreateLibrary("PackageOther");
+
+            ILockFileTarget targetVariant = Substitute.For<ILockFileTarget>();
+            INuGetFramework frameworkVariant = Substitute.For<INuGetFramework>();
+            frameworkVariant.ToString().Returns("net8.0");
+            targetVariant.TargetFramework.Returns(frameworkVariant);
+            targetVariant.Libraries.Returns(new[] { variantTargetLibrary });
+
+            ILockFileTarget targetOther = Substitute.For<ILockFileTarget>();
+            INuGetFramework frameworkOther = Substitute.For<INuGetFramework>();
+            frameworkOther.ToString().Returns("net9.0");
+            targetOther.TargetFramework.Returns(frameworkOther);
+            targetOther.Libraries.Returns(new[] { otherTargetLibrary });
+
+            _lockFileMock.Targets.Returns(new[] { targetVariant, targetOther });
+
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, requestedTargetFramework);
+
+            Assert.That(result.Select(package => package.Id), Is.EquivalentTo(new[] { "PackageVariant" }));
+            Assert.That(result.Select(package => package.Id), Does.Not.Contain("PackageOther"));
         }
 
         [Test]
@@ -299,6 +396,395 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             IEnumerable<PackageIdentity> packages = _uut.GetInstalledPackages(_projectPath, includeTransitive);
 
             Assert.That(packages, Is.EquivalentTo(expectedPackages));
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_ExcludePackages_With_PublishFalse_Metadata()
+        {
+            string excludedPackage = _fixture.Create<string>();
+            string includedPackage = _fixture.Create<string>();
+
+            ILockFileLibrary excludedLibrary = Substitute.For<ILockFileLibrary>();
+            excludedLibrary.Name.Returns(excludedPackage);
+            excludedLibrary.Version.Returns(Substitute.For<INuGetVersion>());
+
+            ILockFileLibrary includedLibrary = Substitute.For<ILockFileLibrary>();
+            includedLibrary.Name.Returns(includedPackage);
+            includedLibrary.Version.Returns(Substitute.For<INuGetVersion>());
+
+            ILockFileTarget target = Substitute.For<ILockFileTarget>();
+            target.Libraries.Returns(new[] { excludedLibrary, includedLibrary });
+            INuGetFramework targetFramework = Substitute.For<INuGetFramework>();
+            targetFramework.ToString().Returns("net8.0");
+            target.TargetFramework.Returns(targetFramework);
+            _lockFileMock.Targets.Returns(new[] { target });
+
+            _projectMock.GetPackageReferences().Returns(new[]
+            {
+                new PackageReferenceMetadata(excludedPackage, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["Publish"] = "false"
+                }),
+                new PackageReferenceMetadata(includedPackage, new Dictionary<string, string>())
+            });
+            _projectMock.GetPackageReferencesForTarget("net8.0").Returns(new[]
+            {
+                new PackageReferenceMetadata(excludedPackage, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["Publish"] = "false"
+                }),
+                new PackageReferenceMetadata(includedPackage, new Dictionary<string, string>())
+            });
+
+            ITargetFrameworkInformation targetFrameworkInformation = Substitute.For<ITargetFrameworkInformation>();
+            targetFrameworkInformation.FrameworkName.Returns(targetFramework);
+            ILibraryDependency excludedDependency = CreateDependency(excludedPackage);
+            ILibraryDependency includedDependency = CreateDependency(includedPackage);
+            targetFrameworkInformation.Dependencies.Returns(new[] { excludedDependency, includedDependency });
+            _packageSpecMock.TargetFrameworks.Returns(new[] { targetFrameworkInformation });
+
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
+
+            Assert.That(result.Select(p => p.Id), Does.Not.Contain(excludedPackage));
+            Assert.That(result.Select(p => p.Id), Does.Contain(includedPackage));
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_Apply_PublishFalse_PerTarget_When_TargetFramework_IsNull()
+        {
+            const string packageName = "PackageConditional";
+
+            INuGetFramework net80 = Substitute.For<INuGetFramework>();
+            net80.ToString().Returns("net8.0");
+
+            INuGetFramework net90 = Substitute.For<INuGetFramework>();
+            net90.ToString().Returns("net9.0");
+
+            ILockFileTarget targetNet80 = Substitute.For<ILockFileTarget>();
+            targetNet80.TargetFramework.Returns(net80);
+            ILockFileLibrary net80Library = CreateLibrary(packageName);
+            targetNet80.Libraries.Returns(new[] { net80Library });
+
+            ILockFileTarget targetNet90 = Substitute.For<ILockFileTarget>();
+            targetNet90.TargetFramework.Returns(net90);
+            ILockFileLibrary net90Library = CreateLibrary(packageName);
+            targetNet90.Libraries.Returns(new[] { net90Library });
+
+            _lockFileMock.Targets.Returns(new[] { targetNet80, targetNet90 });
+
+            ITargetFrameworkInformation net80Info = Substitute.For<ITargetFrameworkInformation>();
+            net80Info.FrameworkName.Returns(net80);
+            ILibraryDependency net80Dependency = CreateDependency(packageName);
+            net80Info.Dependencies.Returns(new[] { net80Dependency });
+
+            ITargetFrameworkInformation net90Info = Substitute.For<ITargetFrameworkInformation>();
+            net90Info.FrameworkName.Returns(net90);
+            ILibraryDependency net90Dependency = CreateDependency(packageName);
+            net90Info.Dependencies.Returns(new[] { net90Dependency });
+
+            _packageSpecMock.TargetFrameworks.Returns(new[] { net80Info, net90Info });
+
+            _projectMock.GetPackageReferences().Returns(new[]
+            {
+                new PackageReferenceMetadata(packageName, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["Publish"] = "false"
+                })
+            });
+
+            _projectMock.GetPackageReferencesForTarget("net8.0").Returns(new[]
+            {
+                new PackageReferenceMetadata(packageName, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["Publish"] = "false"
+                })
+            });
+
+            _projectMock.GetPackageReferencesForTarget("net9.0").Returns(Array.Empty<PackageReferenceMetadata>());
+
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
+
+            Assert.That(result.Select(p => p.Id), Does.Contain(packageName));
+            _projectMock.Received(1).GetPackageReferencesForTarget("net8.0");
+            _projectMock.Received(1).GetPackageReferencesForTarget("net9.0");
+            _projectMock.DidNotReceive().GetPackageReferences();
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_Keep_SharedTransitiveDependency_If_ReachableFrom_PublishableRoot()
+        {
+            string tempAssetsPath = Path.GetTempFileName();
+            try
+            {
+                _assetsFilePath = tempAssetsPath;
+                _lockFileFactory.GetFromFile(tempAssetsPath).Returns(_lockFileMock);
+                File.WriteAllText(tempAssetsPath,
+                    """
+                    {
+                      "targets": {
+                        "net10.0": {
+                          "PackageA/1.0.0": {
+                            "type": "package",
+                            "dependencies": {
+                              "PackageC": "1.0.0"
+                            }
+                          },
+                          "PackageB/1.0.0": {
+                            "type": "package",
+                            "dependencies": {
+                              "PackageC": "1.0.0"
+                            }
+                          },
+                          "PackageC/1.0.0": {
+                            "type": "package"
+                          }
+                        }
+                      }
+                    }
+                    """);
+
+                INuGetFramework targetFramework = Substitute.For<INuGetFramework>();
+                targetFramework.ToString().Returns("net10.0");
+
+                ILockFileTarget target = Substitute.For<ILockFileTarget>();
+                target.TargetFramework.Returns(targetFramework);
+                ILockFileLibrary[] targetLibraries =
+                {
+                    CreateLibrary("PackageA"),
+                    CreateLibrary("PackageB"),
+                    CreateLibrary("PackageC")
+                };
+                target.Libraries.Returns(targetLibraries);
+                _lockFileMock.Targets.Returns(new[] { target });
+
+                ITargetFrameworkInformation targetFrameworkInformation = Substitute.For<ITargetFrameworkInformation>();
+                targetFrameworkInformation.FrameworkName.Returns(targetFramework);
+                ILibraryDependency[] directDependencies =
+                {
+                    CreateDependency("PackageA"),
+                    CreateDependency("PackageB")
+                };
+                targetFrameworkInformation.Dependencies.Returns(directDependencies);
+                _packageSpecMock.TargetFrameworks.Returns(new[] { targetFrameworkInformation });
+
+                _projectMock.GetPackageReferences().Returns(new[]
+                {
+                    new PackageReferenceMetadata("PackageA", new Dictionary<string, string>()),
+                    new PackageReferenceMetadata("PackageB", new Dictionary<string, string>
+                    {
+                        ["Publish"] = "false"
+                    })
+                });
+                _projectMock.GetPackageReferencesForTarget("net10.0").Returns(new[]
+                {
+                    new PackageReferenceMetadata("PackageA", new Dictionary<string, string>()),
+                    new PackageReferenceMetadata("PackageB", new Dictionary<string, string>
+                    {
+                        ["Publish"] = "false"
+                    })
+                });
+
+                IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
+
+                Assert.That(result.Select(p => p.Id), Does.Contain("PackageA"));
+                Assert.That(result.Select(p => p.Id), Does.Not.Contain("PackageB"));
+                Assert.That(result.Select(p => p.Id), Does.Contain("PackageC"));
+            }
+            finally
+            {
+                if (File.Exists(tempAssetsPath))
+                {
+                    File.Delete(tempAssetsPath);
+                }
+            }
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_Exclude_TransitiveDependency_If_OnlyReachableFrom_PublishFalseRoot()
+        {
+            string tempAssetsPath = Path.GetTempFileName();
+            try
+            {
+                _assetsFilePath = tempAssetsPath;
+                _lockFileFactory.GetFromFile(tempAssetsPath).Returns(_lockFileMock);
+                File.WriteAllText(tempAssetsPath,
+                    """
+                    {
+                      "targets": {
+                        "net10.0": {
+                          "PackageA/1.0.0": {
+                            "type": "package"
+                          },
+                          "PackageB/1.0.0": {
+                            "type": "package",
+                            "dependencies": {
+                              "PackageC": "1.0.0"
+                            }
+                          },
+                          "PackageC/1.0.0": {
+                            "type": "package"
+                          }
+                        }
+                      }
+                    }
+                    """);
+
+                INuGetFramework targetFramework = Substitute.For<INuGetFramework>();
+                targetFramework.ToString().Returns("net10.0");
+
+                ILockFileTarget target = Substitute.For<ILockFileTarget>();
+                target.TargetFramework.Returns(targetFramework);
+                ILockFileLibrary[] targetLibraries =
+                {
+                    CreateLibrary("PackageA"),
+                    CreateLibrary("PackageB"),
+                    CreateLibrary("PackageC")
+                };
+                target.Libraries.Returns(targetLibraries);
+                _lockFileMock.Targets.Returns(new[] { target });
+
+                ITargetFrameworkInformation targetFrameworkInformation = Substitute.For<ITargetFrameworkInformation>();
+                targetFrameworkInformation.FrameworkName.Returns(targetFramework);
+                ILibraryDependency[] directDependencies =
+                {
+                    CreateDependency("PackageA"),
+                    CreateDependency("PackageB")
+                };
+                targetFrameworkInformation.Dependencies.Returns(directDependencies);
+                _packageSpecMock.TargetFrameworks.Returns(new[] { targetFrameworkInformation });
+
+                _projectMock.GetPackageReferences().Returns(new[]
+                {
+                    new PackageReferenceMetadata("PackageA", new Dictionary<string, string>()),
+                    new PackageReferenceMetadata("PackageB", new Dictionary<string, string>
+                    {
+                        ["Publish"] = "false"
+                    })
+                });
+                _projectMock.GetPackageReferencesForTarget("net10.0").Returns(new[]
+                {
+                    new PackageReferenceMetadata("PackageA", new Dictionary<string, string>()),
+                    new PackageReferenceMetadata("PackageB", new Dictionary<string, string>
+                    {
+                        ["Publish"] = "false"
+                    })
+                });
+
+                IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
+
+                Assert.That(result.Select(p => p.Id), Does.Contain("PackageA"));
+                Assert.That(result.Select(p => p.Id), Does.Not.Contain("PackageB"));
+                Assert.That(result.Select(p => p.Id), Does.Not.Contain("PackageC"));
+            }
+            finally
+            {
+                if (File.Exists(tempAssetsPath))
+                {
+                    File.Delete(tempAssetsPath);
+                }
+            }
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_Exclude_TransitiveDependency_For_RidQualified_TargetKey()
+        {
+            string tempAssetsPath = Path.GetTempFileName();
+            try
+            {
+                _assetsFilePath = tempAssetsPath;
+                _lockFileFactory.GetFromFile(tempAssetsPath).Returns(_lockFileMock);
+                File.WriteAllText(tempAssetsPath,
+                    """
+                    {
+                      "targets": {
+                        "net10.0/win-x64": {
+                          "PackageA/1.0.0": {
+                            "type": "package"
+                          },
+                          "PackageB/1.0.0": {
+                            "type": "package",
+                            "dependencies": {
+                              "PackageC": "1.0.0"
+                            }
+                          },
+                          "PackageC/1.0.0": {
+                            "type": "package"
+                          }
+                        }
+                      }
+                    }
+                    """);
+
+                INuGetFramework targetFramework = Substitute.For<INuGetFramework>();
+                targetFramework.ToString().Returns("net10.0");
+
+                ILockFileTarget target = Substitute.For<ILockFileTarget>();
+                target.TargetFramework.Returns(targetFramework);
+                ILockFileLibrary[] targetLibraries =
+                {
+                    CreateLibrary("PackageA"),
+                    CreateLibrary("PackageB"),
+                    CreateLibrary("PackageC")
+                };
+                target.Libraries.Returns(targetLibraries);
+                _lockFileMock.Targets.Returns(new[] { target });
+
+                ITargetFrameworkInformation targetFrameworkInformation = Substitute.For<ITargetFrameworkInformation>();
+                targetFrameworkInformation.FrameworkName.Returns(targetFramework);
+                ILibraryDependency[] directDependencies =
+                {
+                    CreateDependency("PackageA"),
+                    CreateDependency("PackageB")
+                };
+                targetFrameworkInformation.Dependencies.Returns(directDependencies);
+                _packageSpecMock.TargetFrameworks.Returns(new[] { targetFrameworkInformation });
+
+                _projectMock.GetPackageReferences().Returns(new[]
+                {
+                    new PackageReferenceMetadata("PackageA", new Dictionary<string, string>()),
+                    new PackageReferenceMetadata("PackageB", new Dictionary<string, string>
+                    {
+                        ["Publish"] = "false"
+                    })
+                });
+                _projectMock.GetPackageReferencesForTarget("net10.0").Returns(new[]
+                {
+                    new PackageReferenceMetadata("PackageA", new Dictionary<string, string>()),
+                    new PackageReferenceMetadata("PackageB", new Dictionary<string, string>
+                    {
+                        ["Publish"] = "false"
+                    })
+                });
+
+                IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
+
+                Assert.That(result.Select(p => p.Id), Does.Contain("PackageA"));
+                Assert.That(result.Select(p => p.Id), Does.Not.Contain("PackageB"));
+                Assert.That(result.Select(p => p.Id), Does.Not.Contain("PackageC"));
+            }
+            finally
+            {
+                if (File.Exists(tempAssetsPath))
+                {
+                    File.Delete(tempAssetsPath);
+                }
+            }
+        }
+
+        private static ILibraryDependency CreateDependency(string packageName)
+        {
+            ILibraryDependency dependency = Substitute.For<ILibraryDependency>();
+            dependency.Name.Returns(packageName);
+            return dependency;
+        }
+
+        private static ILockFileLibrary CreateLibrary(string packageName)
+        {
+            ILockFileLibrary library = Substitute.For<ILockFileLibrary>();
+            library.Name.Returns(packageName);
+            library.Type.Returns("package");
+            library.Version.Returns(Substitute.For<INuGetVersion>());
+            return library;
         }
     }
 }
