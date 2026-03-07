@@ -67,7 +67,7 @@ namespace NuGetLicense
                 _msBuild,
                 new LockFileFactory(),
                 new NuGetFrameworkUtility(),
-                new AssetsPackageDependencyReader(),
+                new AssetsPackageDependencyReader(new NuGetFrameworkUtility()),
                 _packagesConfigReader);
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicensesArray,

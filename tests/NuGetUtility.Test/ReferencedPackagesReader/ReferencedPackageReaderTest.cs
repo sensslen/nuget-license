@@ -107,7 +107,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 _msBuild,
                 _lockFileFactory,
                 new NuGetFrameworkUtility(),
-                new AssetsPackageDependencyReader(),
+                new AssetsPackageDependencyReader(new NuGetFrameworkUtility()),
                 _packagesConfigReader);
         }
 

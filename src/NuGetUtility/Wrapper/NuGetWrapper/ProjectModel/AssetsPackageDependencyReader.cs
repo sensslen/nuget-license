@@ -2,14 +2,20 @@
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.Diagnostics;
-using NuGet.Frameworks;
 using NuGet.ProjectModel;
+using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
     public class AssetsPackageDependencyReader : IAssetsPackageDependencyReader
     {
         private const string PackageTypeIdentifier = "package";
+        private readonly INuGetFrameworkUtility _nuGetFrameworkUtility;
+
+        public AssetsPackageDependencyReader(INuGetFrameworkUtility nuGetFrameworkUtility)
+        {
+            _nuGetFrameworkUtility = nuGetFrameworkUtility;
+        }
 
         public Dictionary<string, HashSet<string>> GetPackageDependenciesForTargetFramework(string assetsPath, string normalizedTargetFramework)
         {
@@ -21,8 +27,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
             try
             {
                 LockFile lockFile = new LockFileFormat().Read(assetsPath);
-                NuGetFramework parsedTargetFramework = NuGetFramework.Parse(normalizedTargetFramework);
-                return BuildDependencyMapFromAssetsFile(lockFile, parsedTargetFramework);
+                return BuildDependencyMapFromAssetsFile(lockFile, normalizedTargetFramework);
             }
             catch (IOException exception)
             {
@@ -44,13 +49,13 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
             }
         }
 
-        private static Dictionary<string, HashSet<string>> BuildDependencyMapFromAssetsFile(LockFile lockFile, NuGetFramework requestedTargetFramework)
+        private Dictionary<string, HashSet<string>> BuildDependencyMapFromAssetsFile(LockFile lockFile, string requestedTargetFramework)
         {
             Dictionary<string, HashSet<string>> packageDependencies = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
             foreach (LockFileTarget target in lockFile.Targets)
             {
-                if (!NuGetFrameworkFullComparer.Instance.Equals(requestedTargetFramework, target.TargetFramework))
+                if (!_nuGetFrameworkUtility.IsEquivalent(requestedTargetFramework, new WrappedNuGetFramework(target.TargetFramework)))
                 {
                     continue;
                 }

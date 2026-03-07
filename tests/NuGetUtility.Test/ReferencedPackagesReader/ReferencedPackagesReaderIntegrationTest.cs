@@ -25,7 +25,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 new MsBuildAbstraction(),
                 new LockFileFactory(),
                 new NuGetFrameworkUtility(),
-                new AssetsPackageDependencyReader(),
+                new AssetsPackageDependencyReader(new NuGetFrameworkUtility()),
                 packagesConfigReader);
         }
 
