@@ -78,13 +78,13 @@ namespace NuGetUtility.ReferencedPackagesReader
             List<ILockFileTarget> selectedTargets;
             string? normalizedRequestedTargetFramework = NormalizeTargetFrameworkOrNull(targetFramework);
             Dictionary<string, HashSet<string>> publishFalsePackagesByFramework = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-            Dictionary<string, string[]> directDependenciesByFramework = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, HashSet<string>> directDependenciesByFramework = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, Dictionary<string, HashSet<string>>> packageDependenciesByFramework = new Dictionary<string, Dictionary<string, HashSet<string>>>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, HashSet<string>> recursiveExclusionsByInput = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
 
             if (normalizedRequestedTargetFramework is not null)
             {
-                selectedTargets = assetsFile.Targets!
+                selectedTargets = assetsFile.Targets
                     .Where(t => _nuGetFrameworkUtility.IsEquivalent(normalizedRequestedTargetFramework, t.TargetFramework))
                     .ToList();
                 if (!selectedTargets.Any())
@@ -94,7 +94,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             }
             else
             {
-                selectedTargets = assetsFile.Targets!.ToList();
+                selectedTargets = assetsFile.Targets.ToList();
             }
 
             foreach (ILockFileTarget target in selectedTargets)
@@ -116,9 +116,9 @@ namespace NuGetUtility.ReferencedPackagesReader
                     HashSet<string> excludedPackages = new HashSet<string>(cachedPublishFalsePackages, StringComparer.OrdinalIgnoreCase);
                     if (includeTransitive && excludedPackages.Any())
                     {
-                        if (!directDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out string[]? directDependenciesForFramework))
+                        if (!directDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out HashSet<string>? directDependenciesForFramework))
                         {
-                            directDependenciesForFramework = GetDirectDependenciesForTargets(assetsFile, new[] { target }).ToArray();
+                            directDependenciesForFramework = GetDirectDependenciesForTargets(assetsFile, [target]);
                             directDependenciesByFramework[targetFrameworkCacheKey] = directDependenciesForFramework;
                         }
 
@@ -190,7 +190,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             }
         }
 
-        private static IEnumerable<string> GetDirectDependenciesForTargets(ILockFile assetsFile,
+        private static HashSet<string> GetDirectDependenciesForTargets(ILockFile assetsFile,
             IEnumerable<ILockFileTarget> selectedTargets)
         {
             HashSet<string> directDependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
