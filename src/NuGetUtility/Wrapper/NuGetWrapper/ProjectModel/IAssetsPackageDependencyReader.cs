@@ -5,6 +5,6 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
     public interface IAssetsPackageDependencyReader
     {
-        Dictionary<string, HashSet<string>> GetPackageDependenciesForTargetFramework(string assetsPath, string normalizedTargetFramework);
+        Dictionary<string, HashSet<string>> GetPackageDependenciesForTargetFramework(ILockFile lockFile, string normalizedTargetFramework);
     }
 }

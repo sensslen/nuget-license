@@ -69,7 +69,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             [NotNullWhen(true)] out IEnumerable<PackageIdentity>? installedPackages)
         {
             installedPackages = null;
-            if (!TryLoadAssetsFile(project, out ILockFile? assetsFile, out string? assetsPath))
+            if (!TryLoadAssetsFile(project, out ILockFile? assetsFile))
             {
                 return false;
             }
@@ -99,8 +99,7 @@ namespace NuGetUtility.ReferencedPackagesReader
 
             foreach (ILockFileTarget target in selectedTargets)
             {
-                HashSet<ILockFileLibrary> targetReferencedLibraries =
-                    new HashSet<ILockFileLibrary>(GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target));
+                HashSet<ILockFileLibrary> targetReferencedLibraries = [.. GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target)];
 
                 if (excludePublishFalse)
                 {
@@ -126,7 +125,7 @@ namespace NuGetUtility.ReferencedPackagesReader
                         if (!packageDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out Dictionary<string, HashSet<string>>? packageDependencies))
                         {
                             packageDependencies = _assetsPackageDependencyReader.GetPackageDependenciesForTargetFramework(
-                                assetsPath!,
+                                assetsFile,
                                 targetFrameworkCacheKey);
                             packageDependenciesByFramework[targetFrameworkCacheKey] = packageDependencies;
                         }
@@ -288,13 +287,11 @@ namespace NuGetUtility.ReferencedPackagesReader
         }
 
         private bool TryLoadAssetsFile(IProject project,
-            [NotNullWhen(true)] out ILockFile? assetsFile,
-            out string? assetsPath)
+            [NotNullWhen(true)] out ILockFile? assetsFile)
         {
             if (!project.TryGetAssetsPath(out string projectAssetsPath))
             {
                 assetsFile = null;
-                assetsPath = null;
                 return false;
             }
 
@@ -311,7 +308,6 @@ namespace NuGetUtility.ReferencedPackagesReader
                     $"Failed to validate project assets for project {project.FullPath}");
             }
 
-            assetsPath = projectAssetsPath;
             return true;
         }
 

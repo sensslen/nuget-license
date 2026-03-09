@@ -2,7 +2,6 @@
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.Diagnostics;
-using NuGet.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
@@ -42,33 +41,22 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
         /// <exception cref="ArgumentNullException">
         /// Thrown when <paramref name="assetsPath"/> or <paramref name="normalizedTargetFramework"/> is <see langword="null"/>.
         /// </exception>
-        public Dictionary<string, HashSet<string>> GetPackageDependenciesForTargetFramework(string assetsPath, string normalizedTargetFramework)
+        public Dictionary<string, HashSet<string>> GetPackageDependenciesForTargetFramework(ILockFile lockFile, string normalizedTargetFramework)
         {
-            if (assetsPath is null)
-            {
-                throw new ArgumentNullException(nameof(assetsPath));
-            }
-
             if (normalizedTargetFramework is null)
             {
                 throw new ArgumentNullException(nameof(normalizedTargetFramework));
             }
 
-            if (!File.Exists(assetsPath))
-            {
-                return new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-            }
-
             try
             {
-                LockFile lockFile = new LockFileFormat().Read(assetsPath);
                 return BuildDependencyMapFromAssetsFile(lockFile, normalizedTargetFramework);
             }
             catch (IOException exception)
             {
                 Trace.TraceWarning(
                     "Failed to analyze transitive Publish=false exclusions due to I/O error. AssetsPath={0}, TargetFramework={1}, Exception={2}",
-                    assetsPath,
+                    lockFile.Path,
                     normalizedTargetFramework,
                     exception);
                 return new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
@@ -77,25 +65,25 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
             {
                 Trace.TraceWarning(
                     "Failed to analyze transitive Publish=false exclusions due to invalid assets data. AssetsPath={0}, TargetFramework={1}, Exception={2}",
-                    assetsPath,
+                    lockFile.Path,
                     normalizedTargetFramework,
                     exception);
                 return new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
             }
         }
 
-        private Dictionary<string, HashSet<string>> BuildDependencyMapFromAssetsFile(LockFile lockFile, string requestedTargetFramework)
+        private Dictionary<string, HashSet<string>> BuildDependencyMapFromAssetsFile(ILockFile lockFile, string requestedTargetFramework)
         {
             Dictionary<string, HashSet<string>> packageDependencies = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (LockFileTarget target in lockFile.Targets)
+            foreach (ILockFileTarget target in lockFile.Targets)
             {
-                if (!_nuGetFrameworkUtility.IsEquivalent(requestedTargetFramework, new WrappedNuGetFramework(target.TargetFramework)))
+                if (!_nuGetFrameworkUtility.IsEquivalent(requestedTargetFramework, target.TargetFramework))
                 {
                     continue;
                 }
 
-                foreach (LockFileTargetLibrary library in target.Libraries)
+                foreach (ILockFileTargetLibrary library in target.Libraries)
                 {
                     if (!string.Equals(library.Type, PackageTypeIdentifier, StringComparison.OrdinalIgnoreCase))
                     {
@@ -120,9 +108,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
                         packageDependencies[packageNameValue] = dependencies;
                     }
 
-                    foreach (NuGet.Packaging.Core.PackageDependency dependency in library.Dependencies)
+                    foreach (string dependencyName in library.Dependencies.Select(d => d.Id))
                     {
-                        string dependencyName = dependency.Id;
                         dependencies.Add(dependencyName);
                         if (!packageDependencies.ContainsKey(dependencyName))
                         {
