@@ -55,6 +55,11 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Frameworks
             return _framework.PlatformVersion == other.PlatformVersion;
         }
 
+        public override string ToString()
+        {
+            return _framework.ToString();
+        }
+
         public override int GetHashCode()
         {
             return _framework.GetHashCode();
