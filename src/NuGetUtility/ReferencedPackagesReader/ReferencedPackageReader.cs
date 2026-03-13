@@ -69,87 +69,29 @@ namespace NuGetUtility.ReferencedPackagesReader
             [NotNullWhen(true)] out IEnumerable<PackageIdentity>? installedPackages)
         {
             installedPackages = null;
-            if (!TryLoadAssetsFile(project, out ILockFile? assetsFile, out string? assetsPath))
+            if (!TryLoadAssetsFile(project, out ILockFile? assetsFile))
             {
                 return false;
             }
 
-            var referencedLibraries = new HashSet<ILockFileLibrary>();
-            List<ILockFileTarget> selectedTargets;
             string? normalizedRequestedTargetFramework = NormalizeTargetFrameworkOrNull(targetFramework);
-            Dictionary<string, HashSet<string>> publishFalsePackagesByFramework = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-            Dictionary<string, string[]> directDependenciesByFramework = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
-            Dictionary<string, Dictionary<string, HashSet<string>>> packageDependenciesByFramework = new Dictionary<string, Dictionary<string, HashSet<string>>>(StringComparer.OrdinalIgnoreCase);
-            Dictionary<string, HashSet<string>> recursiveExclusionsByInput = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+            List<ILockFileTarget> selectedTargets = GetSelectedTargets(assetsFile, normalizedRequestedTargetFramework, targetFramework);
 
-            if (normalizedRequestedTargetFramework is not null)
-            {
-                selectedTargets = assetsFile.Targets!
-                    .Where(t => _nuGetFrameworkUtility.IsEquivalent(normalizedRequestedTargetFramework, t.TargetFramework))
-                    .ToList();
-                if (!selectedTargets.Any())
-                {
-                    throw new ReferencedPackageReaderException($"Target framework {targetFramework} not found.");
-                }
-            }
-            else
-            {
-                selectedTargets = assetsFile.Targets!.ToList();
-            }
+            HashSet<ILockFileLibrary> referencedLibraries = new HashSet<ILockFileLibrary>();
+            PublishExclusionContext publishExclusionContext = new PublishExclusionContext(normalizedRequestedTargetFramework);
 
             foreach (ILockFileTarget target in selectedTargets)
             {
-                HashSet<ILockFileLibrary> targetReferencedLibraries =
-                    new HashSet<ILockFileLibrary>(GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target));
+                HashSet<ILockFileLibrary> targetReferencedLibraries = [.. GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target)];
 
                 if (excludePublishFalse)
                 {
-                    string targetFrameworkForPublishMetadata = normalizedRequestedTargetFramework ?? _nuGetFrameworkUtility.Normalize(target.TargetFramework);
-                    string targetFrameworkCacheKey = targetFrameworkForPublishMetadata ?? string.Empty;
-
-                    // Remove packages with Publish=false metadata from the evaluated PackageReferences for this target only.
-                    if (!publishFalsePackagesByFramework.TryGetValue(targetFrameworkCacheKey, out HashSet<string>? cachedPublishFalsePackages))
-                    {
-                        cachedPublishFalsePackages = GetPackagesExcludedFromPublish(project, targetFrameworkForPublishMetadata);
-                        publishFalsePackagesByFramework[targetFrameworkCacheKey] = cachedPublishFalsePackages;
-                    }
-
-                    HashSet<string> excludedPackages = new HashSet<string>(cachedPublishFalsePackages, StringComparer.OrdinalIgnoreCase);
-                    if (includeTransitive && excludedPackages.Any())
-                    {
-                        if (!directDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out string[]? directDependenciesForFramework))
-                        {
-                            directDependenciesForFramework = GetDirectDependenciesForTargets(assetsFile, new[] { target }).ToArray();
-                            directDependenciesByFramework[targetFrameworkCacheKey] = directDependenciesForFramework;
-                        }
-
-                        if (!packageDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out Dictionary<string, HashSet<string>>? packageDependencies))
-                        {
-                            packageDependencies = _assetsPackageDependencyReader.GetPackageDependenciesForTargetFramework(
-                                assetsPath!,
-                                targetFrameworkCacheKey);
-                            packageDependenciesByFramework[targetFrameworkCacheKey] = packageDependencies;
-                        }
-
-                        if (packageDependencies.Count > 0)
-                        {
-                            string recursiveExclusionCacheKey = BuildExclusionCacheKey(
-                                targetFrameworkCacheKey,
-                                directDependenciesForFramework,
-                                excludedPackages);
-
-                            if (!recursiveExclusionsByInput.TryGetValue(recursiveExclusionCacheKey, out HashSet<string>? recursivelyExcludedPackages))
-                            {
-                                recursivelyExcludedPackages = GetPackagesExcludedFromPublishDependencyPaths(
-                                    packageDependencies,
-                                    directDependenciesForFramework,
-                                    excludedPackages);
-                                recursiveExclusionsByInput[recursiveExclusionCacheKey] = recursivelyExcludedPackages;
-                            }
-
-                            excludedPackages.UnionWith(recursivelyExcludedPackages);
-                        }
-                    }
+                    HashSet<string> excludedPackages = GetExcludedPackagesForTarget(
+                        project,
+                        assetsFile,
+                        target,
+                        includeTransitive,
+                        publishExclusionContext);
 
                     targetReferencedLibraries.RemoveWhere(library => excludedPackages.Contains(library.Name));
                 }
@@ -159,6 +101,85 @@ namespace NuGetUtility.ReferencedPackagesReader
 
             installedPackages = referencedLibraries.Select(r => new PackageIdentity(r.Name, r.Version));
             return true;
+        }
+
+        private List<ILockFileTarget> GetSelectedTargets(ILockFile assetsFile,
+            string? normalizedRequestedTargetFramework,
+            string? targetFramework)
+        {
+            if (normalizedRequestedTargetFramework is null)
+            {
+                return assetsFile.Targets.ToList();
+            }
+
+            List<ILockFileTarget> selectedTargets = assetsFile.Targets
+                .Where(t => _nuGetFrameworkUtility.IsEquivalent(normalizedRequestedTargetFramework, t.TargetFramework))
+                .ToList();
+            if (!selectedTargets.Any())
+            {
+                throw new ReferencedPackageReaderException($"Target framework {targetFramework} not found.");
+            }
+
+            return selectedTargets;
+        }
+
+        private HashSet<string> GetExcludedPackagesForTarget(IProject project,
+            ILockFile assetsFile,
+            ILockFileTarget target,
+            bool includeTransitive,
+            PublishExclusionContext context)
+        {
+            string targetFrameworkForPublishMetadata = context.NormalizedRequestedTargetFramework ?? _nuGetFrameworkUtility.Normalize(target.TargetFramework);
+            string targetFrameworkCacheKey = targetFrameworkForPublishMetadata ?? string.Empty;
+
+            // Remove packages with Publish=false metadata from the evaluated PackageReferences for this target only.
+            if (!context.PublishFalsePackagesByFramework.TryGetValue(targetFrameworkCacheKey, out HashSet<string>? cachedPublishFalsePackages))
+            {
+                cachedPublishFalsePackages = GetPackagesExcludedFromPublish(project, targetFrameworkForPublishMetadata);
+                context.PublishFalsePackagesByFramework[targetFrameworkCacheKey] = cachedPublishFalsePackages;
+            }
+
+            HashSet<string> excludedPackages = new HashSet<string>(cachedPublishFalsePackages, StringComparer.OrdinalIgnoreCase);
+            if (!includeTransitive || !excludedPackages.Any())
+            {
+                return excludedPackages;
+            }
+
+            if (!context.DirectDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out HashSet<string>? directDependenciesForFramework))
+            {
+                directDependenciesForFramework = GetDirectDependenciesForTargets(assetsFile, [target]);
+                context.DirectDependenciesByFramework[targetFrameworkCacheKey] = directDependenciesForFramework;
+            }
+
+            if (!context.PackageDependenciesByFramework.TryGetValue(targetFrameworkCacheKey, out Dictionary<string, HashSet<string>>? packageDependencies))
+            {
+                packageDependencies = _assetsPackageDependencyReader.GetPackageDependenciesForTargetFramework(
+                    assetsFile,
+                    targetFrameworkCacheKey);
+                context.PackageDependenciesByFramework[targetFrameworkCacheKey] = packageDependencies;
+            }
+
+            if (packageDependencies.Count == 0)
+            {
+                return excludedPackages;
+            }
+
+            string recursiveExclusionCacheKey = BuildExclusionCacheKey(
+                targetFrameworkCacheKey,
+                directDependenciesForFramework,
+                excludedPackages);
+
+            if (!context.RecursiveExclusionsByInput.TryGetValue(recursiveExclusionCacheKey, out HashSet<string>? recursivelyExcludedPackages))
+            {
+                recursivelyExcludedPackages = GetPackagesExcludedFromPublishDependencyPaths(
+                    packageDependencies,
+                    directDependenciesForFramework,
+                    excludedPackages);
+                context.RecursiveExclusionsByInput[recursiveExclusionCacheKey] = recursivelyExcludedPackages;
+            }
+
+            excludedPackages.UnionWith(recursivelyExcludedPackages);
+            return excludedPackages;
         }
 
         private static IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(bool includeTransitive,
@@ -191,7 +212,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             }
         }
 
-        private static IEnumerable<string> GetDirectDependenciesForTargets(ILockFile assetsFile,
+        private static HashSet<string> GetDirectDependenciesForTargets(ILockFile assetsFile,
             IEnumerable<ILockFileTarget> selectedTargets)
         {
             HashSet<string> directDependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -288,13 +309,11 @@ namespace NuGetUtility.ReferencedPackagesReader
         }
 
         private bool TryLoadAssetsFile(IProject project,
-            [NotNullWhen(true)] out ILockFile? assetsFile,
-            out string? assetsPath)
+            [NotNullWhen(true)] out ILockFile? assetsFile)
         {
             if (!project.TryGetAssetsPath(out string projectAssetsPath))
             {
                 assetsFile = null;
-                assetsPath = null;
                 return false;
             }
 
@@ -311,7 +330,6 @@ namespace NuGetUtility.ReferencedPackagesReader
                     $"Failed to validate project assets for project {project.FullPath}");
             }
 
-            assetsPath = projectAssetsPath;
             return true;
         }
 
@@ -333,6 +351,17 @@ namespace NuGetUtility.ReferencedPackagesReader
             }
 
             return excludedPackages;
+        }
+
+        private sealed record PublishExclusionContext(string? NormalizedRequestedTargetFramework)
+        {
+            public Dictionary<string, HashSet<string>> PublishFalsePackagesByFramework { get; } = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+
+            public Dictionary<string, HashSet<string>> DirectDependenciesByFramework { get; } = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+
+            public Dictionary<string, Dictionary<string, HashSet<string>>> PackageDependenciesByFramework { get; } = new Dictionary<string, Dictionary<string, HashSet<string>>>(StringComparer.OrdinalIgnoreCase);
+
+            public Dictionary<string, HashSet<string>> RecursiveExclusionsByInput { get; } = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
         }
     }
 }

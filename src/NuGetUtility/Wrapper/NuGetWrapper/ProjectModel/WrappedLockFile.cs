@@ -17,7 +17,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
         public IEnumerable<ILockFileLibrary> Libraries => _file.Libraries.Select(l => new WrappedLockFileLibrary(l));
 
         public IPackageSpec PackageSpec => new WrappedPackageSpec(_file.PackageSpec);
-        public IEnumerable<ILockFileTarget>? Targets => _file.Targets?.Select(t => new WrappedLockFileTarget(t));
+        public IEnumerable<ILockFileTarget> Targets => _file.Targets.Select(t => new WrappedLockFileTarget(t));
+        public string Path => _file.Path;
 
         public bool TryGetErrors(out string[] errors)
         {

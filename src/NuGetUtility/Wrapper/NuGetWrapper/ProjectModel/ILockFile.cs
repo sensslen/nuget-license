@@ -7,6 +7,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
     {
         bool TryGetErrors(out string[] errors);
         IPackageSpec PackageSpec { get; }
-        IEnumerable<ILockFileTarget>? Targets { get; }
+        IEnumerable<ILockFileTarget> Targets { get; }
+        string Path { get; }
     }
 }
