@@ -23,7 +23,8 @@ namespace NuGetLicense.Output.Csv
             {
                 results = results.Where(r => r.ValidationErrors.Any()).ToList();
             }
-            else if (_skipIgnoredPackages)
+
+            if (_skipIgnoredPackages)
             {
                 results = results
                     .Where(r => r.LicenseInformationOrigin != LicenseInformationOrigin.Ignored)
@@ -73,6 +74,9 @@ namespace NuGetLicense.Output.Csv
         }
 
         private static string GetValidationErrorsString(IEnumerable<ValidationError> errors)
-            => string.Join("; ", errors.Select(e => EscapeCsvValue($"{e.Error} ({e.Context})")));
+        {
+            var result = string.Join("; ", errors.Select(e => EscapeCsvValue($"{e.Error} ({e.Context})")));
+            return EscapeCsvValue(result);
+        }
     }
 }
