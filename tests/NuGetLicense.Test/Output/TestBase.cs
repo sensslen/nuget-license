@@ -19,6 +19,10 @@ namespace NuGetLicense.Test.Output
             _includeLicenseUrl = includeLicenseUrl;
         }
 
+        protected TestBase()
+        {
+        }
+
         private IOutputFormatter _uut = null!;
         protected Faker<LicenseValidationResult> LicenseValidationErrorFaker = null!;
         protected Faker<LicenseValidationResult> ValidatedLicenseFaker = null!;
@@ -103,7 +107,7 @@ namespace NuGetLicense.Test.Output
             await Verify(stream.AsString()).HashParameters();
         }
 
-        private class NuGetVersion : INuGetVersion
+        protected class NuGetVersion : INuGetVersion
         {
             private readonly string _version;
 

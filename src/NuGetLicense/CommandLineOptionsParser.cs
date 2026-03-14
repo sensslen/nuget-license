@@ -138,6 +138,7 @@ namespace NuGetLicense
                 OutputType.JsonPretty => new Output.Json.JsonOutputFormatter(true, returnErrorsOnly, !includeIgnoredPackages),
                 OutputType.Table => new Output.Table.TableOutputFormatter(returnErrorsOnly, !includeIgnoredPackages),
                 OutputType.Markdown => new Output.Table.TableOutputFormatter(returnErrorsOnly, !includeIgnoredPackages, printMarkdown: true),
+                OutputType.Csv => new Output.Csv.CsvOutputFormatter(returnErrorsOnly, !includeIgnoredPackages),
                 _ => throw new ArgumentOutOfRangeException($"{outputType} not supported")
             };
         }
