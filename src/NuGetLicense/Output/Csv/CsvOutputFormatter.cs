@@ -11,7 +11,7 @@ namespace NuGetLicense.Output.Csv
         private readonly bool _printErrorsOnly;
         private readonly bool _skipIgnoredPackages;
 
-        public CsvOutputFormatter(bool printErrorsOnly = false, bool skipIgnoredPackages = false)
+        public CsvOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages)
         {
             _printErrorsOnly = printErrorsOnly;
             _skipIgnoredPackages = skipIgnoredPackages;
@@ -38,7 +38,7 @@ namespace NuGetLicense.Output.Csv
 
             foreach (var license in results)
             {
-                var row = new[]
+                string[] row = new[]
                 {
                     EscapeCsvValue(license.PackageId),
                     EscapeCsvValue(license.PackageVersion.ToString()),
@@ -66,7 +66,7 @@ namespace NuGetLicense.Output.Csv
 
             if (value.Contains(',') || value.Contains('"') || value.Contains('\n') || value.Contains('\r'))
             {
-                var escaped = value!.Replace("\"", "\"\"");
+                string escaped = value!.Replace("\"", "\"\"");
                 return $"\"{escaped}\"";
             }
 
@@ -75,7 +75,7 @@ namespace NuGetLicense.Output.Csv
 
         private static string GetValidationErrorsString(IEnumerable<ValidationError> errors)
         {
-            var result = string.Join("; ", errors.Select(e => EscapeCsvValue($"{e.Error} ({e.Context})")));
+            string result = string.Join("; ", errors.Select(e => EscapeCsvValue($"{e.Error} ({e.Context})")));
             return EscapeCsvValue(result);
         }
     }
