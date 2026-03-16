@@ -18,8 +18,10 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
     public class UrlToLicenseMappingTest
     {
         private const int RETRY_COUNT = 3;
+        private const int MAX_CONCURRENT_DRIVERS = 5;
 
         private static readonly ConcurrentQueue<DisposableWebDriver> s_driverPool = new();
+        private static readonly SemaphoreSlim s_driverSlots = new(MAX_CONCURRENT_DRIVERS, MAX_CONCURRENT_DRIVERS);
 
         [After(Class)]
         public static void TearDown()
@@ -37,6 +39,9 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
             int retryCount = 0;
             int baseDelayMs = 2000;
             bool runSucceeded = false;
+
+            using var slot = new DriverSlot(s_driverSlots);
+            await slot.WaitAsync();
 
             // Grab an existing driver from the pool, or create a new one if the pool is empty
             if (!s_driverPool.TryDequeue(out DisposableWebDriver? driver))
@@ -135,6 +140,22 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
 
             internal IWebElement FindElement(By by) => _driver.FindElement(by);
             internal INavigation Navigate() => _driver.Navigate();
+        }
+
+        private sealed class DriverSlot(SemaphoreSlim sem) : IDisposable
+        {
+            private bool _disposed;
+
+            public async Task WaitAsync() => await sem.WaitAsync();
+
+            public void Dispose()
+            {
+                if (!_disposed)
+                {
+                    sem.Release();
+                    _disposed = true;
+                }
+            }
         }
     }
 }
