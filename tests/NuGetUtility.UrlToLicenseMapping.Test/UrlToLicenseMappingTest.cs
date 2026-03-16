@@ -36,6 +36,7 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
         {
             int retryCount = 0;
             int baseDelayMs = 2000;
+            bool runSucceeded = false;
 
             // Grab an existing driver from the pool, or create a new one if the pool is empty
             if (!s_driverPool.TryDequeue(out DisposableWebDriver? driver))
@@ -52,6 +53,7 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
                     if (licenseResult.IsSuccess)
                     {
                         await Verify(licenseResult.Value).HashParameters().UseStringComparer(CompareLicense);
+                        runSucceeded = true;
                         return;
                     }
 
@@ -74,7 +76,14 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
             finally
             {
                 // Return the driver back to the pool so the next test case can reuse it
-                s_driverPool.Enqueue(driver);
+                if (runSucceeded)
+                {
+                    s_driverPool.Enqueue(driver);
+                }
+                else
+                {
+                    driver.Dispose();
+                }
             }
         }
 
