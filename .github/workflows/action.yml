@@ -54,7 +54,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-2025-vs2026]
     steps:
       - uses: actions/checkout@v6
 
@@ -90,7 +90,7 @@ jobs:
         run: dotnet test --project ./tests/NuGetUtility.UrlToLicenseMapping.Test/NuGetUtility.UrlToLicenseMapping.Test.csproj --configuration Release --no-restore
 
   test_windows:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     strategy:
       matrix:
         framework: [net8.0, net472, net9.0, net10.0]
@@ -231,7 +231,7 @@ jobs:
           }
 
   check_licenses_net472:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     strategy:
       matrix:
         project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense, ProjectWithReferenceContainingWindowsSpecificPath]
@@ -372,7 +372,7 @@ jobs:
             exit 1;
           }
   check_version_command_net472:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     steps:
       - uses: actions/checkout@v6
         with:
