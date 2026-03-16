@@ -38,16 +38,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
         /// (<c>Dictionary&lt;string, HashSet&lt;string&gt;&gt;</c>).
         /// Returns an empty dictionary when the assets file does not exist or cannot be read.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown when <paramref name="assetsPath"/> or <paramref name="normalizedTargetFramework"/> is <see langword="null"/>.
-        /// </exception>
         public Dictionary<string, HashSet<string>> GetPackageDependenciesForTargetFramework(ILockFile lockFile, string normalizedTargetFramework)
         {
-            if (normalizedTargetFramework is null)
-            {
-                throw new ArgumentNullException(nameof(normalizedTargetFramework));
-            }
-
             try
             {
                 return BuildDependencyMapFromAssetsFile(lockFile, normalizedTargetFramework);
@@ -90,14 +82,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
                         continue;
                     }
 
-                    string? packageName = library.Name;
-                    if (packageName is null)
-                    {
-                        continue;
-                    }
-
-                    string packageNameValue = packageName.Trim();
-                    if (packageNameValue.Length == 0)
+                    string packageNameValue = library.Name.Trim();
+                    if (string.IsNullOrEmpty(packageNameValue))
                     {
                         continue;
                     }
