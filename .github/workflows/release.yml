@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     steps:
       - uses: actions/checkout@v6
 
@@ -33,7 +33,7 @@ jobs:
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release
 
       - name: test
-        uses: josepho0918/vstest-action@640704dc17dc7debcbd5f54213f39cf448d922a7
+        uses: josepho0918/vstest-action@d188330fa1e2f802e65637e8fed0e04e0c7f8387
         with:
           testAssembly: "NuGet*.Test.dll"
           searchFolder: "tests/*/bin/Release/net9.0/"
