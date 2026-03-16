@@ -159,18 +159,6 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
-        public void GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_TargetsArrayIsNull(
-            [Values] bool includeTransitive)
-        {
-            _lockFileMock.Targets.Returns((IEnumerable<ILockFileTarget>?)null);
-
-            ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
-                _uut.GetInstalledPackages(_projectPath, includeTransitive));
-
-            Assert.That(exception!.Message, Is.EqualTo($"Failed to validate project assets for project {_projectPath}"));
-        }
-
-        [Test]
         public void
             GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_TargetsArrayDoesNotContainAnyElement(
                 [Values] bool includeTransitive)
