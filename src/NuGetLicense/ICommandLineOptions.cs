@@ -23,5 +23,6 @@ namespace NuGetLicense
         public string? TargetFramework { get; }
         public string? DestinationFile { get; }
         public string? LicenseFileMappings { get; }
+        public bool ExcludePublishFalse { get; }
     }
 }
