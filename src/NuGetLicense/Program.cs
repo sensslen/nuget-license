@@ -65,6 +65,9 @@ namespace NuGetLicense
         [Option("-file-mapping|--licensefile-to-license-mappings", Description = "File in json format that contains a dictionary to map license files to licenses.")]
         public string? LicenseFileMappings { get; set; }
 
+        [Option("--exclude-publish-false", Description = "If set, packages with <Publish>false</Publish> metadata are excluded from analysis.")]
+        public bool ExcludePublishFalse { get; set; }
+
         public async Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken cancellationToken)
         {
             // Check if mandatory parameters are provided
@@ -94,6 +97,7 @@ namespace NuGetLicense
 
             return await orchestrator.ValidateAsync(this, cancellationToken);
         }
+
         private static string GetVersion() =>
             typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
 

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net472;net8.0;net9.0;net10.0</TargetFrameworks>
@@ -35,13 +35,13 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="18.0.*" />
+    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="18.*" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-    <PackageReference Include="System.IO.Hashing" Version="10.0.3" />
-    <PackageReference Include="System.Collections.Immutable" Version="10.0.3" />
-    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="18.0.*" />
+    <PackageReference Include="System.IO.Hashing" Version="10.0.5" />
+    <PackageReference Include="System.Collections.Immutable" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="18.*" />
     <PackageReference Include="PolySharp" Version="1.15.*">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

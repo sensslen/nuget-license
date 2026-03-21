@@ -17,6 +17,6 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 
         public INuGetFramework TargetFramework => new WrappedNuGetFramework(_target.TargetFramework);
 
-        public IEnumerable<ILockFileLibrary> Libraries => _target.Libraries.Select(l => new WrappedLockFileTargetLibrary(l));
+        public IEnumerable<ILockFileTargetLibrary> Libraries => _target.Libraries.Select(l => new WrappedLockFileTargetLibrary(l));
     }
 }

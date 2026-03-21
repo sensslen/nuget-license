@@ -68,6 +68,7 @@ nuget-license [options]
 | `-err`, `--error-only` | When set, only validation errors are shown. |
 | `-include-ignored`, `--include-ignored-packages` | When set, ignored packages are included in the output. |
 | `-exclude-projects`, `--exclude-projects-matching <FILE\|LIST>` | Specifies projects to exclude from analysis. You can provide either a JSON file (see [docs/exclude-projects-json.md](docs/exclude-projects-json.md)), or a semicolon-separated list (e.g., `"*Test*;Legacy*"`). Wildcards (`*`) are supported. |
+| `--exclude-publish-false` | Excludes packages marked with `<Publish>false</Publish>` metadata in the project file. This also recursively excludes transitive dependencies. A package is only excluded if all paths leading to it originate from a `Publish="false"` reference (consistent with `dotnet publish` behavior). |
 | `-isp`, `--include-shared-projects` | Include shared projects (`.shproj`). |
 | `-f`, `--target-framework <TFM>` | Analyze for a specific Target Framework Moniker. |
 | `-fo`, `--file-output <FILE>` | Write output to a file instead of console. |
