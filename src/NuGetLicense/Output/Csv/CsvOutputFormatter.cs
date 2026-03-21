@@ -40,8 +40,7 @@ namespace NuGetLicense.Output.Csv
             {
                 string[] row = new[]
                 {
-                    EscapeCsvValue(license.PackageId),
-                    EscapeCsvValue(license.PackageVersion.ToString()),
+                    EscapeCsvValue(license.PackageId), EscapeCsvValue(license.PackageVersion.ToString()),
                     EscapeCsvValue(license.LicenseInformationOrigin.ToString()),
                     EscapeCsvValue(license.License ?? string.Empty),
                     EscapeCsvValue(license.LicenseUrl ?? string.Empty),
@@ -75,7 +74,7 @@ namespace NuGetLicense.Output.Csv
 
         private static string GetValidationErrorsString(IEnumerable<ValidationError> errors)
         {
-            string result = string.Join("; ", errors.Select(e => EscapeCsvValue($"{e.Error} ({e.Context})")));
+            string result = string.Join("; ", errors.Select(e => $"{e.Error} ({e.Context})"));
             return EscapeCsvValue(result);
         }
     }
