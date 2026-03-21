@@ -58,6 +58,6 @@ namespace NuGetLicense
         /// <summary>
         /// Gets the output formatter from the command line options.
         /// </summary>
-        IOutputFormatter GetOutputFormatter(OutputType outputType, bool returnErrorsOnly, bool includeIgnoredPackages);
+        IOutputFormatter GetOutputFormatter(OutputType outputType, bool returnErrorsOnly, bool includeIgnoredPackages, string? includedColumns);
     }
 }

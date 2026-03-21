@@ -24,5 +24,6 @@ namespace NuGetLicense
         public string? DestinationFile { get; }
         public string? LicenseFileMappings { get; }
         public bool ExcludePublishFalse { get; }
+        public string? IncludedColumns { get; }
     }
 }

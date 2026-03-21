@@ -60,7 +60,7 @@ namespace NuGetLicense
             string[] allowedLicensesArray = _optionsParser.GetAllowedLicenses(options.AllowedLicenses);
             CustomPackageInformation[] overridePackageInformationArray = _optionsParser.GetOverridePackageInformation(options.OverridePackageInformation);
             IFileDownloader licenseDownloader = _optionsParser.GetFileDownloader(options.DownloadLicenseInformation);
-            IOutputFormatter output = _optionsParser.GetOutputFormatter(options.OutputType, options.ReturnErrorsOnly, options.IncludeIgnoredPackages);
+            IOutputFormatter output = _optionsParser.GetOutputFormatter(options.OutputType, options.ReturnErrorsOnly, options.IncludeIgnoredPackages, options.IncludedColumns);
 
             var projectCollector = new ProjectsCollector(_solutionPersistance, _fileSystem);
             var projectReader = new ReferencedPackageReader(

@@ -68,6 +68,9 @@ namespace NuGetLicense
         [Option("--exclude-publish-false", Description = "If set, packages with <Publish>false</Publish> metadata are excluded from analysis.")]
         public bool ExcludePublishFalse { get; set; }
 
+        [Option("-c|--include-columns", Description = "Specifies which columns to include in the output. Provide a semicolon-separated list of column names (e.g., \"Package;Version;License\"). Available columns: Package, Version, LicenseInformationOrigin, LicenseExpression, LicenseUrl, Copyright, Authors, PackageProjectUrl, Error, ErrorContext. If omitted, all relevant columns are shown.")]
+        public string? IncludedColumns { get; set; }
+
         public async Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken cancellationToken)
         {
             // Check if mandatory parameters are provided

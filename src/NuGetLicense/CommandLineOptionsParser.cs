@@ -130,15 +130,17 @@ namespace NuGetLicense
             return new FileDownloader(_httpClient, downloadLicenseInformation);
         }
 
-        public IOutputFormatter GetOutputFormatter(OutputType outputType, bool returnErrorsOnly, bool includeIgnoredPackages)
+        public IOutputFormatter GetOutputFormatter(OutputType outputType, bool returnErrorsOnly, bool includeIgnoredPackages, string? includedColumns)
         {
+            string[] columns = ParseIncludedColumns(includedColumns);
+            
             return outputType switch
             {
                 OutputType.Json => new Output.Json.JsonOutputFormatter(false, returnErrorsOnly, !includeIgnoredPackages),
                 OutputType.JsonPretty => new Output.Json.JsonOutputFormatter(true, returnErrorsOnly, !includeIgnoredPackages),
-                OutputType.Table => new Output.Table.TableOutputFormatter(returnErrorsOnly, !includeIgnoredPackages),
-                OutputType.Markdown => new Output.Table.TableOutputFormatter(returnErrorsOnly, !includeIgnoredPackages, printMarkdown: true),
-                OutputType.Csv => new Output.Csv.CsvOutputFormatter(returnErrorsOnly, !includeIgnoredPackages),
+                OutputType.Table => new Output.Table.TableOutputFormatter(returnErrorsOnly, !includeIgnoredPackages, columns),
+                OutputType.Markdown => new Output.Table.TableOutputFormatter(returnErrorsOnly, !includeIgnoredPackages, columns, printMarkdown: true),
+                OutputType.Csv => new Output.Csv.CsvOutputFormatter(returnErrorsOnly, !includeIgnoredPackages, columns),
                 _ => throw new ArgumentOutOfRangeException($"{outputType} not supported")
             };
         }
@@ -163,6 +165,23 @@ namespace NuGetLicense
                 {
                     throw new ArgumentException($"Failed to parse JSON file '{value}': {ex.Message}", ex);
                 }
+            }
+
+            // Parse as semicolon-separated inline values
+            string[] parts = value.Split([';'], StringSplitOptions.RemoveEmptyEntries);
+            // Trim each part manually for .NET Framework compatibility
+            for (int i = 0; i < parts.Length; i++)
+            {
+                parts[i] = parts[i].Trim();
+            }
+            return Array.FindAll(parts, part => part.Length > 0);
+        }
+
+        private string[] ParseIncludedColumns(string? value)
+        {
+            if (value is null)
+            {
+                return Array.Empty<string>();
             }
 
             // Parse as semicolon-separated inline values
