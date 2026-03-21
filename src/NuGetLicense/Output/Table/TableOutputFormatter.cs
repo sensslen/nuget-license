@@ -11,12 +11,14 @@ namespace NuGetLicense.Output.Table
         private readonly bool _printErrorsOnly;
         private readonly bool _skipIgnoredPackages;
         private readonly bool _printMarkdown;
+        private readonly string[] _includedColumns;
 
-        public TableOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages, bool printMarkdown = false)
+        public TableOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages, string[]? includedColumns = null, bool printMarkdown = false)
         {
             _printErrorsOnly = printErrorsOnly;
             _skipIgnoredPackages = skipIgnoredPackages;
             _printMarkdown = printMarkdown;
+            _includedColumns = includedColumns ?? Array.Empty<string>();
         }
 
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
@@ -53,7 +55,32 @@ namespace NuGetLicense.Output.Table
                 results = results.Where(r => r.LicenseInformationOrigin != LicenseInformationOrigin.Ignored).ToList();
             }
 
-            ColumnDefinition[] relevantColumns = columnDefinitions.Where(c => c.Enabled).ToArray();
+            // Apply column filtering if specified
+            ColumnDefinition[] relevantColumns;
+            if (_includedColumns.Length > 0)
+            {
+                var columnMap = columnDefinitions.ToDictionary(c => c.Title.Replace(" ", ""), StringComparer.OrdinalIgnoreCase);
+                var filteredColumns = new List<ColumnDefinition>();
+                foreach (string col in _includedColumns)
+                {
+                    if (columnMap.TryGetValue(col, out ColumnDefinition? columnDef))
+                    {
+                        filteredColumns.Add(columnDef);
+                    }
+                }
+                relevantColumns = filteredColumns.ToArray();
+                
+                // If no valid columns specified, fall back to auto-detected columns
+                if (relevantColumns.Length == 0)
+                {
+                    relevantColumns = columnDefinitions.Where(c => c.Enabled).ToArray();
+                }
+            }
+            else
+            {
+                relevantColumns = columnDefinitions.Where(c => c.Enabled).ToArray();
+            }
+
             await TablePrinterExtensions
                 .Create(stream, relevantColumns.Select(d => d.Title), _printMarkdown)
                 .FromValues(

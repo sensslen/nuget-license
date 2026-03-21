@@ -41,7 +41,7 @@ namespace NuGetLicense
         [Option("-d|--license-information-download-location", Description = "Specifies a folder where the application will download all licenses provided via license URLs.")]
         public string? DownloadLicenseInformation { get; set; }
 
-        [Option("-o|--output", Description = "Specifies the output format. Valid values are Table, Markdown, Json, or JsonPretty (default: Table).")]
+        [Option("-o|--output", Description = "Specifies the output format. Valid values are Table, Markdown, Json, JsonPretty, or Csv (default: Table).")]
         public OutputType OutputType { get; set; } = OutputType.Table;
 
         [Option("-err|--error-only", Description = "When set, only validation errors are returned as result. Otherwise, all validation results are always returned.")]
@@ -67,6 +67,9 @@ namespace NuGetLicense
 
         [Option("--exclude-publish-false", Description = "If set, packages with <Publish>false</Publish> metadata are excluded from analysis.")]
         public bool ExcludePublishFalse { get; set; }
+
+        [Option("-c|--include-columns", Description = "Specifies which columns to include in the output. Provide a semicolon-separated list of column names (e.g., \"Package;Version;License\"). Available columns: Package, Version, LicenseInformationOrigin, LicenseExpression, LicenseUrl, Copyright, Authors, PackageProjectUrl, Error, ErrorContext. If omitted, all relevant columns are shown.")]
+        public string? IncludedColumns { get; set; }
 
         public async Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken cancellationToken)
         {
