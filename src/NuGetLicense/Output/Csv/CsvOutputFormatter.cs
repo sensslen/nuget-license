@@ -36,7 +36,7 @@ namespace NuGetLicense.Output.Csv
             await writer.WriteLineAsync(
                 "Package,Version,License Information Origin,License,License Url,Copyright,Authors,Package Project Url,Errors with Context");
 
-            foreach (var license in results)
+            foreach (LicenseValidationResult license in results)
             {
                 string[] row = new[]
                 {
