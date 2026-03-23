@@ -8,6 +8,7 @@ namespace NuGetUtility
         Table,
         Json,
         JsonPretty,
-        Markdown
+        Markdown,
+        Csv
     }
 }
