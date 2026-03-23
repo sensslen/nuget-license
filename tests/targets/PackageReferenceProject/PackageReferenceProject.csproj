@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TinyCsvParser" Version="3.0.2" />
+    <PackageReference Include="TinyCsvParser" Version="3.0.6" />
   </ItemGroup>
 
 </Project>
