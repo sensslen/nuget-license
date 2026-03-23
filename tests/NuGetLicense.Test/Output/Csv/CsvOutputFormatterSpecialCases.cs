@@ -11,6 +11,8 @@ namespace NuGetLicense.Test.Output.Csv
     [TestFixture]
     public class CsvOutputFormatterSpecialCases
     {
+        private static readonly string s_newLine = Environment.NewLine;
+
         [Test]
         public async Task Should_EscapeCsv_WithSpecialCharacters_Correctly()
         {
@@ -45,9 +47,9 @@ namespace NuGetLicense.Test.Output.Csv
             };
 
             string expected =
-                "Package,Version,License Information Origin,License,License Url,Copyright,Authors,Package Project Url,Errors with Context\r\n" +
-                "\"PackageId,With,Commas\",1.0.0,Expression,MIT License,,\"Copyright \"\"2024\"\"\",\"Author1, Author2\",,\r\n" +
-                "\"PackageIdWith\nNewline\",2.0.0,Expression,Apache-2.0,,,,,\r\n";
+                $"Package,Version,License Information Origin,License,License Url,Copyright,Authors,Package Project Url,Errors with Context{s_newLine}" +
+                $"\"PackageId,With,Commas\",1.0.0,Expression,MIT License,,\"Copyright \"\"2024\"\"\",\"Author1, Author2\",,{s_newLine}" +
+                $"\"PackageIdWith\nNewline\",2.0.0,Expression,Apache-2.0,,,,,{s_newLine}";
 
             var csvFormatter = new CsvOutputFormatter(false, false);
             using var memoryStream = new MemoryStream();
@@ -84,8 +86,8 @@ namespace NuGetLicense.Test.Output.Csv
             };
 
             string expected =
-                "Package,Version,License Information Origin,License,License Url,Copyright,Authors,Package Project Url,Errors with Context\r\n" +
-                "TestPackage,1.0.0,Expression,MIT,,,,,License not allowed (MIT is not in the allowed list); Missing copyright (No copyright information)\r\n";
+                $"Package,Version,License Information Origin,License,License Url,Copyright,Authors,Package Project Url,Errors with Context{s_newLine}" +
+                $"TestPackage,1.0.0,Expression,MIT,,,,,License not allowed (MIT is not in the allowed list); Missing copyright (No copyright information){s_newLine}";
 
             var csvFormatter = new CsvOutputFormatter(false, false);
             using var memoryStream = new MemoryStream();
@@ -131,8 +133,8 @@ namespace NuGetLicense.Test.Output.Csv
             };
 
             string expected =
-                "Package,Version,License Information Origin,License,License Url,Copyright,Authors,Package Project Url,Errors with Context\r\n" +
-                "NormalPackage,1.0.0,Expression,MIT,,,,,\r\n";
+                $"Package,Version,License Information Origin,License,License Url,Copyright,Authors,Package Project Url,Errors with Context{s_newLine}" +
+                $"NormalPackage,1.0.0,Expression,MIT,,,,,{s_newLine}";
 
             var csvFormatter = new CsvOutputFormatter(false, skipIgnoredPackages: true);
             using var memoryStream = new MemoryStream();
@@ -176,18 +178,15 @@ namespace NuGetLicense.Test.Output.Csv
             };
 
             string expected =
-                "Package,Version,License Information Origin,License,License Url,Copyright,Authors,Package Project Url,Errors with Context\r";
+                $"Package,Version,License Information Origin,License,License Url,Copyright,Authors,Package Project Url,Errors with Context{s_newLine}";
 
             var csvFormatter = new CsvOutputFormatter(printErrorsOnly: true, false);
             using var memoryStream = new MemoryStream();
 
             await csvFormatter.Write(memoryStream, licenses);
 
-            string[] result = Encoding.UTF8.GetString(memoryStream.ToArray())
-                .Split(['\n'], StringSplitOptions.RemoveEmptyEntries);
-
-            Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That(result.Single(), Is.EqualTo(expected));
+            string result = Encoding.UTF8.GetString(memoryStream.ToArray());
+            Assert.That(result, Is.EqualTo(expected));
         }
 
         [Test]
@@ -250,8 +249,8 @@ namespace NuGetLicense.Test.Output.Csv
             };
 
             string expected =
-                "Package,Version,License Information Origin,License,License Url,Copyright,Authors,Package Project Url,Errors with Context\r\n" +
-                "Package3,3.0.0,Expression,MIT,,,,,Test error (Context)\r\n";
+                $"Package,Version,License Information Origin,License,License Url,Copyright,Authors,Package Project Url,Errors with Context{s_newLine}" +
+                $"Package3,3.0.0,Expression,MIT,,,,,Test error (Context){s_newLine}";
 
             var csvFormatter = new CsvOutputFormatter(printErrorsOnly: true, skipIgnoredPackages: true);
             using var memoryStream = new MemoryStream();
