@@ -6,7 +6,8 @@ using NuGetLicense.LicenseValidator;
 using NuGetLicense.Output;
 using NuGetUtility.Test.Extensions;
 using NuGetUtility.Test.Extensions.Helper.ShuffelledEnumerable;
-using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
+
+using HelperNuGetVersion = NuGetLicense.Test.Output.Helper.NuGetVersion;
 
 namespace NuGetLicense.Test.Output
 {
@@ -31,26 +32,26 @@ namespace NuGetLicense.Test.Output
         {
             ValidatedLicenseFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
                     new LicenseValidationResult(f.Name.JobTitle(),
-                        new NuGetVersion(f.System.Semver()),
+                        new HelperNuGetVersion(f.System.Semver()),
                         GetNullable(f, f.Internet.Url),
                         GetNullable(f, f.Hacker.Phrase),
                         _includeLicenseUrl ? GetNullable(f, f.Hacker.Phrase) : null,
                         _includeCopyright ? GetNullable(f, f.Hacker.Phrase) : null,
                         _includeAuthors ? GetNullable(f, () => string.Join(",", Enumerable.Repeat(true, f.Random.Int(0, 10)).Select(_ => f.Person.FullName))) : null,
-                        GetNullable<string>(f, () => f.Lorem.Sentence()),
-                        GetNullable<string>(f, () => f.Lorem.Sentence()),
+                        GetNullable(f, () => f.Lorem.Sentence()),
+                        GetNullable(f, () => f.Lorem.Sentence()),
                         f.Random.Enum<LicenseInformationOrigin>()))
                 .UseSeed(8675309);
             LicenseValidationErrorFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
                     new LicenseValidationResult(f.Name.JobTitle(),
-                        new NuGetVersion(f.System.Semver()),
+                        new HelperNuGetVersion(f.System.Semver()),
                         GetNullable(f, f.Internet.Url),
                         GetNullable(f, f.Hacker.Phrase),
                         _includeLicenseUrl ? GetNullable(f, f.Hacker.Phrase) : null,
                         _includeCopyright ? GetNullable(f, f.Hacker.Phrase) : null,
                         _includeAuthors ? GetNullable(f, () => string.Join(",", Enumerable.Repeat(true, f.Random.Int(0, 10)).Select(_ => f.Person.FullName))) : null,
-                        GetNullable<string>(f, () => f.Lorem.Sentence()),
-                        GetNullable<string>(f, () => f.Lorem.Sentence()),
+                        GetNullable(f, () => f.Lorem.Sentence()),
+                        GetNullable(f, () => f.Lorem.Sentence()),
                         f.Random.Enum<LicenseInformationOrigin>(),
                         GetErrorList(f).ToList()))
                 .UseSeed(9078345);
@@ -101,23 +102,6 @@ namespace NuGetLicense.Test.Output
             await _uut.Write(stream, validated);
 
             await Verify(stream.AsString()).HashParameters();
-        }
-
-        private class NuGetVersion : INuGetVersion
-        {
-            private readonly string _version;
-
-            public NuGetVersion(string version)
-            {
-                _version = version;
-            }
-
-            public int CompareTo(INuGetVersion? other) => throw new NotImplementedException();
-
-            public override string ToString()
-            {
-                return _version;
-            }
         }
     }
 }

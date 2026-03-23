@@ -154,7 +154,7 @@ namespace NuGetLicense.Test
 
             LicenseOutput.IOutputFormatter throwingFormatter = Substitute.For<LicenseOutput.IOutputFormatter>();
             throwingFormatter.Write(Arg.Any<Stream>(), Arg.Any<IList<LicenseValidationResult>>())
-                .Returns<Task>(_ => throw new InvalidOperationException("Test exception"));
+                .Returns(_ => throw new InvalidOperationException("Test exception"));
             _optionsParser.GetOutputFormatter(OutputType.Table, false, false).Returns(throwingFormatter);
 
             // Act
