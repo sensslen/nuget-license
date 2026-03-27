@@ -1,4 +1,4 @@
-﻿// Licensed to the projects contributors.
+// Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.Collections.Concurrent;
@@ -57,7 +57,9 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
 
                     if (licenseResult.IsSuccess)
                     {
-                        await Verify(licenseResult.Value).HashParameters().UseStringComparer(CompareLicense);
+                        // Verify the license content matches the expected license type from the mapping
+                        await Verify(licenseResult.Value).HashParameters().UseStringComparer(
+                            (received, verified, context) => CompareLicense(received, verified, context, mappedValue.Value));
                         runSucceeded = true;
                         return;
                     }
@@ -113,11 +115,47 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
             return new() { Value = bodyText };
         }
 
-        private static Task<CompareResult> CompareLicense(string received, string verified, IReadOnlyDictionary<string, object> context)
+        private static Task<CompareResult> CompareLicense(string received, string verified, IReadOnlyDictionary<string, object> context, string expectedLicenseType)
         {
             string trimmedReceived = string.Join(' ', received.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries));
             string trimmedVerified = string.Join(' ', verified.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries));
-            return Task.FromResult(new CompareResult(!string.IsNullOrWhiteSpace(trimmedVerified) && trimmedReceived.Contains(trimmedVerified)));
+            
+            // First check if the received content contains the verified content
+            bool contentMatches = !string.IsNullOrWhiteSpace(trimmedVerified) && trimmedReceived.Contains(trimmedVerified);
+            
+            // Additionally verify that the license content matches the expected license type from the mapping
+            bool licenseTypeMatches = VerifyLicenseType(trimmedReceived, expectedLicenseType);
+            
+            if (!licenseTypeMatches)
+            {
+                Console.WriteLine($"License type verification failed. Expected: {expectedLicenseType}");
+                Console.WriteLine($"Received content snippet: {trimmedReceived[..Math.Min(200, trimmedReceived.Length)]}...");
+            }
+            
+            return Task.FromResult(new CompareResult(contentMatches && licenseTypeMatches));
+        }
+
+        private static bool VerifyLicenseType(string licenseContent, string expectedLicenseType)
+        {
+            // Normalize the content for comparison
+            string normalizedContent = licenseContent.ToUpperInvariant();
+            
+            return expectedLicenseType switch
+            {
+                "MIT" => normalizedContent.Contains("MIT LICENSE") || 
+                         normalizedContent.Contains("THE MIT LICENSE"),
+                "Apache-2.0" => normalizedContent.Contains("APACHE LICENSE") || 
+                                normalizedContent.Contains("APACHE 2.0") ||
+                                normalizedContent.Contains("APACHE-2.0") ||
+                                normalizedContent.Contains("VERSION 2.0"),
+                "BSD-3-Clause" => normalizedContent.Contains("BSD") ||
+                                  normalizedContent.Contains("3-CLAUSE") ||
+                                  normalizedContent.Contains("REDISTRIBUTION AND USE IN SOURCE AND BINARY FORMS"),
+                "MS-PL" => normalizedContent.Contains("MICROSOFT") || 
+                           normalizedContent.Contains("MS-PL") ||
+                           normalizedContent.Contains("MICROSOFT PUBLIC LICENSE"),
+                _ => true // If we don't have specific validation for this license type, allow it to pass
+            };
         }
 
         private sealed class DisposableWebDriver : IDisposable
