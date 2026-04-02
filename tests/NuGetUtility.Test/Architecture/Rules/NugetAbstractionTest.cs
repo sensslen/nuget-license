@@ -8,9 +8,9 @@ namespace NuGetUtility.Test.Architecture.Rules
         public NugetAbstractionTest() : base() { }
 
         [Test]
-        public void TestOnlyNugetWrapperHasDependencyToNuget()
+        public async Task TestOnlyNugetWrapperHasDependencyToNuget()
         {
-            Types.That()
+            await Types.That()
                 .DoNotResideInNamespace($"{AssemblyNames.NuGetUtility}.{nameof(Wrapper)}.{nameof(Wrapper.NuGetWrapper)}")
                 .ShouldNot().HaveDependencyOn(nameof(NuGet))
                 .Assert($"Only the {nameof(Wrapper.NuGetWrapper)} should have dependencies to {nameof(NuGet)}.");

@@ -15,7 +15,6 @@ using LicenseOutput = NuGetLicense.Output;
 
 namespace NuGetLicense.Test
 {
-    [TestFixture]
     internal class LicenseValidationOrchestratorTest
     {
         private MockFileSystem _fileSystem = null!;
@@ -28,7 +27,7 @@ namespace NuGetLicense.Test
         private ICommandLineOptions _options = null!;
         private LicenseValidationOrchestrator _orchestrator = null!;
 
-        [SetUp]
+        [Before(Test)]
         public void SetUp()
         {
             _fileSystem = new MockFileSystem();
@@ -52,7 +51,7 @@ namespace NuGetLicense.Test
                 _errorStream);
         }
 
-        [TearDown]
+        [After(Test)]
         public void TearDown()
         {
             _outputStream?.Dispose();
@@ -103,7 +102,7 @@ namespace NuGetLicense.Test
             int result = await _orchestrator.ValidateAsync(_options);
 
             // Assert
-            Assert.That(result, Is.EqualTo(0));
+            await Assert.That(result).IsEqualTo(0);
         }
 
         [Test]
@@ -122,8 +121,8 @@ namespace NuGetLicense.Test
             int result = await _orchestrator.ValidateAsync(_options);
 
             // Assert
-            Assert.That(result, Is.EqualTo(0));
-            Assert.That(_fileSystem.File.Exists(destinationFile), Is.True);
+            await Assert.That(result).IsEqualTo(0);
+            await Assert.That(_fileSystem.File.Exists(destinationFile)).IsTrue();
         }
 
         [Test]
@@ -139,8 +138,8 @@ namespace NuGetLicense.Test
             int result = await _orchestrator.ValidateAsync(_options);
 
             // Assert
-            Assert.That(result, Is.EqualTo(0));
-            Assert.That(_outputStream.Length, Is.GreaterThan(0));
+            await Assert.That(result).IsEqualTo(0);
+            await Assert.That(_outputStream.Length).IsGreaterThan(0);
         }
 
         [Test]
@@ -161,12 +160,12 @@ namespace NuGetLicense.Test
             int result = await _orchestrator.ValidateAsync(_options);
 
             // Assert
-            Assert.That(result, Is.EqualTo(-1));
-            Assert.That(_errorStream.Length, Is.GreaterThan(0));
+            await Assert.That(result).IsEqualTo(-1);
+            await Assert.That(_errorStream.Length).IsGreaterThan(0);
         }
 
         [Test]
-        public void ValidateAsync_WithCancellationToken_CanBeCancelled()
+        public async Task ValidateAsync_WithCancellationToken_CanBeCancelled()
         {
             // Arrange
             _options.InputFile.Returns("/test/project.csproj");
@@ -177,7 +176,7 @@ namespace NuGetLicense.Test
             using var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.Cancel();
 
-            Assert.That(_orchestrator.ValidateAsync(_options, cancellationTokenSource.Token).Wait(2000), Is.True);
+            await Assert.That(_orchestrator.ValidateAsync(_options, cancellationTokenSource.Token).Wait(2000)).IsTrue();
         }
 
         [Test]

@@ -6,20 +6,16 @@ using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
+using TUnit.Core.Enums;
 
 namespace NuGetUtility.Test.ReferencedPackagesReader
 {
-    [TestFixture, FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
     public class ReferencedPackagesReaderIntegrationTest
     {
-        [SetUp]
+        [Before(Test)]
         public void SetUp()
         {
-#if NETFRAMEWORK
-            IPackagesConfigReader packagesConfigReader = new WindowsPackagesConfigReader();
-#else
             IPackagesConfigReader packagesConfigReader = OperatingSystem.IsWindows() ? new WindowsPackagesConfigReader() : new FailingPackagesConfigReader();
-#endif
 
             _uut = new ReferencedPackageReader(
                 new MsBuildAbstraction(),
@@ -32,143 +28,122 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         private ReferencedPackageReader? _uut;
 
         [Test]
-        public void GetInstalledPackagesShould_ReturnPackagesForActualProjectCorrectly()
+        public async Task GetInstalledPackagesShould_ReturnPackagesForActualProjectCorrectly()
         {
             string path = Path.GetFullPath("../../../../targets/PackageReferenceProject/PackageReferenceProject.csproj");
 
             IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false);
 
-            Assert.That(result.Count, Is.EqualTo(1));
+            await Assert.That(result.Count()).IsEqualTo(1);
         }
 
         [Test]
-        public void GetInstalledPackagesShould_ReturnTransitivePackages()
+        public async Task GetInstalledPackagesShould_ReturnTransitivePackages()
         {
             string path = Path.GetFullPath(
                 "../../../../targets/ProjectWithTransitiveReferences/ProjectWithTransitiveReferences.csproj");
 
             IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, true);
 
-            Assert.That(result.Count, Is.EqualTo(1));
+            await Assert.That(result.Count()).IsEqualTo(1);
         }
 
         [Test]
-        public void GetInstalledPackagesShould_ReturnTransitiveNuGet()
+        public async Task GetInstalledPackagesShould_ReturnTransitiveNuGet()
         {
             string path = Path.GetFullPath(
                 "../../../../targets/ProjectWithTransitiveNuget/ProjectWithTransitiveNuget.csproj");
 
             PackageIdentity[] result = _uut!.GetInstalledPackages(path, true).ToArray();
 
-            Assert.That(result.Count, Is.EqualTo(3));
+            await Assert.That(result.Count()).IsEqualTo(3);
             string[] titles = result.Select(metadata => metadata.Id).ToArray();
-            Assert.That(titles.Contains("NSubstitute"), Is.True);
-            Assert.That(titles.Contains("Castle.Core"), Is.True);
-            Assert.That(titles.Contains("System.Diagnostics.EventLog"), Is.True);
+            await Assert.That(titles.Contains("NSubstitute")).IsTrue();
+            await Assert.That(titles.Contains("Castle.Core")).IsTrue();
+            await Assert.That(titles.Contains("System.Diagnostics.EventLog")).IsTrue();
         }
 
         [Test]
-        public void GetInstalledPackagesShould_ReturnEmptyEnumerable_For_ProjectsWithoutPackages()
+        public async Task GetInstalledPackagesShould_ReturnEmptyEnumerable_For_ProjectsWithoutPackages()
         {
             string path = Path.GetFullPath(
                 "../../../../targets/ProjectWithoutNugetReferences/ProjectWithoutNugetReferences.csproj");
 
             IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false);
 
-            Assert.That(result.Count, Is.EqualTo(0));
+            await Assert.That(result.Count()).IsEqualTo(0);
         }
 
+        [Arguments(true)]
+        [Arguments(false)]
         [Test]
-        public void GetInstalledPackagesShould_ReturnResolvedDependency_For_ProjectWithRangedDependencies([Values] bool includeTransitive)
+        public async Task GetInstalledPackagesShould_ReturnResolvedDependency_For_ProjectWithRangedDependencies(bool includeTransitive)
         {
             string path = Path.GetFullPath(
                 "../../../../targets/VersionRangesProject/VersionRangesProject.csproj");
 
             IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive);
 
-            Assert.That(result.Count, Is.EqualTo(includeTransitive ? 3 : 1));
+            await Assert.That(result.Count()).IsEqualTo(includeTransitive ? 3 : 1);
         }
 
+        [RunOn(OS.Windows)]
         [Test]
-        [Platform(Include = "Win")]
-        public void GetInstalledPackagesShould_ReturnPackages_For_PackagesConfigProject()
+        public async Task GetInstalledPackagesShould_ReturnPackages_For_PackagesConfigProject()
         {
             string path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
 
             IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false);
 
-            Assert.That(result.Count, Is.EqualTo(1));
+            await Assert.That(result.Count()).IsEqualTo(1);
         }
 
+        [ExcludeOn(OS.Windows)]
         [Test]
-        [Platform(Exclude = "Win")]
-        public void GetInstalledPackagesShould_ThrowError_PackagesConfigProject()
+        public async Task GetInstalledPackagesShould_ThrowError_PackagesConfigProject()
         {
             string path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
 
-            PackagesConfigReaderException? exception = Assert.Throws<PackagesConfigReaderException>(() => _uut!.GetInstalledPackages(path, false));
-            Assert.That(exception?.Message, Is.EqualTo($"Invalid project structure detected. Currently packages.config projects are only supported on Windows (Project: {path})"));
+            PackagesConfigReaderException exception = Assert.Throws<PackagesConfigReaderException>(() => _uut!.GetInstalledPackages(path, false));
+            await Assert.That(exception.Message).IsEqualTo($"Invalid project structure detected. Currently packages.config projects are only supported on Windows (Project: {path})");
         }
 
-#if NETFRAMEWORK
-        [TestCase(true)]
-        [TestCase(false)]
-        public void GetInstalledPackagesShould_ReturnPackages_For_NativeCppProject_With_References(bool includeTransitive)
+        [Arguments(true)]
+        [Arguments(false)]
+        [Test]
+        public async Task GetInstalledPackagesShould_ThrowError_For_PackagesForNativeCppProject_With_References(bool includeTransitive)
         {
             string path = Path.GetFullPath("../../../../targets/SimpleCppProject/SimpleCppProject.vcxproj");
 
-            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive);
-
-            Assert.That(result.Count, Is.EqualTo(2));
+            MsBuildAbstractionException exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, includeTransitive));
+            await Assert.That(exception.Message).IsEqualTo($"Please use the .net Framework version to analyze c++ projects (Project: {path})");
         }
-#else
-        [TestCase(true)]
-        [TestCase(false)]
-        public void GetInstalledPackagesShould_ThrowError_For_PackagesForNativeCppProject_With_References(bool includeTransitive)
-        {
-            string path = Path.GetFullPath("../../../../targets/SimpleCppProject/SimpleCppProject.vcxproj");
 
-            MsBuildAbstractionException? exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, includeTransitive));
-            Assert.That(exception?.Message, Is.EqualTo($"Please use the .net Framework version to analyze c++ projects (Project: {path})"));
-        }
-#endif
-
-#if NETFRAMEWORK
-        [TestCase(true)]
-        [TestCase(false)]
-        public void GetInstalledPackagesShould_ReturnPackages_For_NativeCppProject_Without_References(bool includeTransitive)
+        [Arguments(true)]
+        [Arguments(false)]
+        [Test]
+        public async Task GetInstalledPackagesShould_ThrowError_For_PackagesForNativeCppProject_Without_References(bool includeTransitive)
         {
             string path = Path.GetFullPath("../../../../targets/EmptyCppProject/EmptyCppProject.vcxproj");
 
-            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive);
-
-            Assert.That(result.Count, Is.EqualTo(0));
+            MsBuildAbstractionException exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, includeTransitive));
+            await Assert.That(exception.Message).IsEqualTo($"Please use the .net Framework version to analyze c++ projects (Project: {path})");
         }
-#else
-        [TestCase(true)]
-        [TestCase(false)]
-        public void GetInstalledPackagesShould_ThrowError_For_PackagesForNativeCppProject_Without_References(bool includeTransitive)
-        {
-            string path = Path.GetFullPath("../../../../targets/EmptyCppProject/EmptyCppProject.vcxproj");
 
-            MsBuildAbstractionException? exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, includeTransitive));
-            Assert.That(exception?.Message, Is.EqualTo($"Please use the .net Framework version to analyze c++ projects (Project: {path})"));
-        }
-#endif
-
-        [TestCase("net9.0", false, "TinyCsvParser")]
-        [TestCase("net8.0", false, "Microsoft.Extensions.Logging.Abstractions")]
-        [TestCase("net8.0-browser", false, "Microsoft.Extensions.Logging.Abstractions")]
-        [TestCase("net9.0", true, "TinyCsvParser")]
-        [TestCase("net8.0", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions", "System.Diagnostics.DiagnosticSource")]
-        [TestCase("net8.0-browser", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions", "System.Diagnostics.DiagnosticSource")]
-        public void GetInstalledPackagesShould_OnlyReturn_PackagesPackagesReferencedByRequestedFramework(string framework, bool includeTransitive, params string[] packages)
+        [Arguments("net9.0", false, "TinyCsvParser")]
+        [Arguments("net8.0", false, "Microsoft.Extensions.Logging.Abstractions")]
+        [Arguments("net8.0-browser", false, "Microsoft.Extensions.Logging.Abstractions")]
+        [Arguments("net9.0", true, "TinyCsvParser")]
+        [Arguments("net8.0", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions", "System.Diagnostics.DiagnosticSource")]
+        [Arguments("net8.0-browser", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions", "System.Diagnostics.DiagnosticSource")]
+        [Test]
+        public async Task GetInstalledPackagesShould_OnlyReturn_PackagesPackagesReferencedByRequestedFramework(string framework, bool includeTransitive, params string[] packages)
         {
             string path = Path.GetFullPath("../../../../targets/MultiTargetProjectWithDifferentDependencies/MultiTargetProjectWithDifferentDependencies.csproj");
 
             IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive, framework);
 
-            Assert.That(result.Select(p => p.Id), Is.EquivalentTo(packages));
+            await Assert.That(result.Select(p => p.Id)).IsEquivalentTo(packages, CollectionOrdering.Any);
         }
     }
 }

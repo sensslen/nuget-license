@@ -3,17 +3,16 @@
 
 using System.Collections.Immutable;
 using AutoFixture;
-using AutoFixture.NUnit4;
 using NuGetUtility.Extensions;
 
 namespace NuGetUtility.Test.Extensions
 {
-    [TestFixture(typeof(string))]
-    [TestFixture(typeof(HashSetExtensionTestObject))]
-    [TestFixture(typeof(int))]
+    [GenerateGenericTest(typeof(string))]
+    [GenerateGenericTest(typeof(HashSetExtensionTestObject))]
+    [GenerateGenericTest(typeof(int))]
     internal class HashSetExtensionsTest<T>
     {
-        [SetUp]
+        [Before(Test)]
         public void SetUp()
         {
             _uut = new HashSet<T>(new Fixture().CreateMany<T>());
@@ -22,34 +21,34 @@ namespace NuGetUtility.Test.Extensions
         private HashSet<T>? _uut;
 
         [Test]
-        [AutoData]
-        public void AddMany_Should_AddNewElementsToHashSet(T[] newElements)
+        public async Task AddMany_Should_AddNewElementsToHashSet()
         {
+            T[] newElements = new Fixture().CreateMany<T>().ToArray();
             var initialElements = _uut!.ToImmutableList();
             _uut!.AddRange(newElements);
 
-            Assert.That(_uut, Is.EquivalentTo(initialElements.AddRange(newElements).Distinct()));
+            await Assert.That(_uut).IsEquivalentTo(initialElements.AddRange(newElements).Distinct(), CollectionOrdering.Any);
         }
 
         [Test]
-        [AutoData]
-        public void AddMany_Should_OnlyAddNewItems(T[] newElements)
+        public async Task AddMany_Should_OnlyAddNewItems()
         {
+            T[] newElements = new Fixture().CreateMany<T>().ToArray();
             var initialElements = _uut!.ToImmutableList();
             _uut!.AddRange(initialElements.AddRange(newElements));
 
-            Assert.That(_uut, Is.EquivalentTo(initialElements.AddRange(newElements).Distinct()));
+            await Assert.That(_uut).IsEquivalentTo(initialElements.AddRange(newElements).Distinct(), CollectionOrdering.Any);
         }
 
         [Test]
-        public void AddMany_Should_KeepSameHashSetIfOnlyAddingSameElements()
+        public async Task AddMany_Should_KeepSameHashSetIfOnlyAddingSameElements()
         {
             var initialElements = _uut!.ToImmutableList();
             _uut!.AddRange(initialElements);
             _uut!.AddRange(initialElements);
             _uut!.AddRange(initialElements);
 
-            Assert.That(_uut, Is.EquivalentTo(initialElements));
+            await Assert.That(_uut).IsEquivalentTo(initialElements, CollectionOrdering.Any);
         }
     }
 }

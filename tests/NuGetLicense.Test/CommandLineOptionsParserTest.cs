@@ -8,15 +8,12 @@ using NuGetUtility;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using RichardSzalay.MockHttp;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 using LicenseOutput = NuGetLicense.Output;
-
-#if !NET
-using System.Net.Http;
-#endif
 
 namespace NuGetLicense.Test
 {
-    [TestFixture]
     internal class CommandLineOptionsParserTest
     {
         private MockFileSystem _fileSystem = null!;
@@ -24,7 +21,7 @@ namespace NuGetLicense.Test
         private HttpClient _httpClient = null!;
         private CommandLineOptionsParser _parser = null!;
 
-        [SetUp]
+        [Before(HookType.Test)]
         public void SetUp()
         {
             _fileSystem = new MockFileSystem();
@@ -33,18 +30,17 @@ namespace NuGetLicense.Test
             _parser = new CommandLineOptionsParser(_fileSystem, _httpClient);
         }
 
-        [TearDown]
+        [After(HookType.Test)]
         public void TearDown()
         {
             _httpClient?.Dispose();
             _mockHttp?.Dispose();
         }
 
-        [TestFixture]
         internal class GetInputFilesTests : CommandLineOptionsParserTest
         {
             [Test]
-            public void GetInputFiles_WithInputFile_ReturnsFileInArray()
+            public async Task GetInputFiles_WithInputFile_ReturnsFileInArray()
             {
                 // Arrange
                 string inputFile = "/test/project.csproj";
@@ -53,12 +49,12 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetInputFiles(inputFile, null);
 
                 // Assert
-                Assert.That(result, Has.Length.EqualTo(1));
-                Assert.That(result[0], Is.EqualTo(inputFile));
+                await Assert.That(result.Length).IsEqualTo(1);
+                await Assert.That(result[0]).IsEqualTo(inputFile);
             }
 
             [Test]
-            public void GetInputFiles_WithInputJsonFile_ReadsAndDeserializesFile()
+            public async Task GetInputFiles_WithInputJsonFile_ReadsAndDeserializesFile()
             {
                 // Arrange
                 string jsonFile = "/test/input.json";
@@ -69,20 +65,20 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetInputFiles(null, jsonFile);
 
                 // Assert
-                Assert.That(result, Is.EqualTo(expectedFiles));
+                await Assert.That(result).IsEqualTo(expectedFiles);
             }
 
             [Test]
-            public void GetInputFiles_WithNeitherOption_ThrowsArgumentException()
+            public async Task GetInputFiles_WithNeitherOption_ThrowsArgumentException()
             {
                 // Act & Assert
-                ArgumentException? ex = Assert.Throws<ArgumentException>(() =>
+                ArgumentException ex = Assert.Throws<ArgumentException>(() =>
                     _parser.GetInputFiles(null, null));
-                Assert.That(ex!.Message, Does.Contain("Please provide an input file using --input or --json-input"));
+                await Assert.That(ex.Message).Contains("Please provide an input file using --input or --json-input");
             }
 
             [Test]
-            public void GetInputFiles_WithBothOptions_PrefersInputFile()
+            public async Task GetInputFiles_WithBothOptions_PrefersInputFile()
             {
                 // Arrange
                 string inputFile = "/test/project.csproj";
@@ -93,26 +89,25 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetInputFiles(inputFile, jsonFile);
 
                 // Assert
-                Assert.That(result, Has.Length.EqualTo(1));
-                Assert.That(result[0], Is.EqualTo(inputFile));
+                await Assert.That(result.Length).IsEqualTo(1);
+                await Assert.That(result[0]).IsEqualTo(inputFile);
             }
         }
 
-        [TestFixture]
         internal class GetAllowedLicensesTests : CommandLineOptionsParserTest
         {
             [Test]
-            public void GetAllowedLicenses_WithNull_ReturnsEmptyArray()
+            public async Task GetAllowedLicenses_WithNull_ReturnsEmptyArray()
             {
                 // Act
                 string[] result = _parser.GetAllowedLicenses(null);
 
                 // Assert
-                Assert.That(result, Is.Empty);
+                await Assert.That(result).IsEmpty();
             }
 
             [Test]
-            public void GetAllowedLicenses_WithInlineList_ReturnsParsedArray()
+            public async Task GetAllowedLicenses_WithInlineList_ReturnsParsedArray()
             {
                 // Arrange
                 string allowedLicenses = "MIT;Apache-2.0;BSD-3-Clause";
@@ -121,11 +116,11 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetAllowedLicenses(allowedLicenses);
 
                 // Assert
-                Assert.That(result, Is.EqualTo(["MIT", "Apache-2.0", "BSD-3-Clause"]));
+                await Assert.That(result).IsEqualTo(["MIT", "Apache-2.0", "BSD-3-Clause"]);
             }
 
             [Test]
-            public void GetAllowedLicenses_WithFile_ReadsAndDeserializesFile()
+            public async Task GetAllowedLicenses_WithFile_ReadsAndDeserializesFile()
             {
                 // Arrange
                 string licenseFile = "/test/allowed.json";
@@ -136,11 +131,11 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetAllowedLicenses(licenseFile);
 
                 // Assert
-                Assert.That(result, Is.EqualTo(expectedLicenses));
+                await Assert.That(result).IsEqualTo(expectedLicenses);
             }
 
             [Test]
-            public void GetAllowedLicenses_WithWhitespace_TrimsValues()
+            public async Task GetAllowedLicenses_WithWhitespace_TrimsValues()
             {
                 // Arrange
                 string allowedLicenses = " MIT ; Apache-2.0 ; BSD-3-Clause ";
@@ -149,38 +144,37 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetAllowedLicenses(allowedLicenses);
 
                 // Assert
-                Assert.That(result, Is.EqualTo(["MIT", "Apache-2.0", "BSD-3-Clause"]));
+                await Assert.That(result).IsEqualTo(["MIT", "Apache-2.0", "BSD-3-Clause"]);
             }
 
             [Test]
-            public void GetAllowedLicenses_WithInvalidJsonFile_ThrowsArgumentException()
+            public async Task GetAllowedLicenses_WithInvalidJsonFile_ThrowsArgumentException()
             {
                 // Arrange
                 string licenseFile = "/test/allowed.json";
                 _fileSystem.AddFile(licenseFile, new MockFileData("invalid json"));
 
                 // Act & Assert
-                ArgumentException? ex = Assert.Throws<ArgumentException>(() =>
+                ArgumentException ex = Assert.Throws<ArgumentException>(() =>
                     _parser.GetAllowedLicenses(licenseFile));
-                Assert.That(ex!.Message, Does.Contain("Failed to parse JSON file"));
+                await Assert.That(ex.Message).Contains("Failed to parse JSON file");
             }
         }
 
-        [TestFixture]
         internal class GetIgnoredPackagesTests : CommandLineOptionsParserTest
         {
             [Test]
-            public void GetIgnoredPackages_WithNull_ReturnsEmptyArray()
+            public async Task GetIgnoredPackages_WithNull_ReturnsEmptyArray()
             {
                 // Act
                 string[] result = _parser.GetIgnoredPackages(null);
 
                 // Assert
-                Assert.That(result, Is.Empty);
+                await Assert.That(result).IsEmpty();
             }
 
             [Test]
-            public void GetIgnoredPackages_WithInlineList_ReturnsParsedArray()
+            public async Task GetIgnoredPackages_WithInlineList_ReturnsParsedArray()
             {
                 // Arrange
                 string ignoredPackages = "Package1;Package2;Package3";
@@ -189,11 +183,11 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetIgnoredPackages(ignoredPackages);
 
                 // Assert
-                Assert.That(result, Is.EqualTo(["Package1", "Package2", "Package3"]));
+                await Assert.That(result).IsEqualTo(["Package1", "Package2", "Package3"]);
             }
 
             [Test]
-            public void GetIgnoredPackages_WithFile_ReadsAndDeserializesFile()
+            public async Task GetIgnoredPackages_WithFile_ReadsAndDeserializesFile()
             {
                 // Arrange
                 string packageFile = "/test/ignored.json";
@@ -204,25 +198,24 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetIgnoredPackages(packageFile);
 
                 // Assert
-                Assert.That(result, Is.EqualTo(expectedPackages));
+                await Assert.That(result).IsEqualTo(expectedPackages);
             }
         }
 
-        [TestFixture]
         internal class GetExcludedProjectsTests : CommandLineOptionsParserTest
         {
             [Test]
-            public void GetExcludedProjects_WithNull_ReturnsEmptyArray()
+            public async Task GetExcludedProjects_WithNull_ReturnsEmptyArray()
             {
                 // Act
                 string[] result = _parser.GetExcludedProjects(null);
 
                 // Assert
-                Assert.That(result, Is.Empty);
+                await Assert.That(result).IsEmpty();
             }
 
             [Test]
-            public void GetExcludedProjects_WithInlineList_ReturnsParsedArray()
+            public async Task GetExcludedProjects_WithInlineList_ReturnsParsedArray()
             {
                 // Arrange
                 string excludedProjects = "*Test*;*.Test;Legacy*";
@@ -231,11 +224,11 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetExcludedProjects(excludedProjects);
 
                 // Assert
-                Assert.That(result, Is.EqualTo(["*Test*", "*.Test", "Legacy*"]));
+                await Assert.That(result).IsEqualTo(["*Test*", "*.Test", "Legacy*"]);
             }
 
             [Test]
-            public void GetExcludedProjects_WithFile_ReadsAndDeserializesFile()
+            public async Task GetExcludedProjects_WithFile_ReadsAndDeserializesFile()
             {
                 // Arrange
                 string projectFile = "/test/excluded.json";
@@ -246,26 +239,25 @@ namespace NuGetLicense.Test
                 string[] result = _parser.GetExcludedProjects(projectFile);
 
                 // Assert
-                Assert.That(result, Is.EqualTo(expectedProjects));
+                await Assert.That(result).IsEqualTo(expectedProjects);
             }
         }
 
-        [TestFixture]
         internal class GetLicenseMappingsTests : CommandLineOptionsParserTest
         {
             [Test]
-            public void GetLicenseMappings_WithNull_ReturnsDefaultMapping()
+            public async Task GetLicenseMappings_WithNull_ReturnsDefaultMapping()
             {
                 // Act
                 IImmutableDictionary<Uri, string> result = _parser.GetLicenseMappings(null);
 
                 // Assert
-                Assert.That(result, Is.Not.Null);
-                Assert.That(result.Count, Is.GreaterThan(0)); // Should contain default mappings
+                await Assert.That(result).IsNotNull();
+                await Assert.That(result.Count).IsGreaterThan(0); // Should contain default mappings
             }
 
             [Test]
-            public void GetLicenseMappings_WithFile_MergesWithDefaultMappings()
+            public async Task GetLicenseMappings_WithFile_MergesWithDefaultMappings()
             {
                 // Arrange
                 string mappingFile = "/test/mappings.json";
@@ -277,26 +269,25 @@ namespace NuGetLicense.Test
                 IImmutableDictionary<Uri, string> result = _parser.GetLicenseMappings(mappingFile);
 
                 // Assert
-                Assert.That(result.ContainsKey(customUrl), Is.True);
-                Assert.That(result[customUrl], Is.EqualTo(customLicense));
+                await Assert.That(result.ContainsKey(customUrl)).IsTrue();
+                await Assert.That(result[customUrl]).IsEqualTo(customLicense);
             }
         }
 
-        [TestFixture]
         internal class GetOverridePackageInformationTests : CommandLineOptionsParserTest
         {
             [Test]
-            public void GetOverridePackageInformation_WithNull_ReturnsEmptyArray()
+            public async Task GetOverridePackageInformation_WithNull_ReturnsEmptyArray()
             {
                 // Act
                 CustomPackageInformation[] result = _parser.GetOverridePackageInformation(null);
 
                 // Assert
-                Assert.That(result, Is.Empty);
+                await Assert.That(result).IsEmpty();
             }
 
             [Test]
-            public void GetOverridePackageInformation_WithFile_ReadsAndDeserializesFile()
+            public async Task GetOverridePackageInformation_WithFile_ReadsAndDeserializesFile()
             {
                 // Arrange
                 string overrideFile = "/test/override.json";
@@ -306,28 +297,27 @@ namespace NuGetLicense.Test
                 CustomPackageInformation[] result = _parser.GetOverridePackageInformation(overrideFile);
 
                 // Assert
-                Assert.That(result, Has.Length.EqualTo(1));
-                Assert.That(result[0].Id, Is.EqualTo("TestPackage"));
-                Assert.That(result[0].License, Is.EqualTo("MIT"));
+                await Assert.That(result.Length).IsEqualTo(1);
+                await Assert.That(result[0].Id).IsEqualTo("TestPackage");
+                await Assert.That(result[0].License).IsEqualTo("MIT");
             }
         }
 
-        [TestFixture]
         internal class GetLicenseMatcherTests : CommandLineOptionsParserTest
         {
             [Test]
-            public void GetLicenseMatcher_WithNull_ReturnsSpdxMatcher()
+            public async Task GetLicenseMatcher_WithNull_ReturnsSpdxMatcher()
             {
                 // Act
                 IFileLicenseMatcher result = _parser.GetLicenseMatcher(null);
 
                 // Assert
-                Assert.That(result, Is.Not.Null);
-                Assert.That(result, Is.InstanceOf<FileLicenseMatcher.SPDX.FastLicenseMatcher>());
+                await Assert.That(result).IsNotNull();
+                await Assert.That(result).IsAssignableTo<FileLicenseMatcher.SPDX.FastLicenseMatcher>();
             }
 
             [Test]
-            public void GetLicenseMatcher_WithFile_ReturnsCombinedMatcher()
+            public async Task GetLicenseMatcher_WithFile_ReturnsCombinedMatcher()
             {
                 // Arrange
                 string mappingFile = "/test/dir/license-mappings.json";
@@ -339,26 +329,25 @@ namespace NuGetLicense.Test
                 IFileLicenseMatcher result = _parser.GetLicenseMatcher(mappingFile);
 
                 // Assert
-                Assert.That(result, Is.Not.Null);
-                Assert.That(result, Is.InstanceOf<FileLicenseMatcher.Combine.LicenseMatcher>());
+                await Assert.That(result).IsNotNull();
+                await Assert.That(result).IsAssignableTo<FileLicenseMatcher.Combine.LicenseMatcher>();
             }
         }
 
-        [TestFixture]
         internal class GetFileDownloaderTests : CommandLineOptionsParserTest
         {
             [Test]
-            public void GetFileDownloader_WithNull_ReturnsNopDownloader()
+            public async Task GetFileDownloader_WithNull_ReturnsNopDownloader()
             {
                 // Act
                 IFileDownloader result = _parser.GetFileDownloader(null);
 
                 // Assert
-                Assert.That(result, Is.InstanceOf<NopFileDownloader>());
+                await Assert.That(result).IsAssignableTo<NopFileDownloader>();
             }
 
             [Test]
-            public void GetFileDownloader_WithDirectory_CreatesDirectoryAndReturnsFileDownloader()
+            public async Task GetFileDownloader_WithDirectory_CreatesDirectoryAndReturnsFileDownloader()
             {
                 // Arrange
                 string downloadDir = "/test/downloads";
@@ -367,12 +356,12 @@ namespace NuGetLicense.Test
                 IFileDownloader result = _parser.GetFileDownloader(downloadDir);
 
                 // Assert
-                Assert.That(result, Is.InstanceOf<FileDownloader>());
-                Assert.That(_fileSystem.Directory.Exists(downloadDir), Is.True);
+                await Assert.That(result).IsAssignableTo<FileDownloader>();
+                await Assert.That(_fileSystem.Directory.Exists(downloadDir)).IsTrue();
             }
 
             [Test]
-            public void GetFileDownloader_WithExistingDirectory_ReturnsFileDownloader()
+            public async Task GetFileDownloader_WithExistingDirectory_ReturnsFileDownloader()
             {
                 // Arrange
                 string downloadDir = "/test/downloads";
@@ -382,51 +371,50 @@ namespace NuGetLicense.Test
                 IFileDownloader result = _parser.GetFileDownloader(downloadDir);
 
                 // Assert
-                Assert.That(result, Is.InstanceOf<FileDownloader>());
+                await Assert.That(result).IsAssignableTo<FileDownloader>();
             }
         }
 
-        [TestFixture]
         internal class GetOutputFormatterTests : CommandLineOptionsParserTest
         {
             [Test]
-            public void GetOutputFormatter_WithTable_ReturnsTableFormatter()
+            public async Task GetOutputFormatter_WithTable_ReturnsTableFormatter()
             {
                 // Act
                 LicenseOutput.IOutputFormatter result = _parser.GetOutputFormatter(OutputType.Table, false, false);
 
                 // Assert
-                Assert.That(result, Is.InstanceOf<LicenseOutput.Table.TableOutputFormatter>());
+                await Assert.That(result).IsAssignableTo<LicenseOutput.Table.TableOutputFormatter>();
             }
 
             [Test]
-            public void GetOutputFormatter_WithMarkdown_ReturnsTableFormatter()
+            public async Task GetOutputFormatter_WithMarkdown_ReturnsTableFormatter()
             {
                 // Act
                 LicenseOutput.IOutputFormatter result = _parser.GetOutputFormatter(OutputType.Markdown, false, false);
 
                 // Assert
-                Assert.That(result, Is.InstanceOf<LicenseOutput.Table.TableOutputFormatter>());
+                await Assert.That(result).IsAssignableTo<LicenseOutput.Table.TableOutputFormatter>();
             }
 
             [Test]
-            public void GetOutputFormatter_WithJson_ReturnsJsonFormatter()
+            public async Task GetOutputFormatter_WithJson_ReturnsJsonFormatter()
             {
                 // Act
                 LicenseOutput.IOutputFormatter result = _parser.GetOutputFormatter(OutputType.Json, false, false);
 
                 // Assert
-                Assert.That(result, Is.InstanceOf<LicenseOutput.Json.JsonOutputFormatter>());
+                await Assert.That(result).IsAssignableTo<LicenseOutput.Json.JsonOutputFormatter>();
             }
 
             [Test]
-            public void GetOutputFormatter_WithJsonPretty_ReturnsJsonFormatter()
+            public async Task GetOutputFormatter_WithJsonPretty_ReturnsJsonFormatter()
             {
                 // Act
                 LicenseOutput.IOutputFormatter result = _parser.GetOutputFormatter(OutputType.JsonPretty, false, false);
 
                 // Assert
-                Assert.That(result, Is.InstanceOf<LicenseOutput.Json.JsonOutputFormatter>());
+                await Assert.That(result).IsAssignableTo<LicenseOutput.Json.JsonOutputFormatter>();
             }
 
             [Test]
