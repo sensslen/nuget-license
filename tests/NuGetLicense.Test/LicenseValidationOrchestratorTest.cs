@@ -1,4 +1,4 @@
-// Licensed to the projects contributors.
+// Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.Collections.Immutable;
@@ -15,26 +15,22 @@ using LicenseOutput = NuGetLicense.Output;
 
 namespace NuGetLicense.Test
 {
-    [TestFixture]
-    internal class LicenseValidationOrchestratorTest
+    public class LicenseValidationOrchestratorTest
     {
-        private MockFileSystem _fileSystem = null!;
-        private ISolutionPersistanceWrapper _solutionPersistance = null!;
-        private IMsBuildAbstraction _msBuild = null!;
-        private IPackagesConfigReader _packagesConfigReader = null!;
-        private ICommandLineOptionsParser _optionsParser = null!;
-        private MemoryStream _outputStream = null!;
-        private MemoryStream _errorStream = null!;
-        private ICommandLineOptions _options = null!;
-        private LicenseValidationOrchestrator _orchestrator = null!;
+        private readonly MockFileSystem _fileSystem;
+        private readonly ISolutionPersistanceWrapper _solutionPersistance;
+        private readonly ICommandLineOptionsParser _optionsParser;
+        private readonly MemoryStream _outputStream;
+        private readonly MemoryStream _errorStream;
+        private readonly ICommandLineOptions _options;
+        private readonly LicenseValidationOrchestrator _orchestrator;
 
-        [SetUp]
-        public void SetUp()
+        public LicenseValidationOrchestratorTest()
         {
             _fileSystem = new MockFileSystem();
             _solutionPersistance = Substitute.For<ISolutionPersistanceWrapper>();
-            _msBuild = Substitute.For<IMsBuildAbstraction>();
-            _packagesConfigReader = Substitute.For<IPackagesConfigReader>();
+            IMsBuildAbstraction msBuild = Substitute.For<IMsBuildAbstraction>();
+            IPackagesConfigReader packagesConfigReader = Substitute.For<IPackagesConfigReader>();
             _optionsParser = Substitute.For<ICommandLineOptionsParser>();
             _outputStream = new MemoryStream();
             _errorStream = new MemoryStream();
@@ -45,18 +41,18 @@ namespace NuGetLicense.Test
             _orchestrator = new LicenseValidationOrchestrator(
                 _fileSystem,
                 _solutionPersistance,
-                _msBuild,
-                _packagesConfigReader,
+                msBuild,
+                packagesConfigReader,
                 _optionsParser,
                 _outputStream,
                 _errorStream);
         }
 
-        [TearDown]
+        [After(HookType.Test)]
         public void TearDown()
         {
-            _outputStream?.Dispose();
-            _errorStream?.Dispose();
+            _outputStream.Dispose();
+            _errorStream.Dispose();
         }
 
         [Test]
@@ -103,7 +99,7 @@ namespace NuGetLicense.Test
             int result = await _orchestrator.ValidateAsync(_options);
 
             // Assert
-            Assert.That(result, Is.EqualTo(0));
+            await Assert.That(result).IsEqualTo(0);
         }
 
         [Test]
@@ -122,8 +118,8 @@ namespace NuGetLicense.Test
             int result = await _orchestrator.ValidateAsync(_options);
 
             // Assert
-            Assert.That(result, Is.EqualTo(0));
-            Assert.That(_fileSystem.File.Exists(destinationFile), Is.True);
+            await Assert.That(result).IsEqualTo(0);
+            await Assert.That(_fileSystem.File.Exists(destinationFile)).IsTrue();
         }
 
         [Test]
@@ -139,8 +135,8 @@ namespace NuGetLicense.Test
             int result = await _orchestrator.ValidateAsync(_options);
 
             // Assert
-            Assert.That(result, Is.EqualTo(0));
-            Assert.That(_outputStream.Length, Is.GreaterThan(0));
+            await Assert.That(result).IsEqualTo(0);
+            await Assert.That(_outputStream.Length).IsGreaterThan(0);
         }
 
         [Test]
@@ -161,12 +157,12 @@ namespace NuGetLicense.Test
             int result = await _orchestrator.ValidateAsync(_options);
 
             // Assert
-            Assert.That(result, Is.EqualTo(-1));
-            Assert.That(_errorStream.Length, Is.GreaterThan(0));
+            await Assert.That(result).IsEqualTo(-1);
+            await Assert.That(_errorStream.Length).IsGreaterThan(0);
         }
 
         [Test]
-        public void ValidateAsync_WithCancellationToken_CanBeCancelled()
+        public async Task ValidateAsync_WithCancellationToken_CanBeCancelled()
         {
             // Arrange
             _options.InputFile.Returns("/test/project.csproj");
@@ -175,9 +171,13 @@ namespace NuGetLicense.Test
             _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
 
             using var cancellationTokenSource = new CancellationTokenSource();
+#if NETFRAMEWORK
             cancellationTokenSource.Cancel();
+#else
+            await cancellationTokenSource.CancelAsync();
+#endif
 
-            Assert.That(_orchestrator.ValidateAsync(_options, cancellationTokenSource.Token).Wait(2000), Is.True);
+            await Assert.That(_orchestrator.ValidateAsync(_options, cancellationTokenSource.Token).Wait(2000)).IsTrue();
         }
 
         [Test]

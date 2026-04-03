@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿// Licensed to the project contributors.
+// The license conditions are provided in the LICENSE file located in the project root
+
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following

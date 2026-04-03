@@ -1,4 +1,4 @@
-// Licensed to the projects contributors.
+// Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
 using Bogus;
@@ -6,7 +6,6 @@ using NuGetLicense.LicenseValidator;
 using NuGetLicense.Output;
 using NuGetUtility.Test.Extensions;
 using NuGetUtility.Test.Extensions.Helper.ShuffelledEnumerable;
-
 using HelperNuGetVersion = NuGetLicense.Test.Output.Helper.NuGetVersion;
 
 namespace NuGetLicense.Test.Output
@@ -15,46 +14,40 @@ namespace NuGetLicense.Test.Output
     {
         protected TestBase(bool includeCopyright, bool includeAuthors, bool includeLicenseUrl)
         {
-            _includeCopyright = includeCopyright;
-            _includeAuthors = includeAuthors;
-            _includeLicenseUrl = includeLicenseUrl;
-        }
-
-        private IOutputFormatter _uut = null!;
-        protected Faker<LicenseValidationResult> LicenseValidationErrorFaker = null!;
-        protected Faker<LicenseValidationResult> ValidatedLicenseFaker = null!;
-        private readonly bool _includeCopyright;
-        private readonly bool _includeAuthors;
-        private readonly bool _includeLicenseUrl;
-
-        [SetUp]
-        public void SetUp()
-        {
-            ValidatedLicenseFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
+            _validatedLicenseFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
                     new LicenseValidationResult(f.Name.JobTitle(),
                         new HelperNuGetVersion(f.System.Semver()),
                         GetNullable(f, f.Internet.Url),
                         GetNullable(f, f.Hacker.Phrase),
-                        _includeLicenseUrl ? GetNullable(f, f.Hacker.Phrase) : null,
-                        _includeCopyright ? GetNullable(f, f.Hacker.Phrase) : null,
-                        _includeAuthors ? GetNullable(f, () => string.Join(",", Enumerable.Repeat(true, f.Random.Int(0, 10)).Select(_ => f.Person.FullName))) : null,
+                        includeLicenseUrl ? GetNullable(f, f.Hacker.Phrase) : null,
+                        includeCopyright ? GetNullable(f, f.Hacker.Phrase) : null,
+                        includeAuthors ? GetNullable(f, () => string.Join(",", Enumerable.Repeat(true, f.Random.Int(0, 10)).Select(_ => f.Person.FullName))) : null,
                         GetNullable(f, () => f.Lorem.Sentence()),
                         GetNullable(f, () => f.Lorem.Sentence()),
                         f.Random.Enum<LicenseInformationOrigin>()))
                 .UseSeed(8675309);
-            LicenseValidationErrorFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
+            _licenseValidationErrorFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
                     new LicenseValidationResult(f.Name.JobTitle(),
                         new HelperNuGetVersion(f.System.Semver()),
                         GetNullable(f, f.Internet.Url),
                         GetNullable(f, f.Hacker.Phrase),
-                        _includeLicenseUrl ? GetNullable(f, f.Hacker.Phrase) : null,
-                        _includeCopyright ? GetNullable(f, f.Hacker.Phrase) : null,
-                        _includeAuthors ? GetNullable(f, () => string.Join(",", Enumerable.Repeat(true, f.Random.Int(0, 10)).Select(_ => f.Person.FullName))) : null,
+                        includeLicenseUrl ? GetNullable(f, f.Hacker.Phrase) : null,
+                        includeCopyright ? GetNullable(f, f.Hacker.Phrase) : null,
+                        includeAuthors ? GetNullable(f, () => string.Join(",", Enumerable.Repeat(true, f.Random.Int(0, 10)).Select(_ => f.Person.FullName))) : null,
                         GetNullable(f, () => f.Lorem.Sentence()),
                         GetNullable(f, () => f.Lorem.Sentence()),
                         f.Random.Enum<LicenseInformationOrigin>(),
                         GetErrorList(f).ToList()))
                 .UseSeed(9078345);
+        }
+
+        private IOutputFormatter _uut = null!;
+        private readonly Faker<LicenseValidationResult> _licenseValidationErrorFaker;
+        private readonly Faker<LicenseValidationResult> _validatedLicenseFaker;
+
+        [Before(HookType.Test)]
+        public void SetUp()
+        {
             _uut = CreateUut();
         }
         protected abstract IOutputFormatter CreateUut();
@@ -77,15 +70,15 @@ namespace NuGetLicense.Test.Output
             }
         }
 
-        [Test]
+        [Test, MatrixDataSource]
         public async Task ValidatedLicensesWithErrors_Should_PrintCorrectTable(
-            [Values(0, 1, 5, 20, 100)] int validCount,
-            [Values(1, 3, 5, 20)] int errorCount)
+            [Matrix(0, 1, 5, 20, 100)] int validCount,
+            [Matrix(1, 3, 5, 20)] int errorCount)
         {
             using var stream = new MemoryStream();
-            var result = LicenseValidationErrorFaker.GenerateForever()
+            var result = _licenseValidationErrorFaker.GenerateForever()
                 .Take(errorCount)
-                .Concat(ValidatedLicenseFaker.GenerateForever().Take(validCount))
+                .Concat(_validatedLicenseFaker.GenerateForever().Take(validCount))
                 .Shuffle(971234)
                 .ToList();
             await _uut.Write(stream, result);
@@ -93,12 +86,12 @@ namespace NuGetLicense.Test.Output
             await Verify(stream.AsString()).HashParameters();
         }
 
-        [Test]
+        [Test, MatrixDataSource]
         public async Task ValidatedLicenses_Should_PrintCorrectTable(
-            [Values(0, 1, 5, 20, 100)] int validatedLicenseCount)
+            [Matrix(0, 1, 5, 20, 100)] int validatedLicenseCount)
         {
             using var stream = new MemoryStream();
-            var validated = ValidatedLicenseFaker.GenerateForever().Take(validatedLicenseCount).ToList();
+            var validated = _validatedLicenseFaker.GenerateForever().Take(validatedLicenseCount).ToList();
             await _uut.Write(stream, validated);
 
             await Verify(stream.AsString()).HashParameters();

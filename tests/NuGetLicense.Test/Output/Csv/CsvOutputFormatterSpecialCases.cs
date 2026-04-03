@@ -1,4 +1,4 @@
-﻿// Licensed to the projects contributors.
+﻿// Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.Text;
@@ -8,7 +8,6 @@ using HelperNuGetVersion = NuGetLicense.Test.Output.Helper.NuGetVersion;
 
 namespace NuGetLicense.Test.Output.Csv
 {
-    [TestFixture]
     public class CsvOutputFormatterSpecialCases
     {
         private static readonly string s_newLine = Environment.NewLine;
@@ -29,7 +28,7 @@ namespace NuGetLicense.Test.Output.Csv
                     Description: null,
                     Summary: null,
                     LicenseInformationOrigin.Expression,
-                    ValidationErrors: new List<ValidationError>()
+                    ValidationErrors: []
                 ),
                 new(
                     PackageId: "PackageIdWith\nNewline",
@@ -42,7 +41,7 @@ namespace NuGetLicense.Test.Output.Csv
                     Description: null,
                     Summary: null,
                     LicenseInformationOrigin.Expression,
-                    ValidationErrors: new List<ValidationError>()
+                    ValidationErrors: []
                 )
             };
 
@@ -58,7 +57,7 @@ namespace NuGetLicense.Test.Output.Csv
 
             string result = Encoding.UTF8.GetString(memoryStream.ToArray());
 
-            Assert.That(result, Is.EqualTo(expected));
+            await Assert.That(result).IsEqualTo(expected);
         }
 
         [Test]
@@ -77,11 +76,11 @@ namespace NuGetLicense.Test.Output.Csv
                     Description: null,
                     Summary: null,
                     LicenseInformationOrigin.Expression,
-                    ValidationErrors: new List<ValidationError>
-                    {
+                    ValidationErrors:
+                    [
                         new("License not allowed", "MIT is not in the allowed list"),
                         new("Missing copyright", "No copyright information")
-                    }
+                    ]
                 )
             };
 
@@ -96,7 +95,7 @@ namespace NuGetLicense.Test.Output.Csv
 
             string result = Encoding.UTF8.GetString(memoryStream.ToArray());
 
-            Assert.That(result, Is.EqualTo(expected));
+            await Assert.That(result).IsEqualTo(expected);
         }
 
         [Test]
@@ -115,7 +114,7 @@ namespace NuGetLicense.Test.Output.Csv
                     Description: null,
                     Summary: null,
                     LicenseInformationOrigin.Expression,
-                    ValidationErrors: new List<ValidationError>()
+                    ValidationErrors: []
                 ),
                 new(
                     PackageId: "IgnoredPackage",
@@ -128,7 +127,7 @@ namespace NuGetLicense.Test.Output.Csv
                     Description: null,
                     Summary: null,
                     LicenseInformationOrigin.Ignored,
-                    ValidationErrors: new List<ValidationError>()
+                    ValidationErrors: []
                 )
             };
 
@@ -143,7 +142,7 @@ namespace NuGetLicense.Test.Output.Csv
 
             string result = Encoding.UTF8.GetString(memoryStream.ToArray());
 
-            Assert.That(result, Is.EqualTo(expected));
+            await Assert.That(result).IsEqualTo(expected);
         }
 
         [Test]
@@ -186,7 +185,7 @@ namespace NuGetLicense.Test.Output.Csv
             await csvFormatter.Write(memoryStream, licenses);
 
             string result = Encoding.UTF8.GetString(memoryStream.ToArray());
-            Assert.That(result, Is.EqualTo(expected));
+            await Assert.That(result).IsEqualTo(expected);
         }
 
         [Test]
@@ -205,7 +204,7 @@ namespace NuGetLicense.Test.Output.Csv
                     Description: null,
                     Summary: null,
                     LicenseInformationOrigin.Expression,
-                    ValidationErrors: new List<ValidationError>()
+                    ValidationErrors: []
                 ),
                 new(
                     PackageId: "Package2",
@@ -218,7 +217,7 @@ namespace NuGetLicense.Test.Output.Csv
                     Description: null,
                     Summary: null,
                     LicenseInformationOrigin.Ignored,
-                    ValidationErrors: new List<ValidationError> { new("Test error", "Context") }
+                    ValidationErrors: [new("Test error", "Context")]
                 ),
                 new(
                     PackageId: "Package3", // should contain because _printErrorsOnly = true & _skipIgnoredPackages = true
@@ -231,7 +230,7 @@ namespace NuGetLicense.Test.Output.Csv
                     Description: null,
                     Summary: null,
                     LicenseInformationOrigin.Expression,
-                    ValidationErrors: new List<ValidationError> { new("Test error", "Context") }
+                    ValidationErrors: [new("Test error", "Context")]
                 ),
                 new(
                     PackageId: "Package4",
@@ -244,7 +243,7 @@ namespace NuGetLicense.Test.Output.Csv
                     Description: null,
                     Summary: null,
                     LicenseInformationOrigin.Ignored,
-                    ValidationErrors: new List<ValidationError>()
+                    ValidationErrors: []
                 )
             };
 
@@ -259,11 +258,11 @@ namespace NuGetLicense.Test.Output.Csv
 
             string result = Encoding.UTF8.GetString(memoryStream.ToArray());
 
-            Assert.That(result, Does.Contain("Package3"));
-            Assert.That(result, Does.Not.Contain("Package1"));
-            Assert.That(result, Does.Not.Contain("Package2"));
-            Assert.That(result, Does.Not.Contain("Package4"));
-            Assert.That(result, Is.EqualTo(expected));
+            await Assert.That(result).Contains("Package3");
+            await Assert.That(result).DoesNotContain("Package1");
+            await Assert.That(result).DoesNotContain("Package2");
+            await Assert.That(result).DoesNotContain("Package4");
+            await Assert.That(result).IsEqualTo(expected);
         }
     }
 }
