@@ -21,7 +21,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Verify.TUnit" Version="31.13.5" />
+    <PackageReference Include="Verify.TUnit" Version="31.15.0" />
   </ItemGroup>
 
   <ItemGroup>
