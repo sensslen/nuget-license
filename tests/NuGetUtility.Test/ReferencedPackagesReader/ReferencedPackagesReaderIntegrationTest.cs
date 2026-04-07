@@ -49,7 +49,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, true);
 
-            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.Count, Is.EqualTo(2));
         }
 
         [Test]
@@ -159,7 +159,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [TestCase("net9.0", false, "TinyCsvParser")]
         [TestCase("net8.0", false, "Microsoft.Extensions.Logging.Abstractions")]
         [TestCase("net8.0-browser", false, "Microsoft.Extensions.Logging.Abstractions")]
-        [TestCase("net9.0", true, "TinyCsvParser")]
+        [TestCase("net9.0", true, "System.IO.Pipelines", "TinyCsvParser")]
         [TestCase("net8.0", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions", "System.Diagnostics.DiagnosticSource")]
         [TestCase("net8.0-browser", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions", "System.Diagnostics.DiagnosticSource")]
         public void GetInstalledPackagesShould_OnlyReturn_PackagesPackagesReferencedByRequestedFramework(string framework, bool includeTransitive, params string[] packages)
