@@ -498,5 +498,26 @@
     "ProjectUrl": "https://github.com/bchavez/Bogus",
     "Authors": "Brian Chavez",
     "License": "MIT AND BSD-3-Clause"
+  },{
+    "Id": "googletest",
+    "Version": "1.8.3",
+    "ProjectUrl": "https://github.com/google/googletest",
+    "Copyright": "Copyright 2016 Google Inc. All rights reserved.",
+    "Authors": "mheule@google.com (Markus Heule)",
+    "Description": "Google\u0027s C\u002B\u002B test framework for Visual Studio 2015 (v140) \u0026 2017 (v141)\n      Note: NuGet package version is not corresponding with GoogleTest releases!",
+    "Summary": "Google\u0027s C\u002B\u002B test framework",
+    "License": "BSD-2-Clause",
+    "LicenseUrl": "https://opensource.org/licenses/bsd-license.php"
+  },
+  {
+    "Id": "googletest.redist",
+    "Version": "1.8.3",
+    "ProjectUrl": "https://github.com/google/googletest",
+    "Copyright": "Copyright 2016 Google Inc. All rights reserved.",
+    "Authors": "mheule@google.com (Markus Heule)",
+    "Description": "Redistributable components for package \u0027googletest\u0027. This package should only be installed as a dependency. \n(This is not the package you are looking for).",
+    "Summary": "Redistributable components for for package \u0027googletest\u0027",
+    "License": "BSD-2-Clause",
+    "LicenseUrl": "https://opensource.org/licenses/bsd-license.php"
   }
 ]
