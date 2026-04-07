@@ -158,7 +158,7 @@ jobs:
             10.0.x
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet restore NuGetUtility.slnx -p:TargetFramework=${{ matrix.framework }}
 
       - name: build
         run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.framework }} --no-restore
@@ -251,7 +251,7 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v3
 
-      - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.sln
+      - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.slnx
 
       - name: fully qualify release path
         id: release_path
@@ -351,7 +351,7 @@ jobs:
             10.0.x
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet restore NuGetUtility.slnx -p:TargetFramework=${{ matrix.framework }}
 
       - uses: paulhatch/semantic-version@v6.0.2
         id: version
@@ -388,7 +388,7 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v3
 
-      - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.sln
+      - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.slnx
 
       - name: fully qualify release path
         id: release_path

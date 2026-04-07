@@ -30,13 +30,13 @@ jobs:
       - uses: browser-actions/setup-chrome@v2.1.1
 
       - name: build
-        run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release
+        run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release NuGetUtility.slnx
 
       - name: test
         uses: josepho0918/vstest-action@15c7e288a18f04395431c4940afe15013a12098e
         with:
           testAssembly: "NuGet*.Test.dll"
-          searchFolder: "tests/*/bin/Release/net9.0/"
+          searchFolder: "tests/*/bin/Release/net10.0/"
           runInParallel: true
 
       - name: fully qualify artifacts path
