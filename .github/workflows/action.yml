@@ -164,9 +164,10 @@ jobs:
         run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.framework }} --no-restore
 
       - name: check
+        shell: bash
         run: |
-          dotnet ./release/nuget-license.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.framework }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json > ./licenses-output.json
-          cat ./licenses-output.json
+          set -o pipefail
+          dotnet ./release/nuget-license.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.framework }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json 2>&1 | tee ./licenses-output.json
 
       - name: validate downloaded licenses
         shell: pwsh
@@ -265,10 +266,14 @@ jobs:
         run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }} /p:TargetFramework=net472
 
       - name: check
+        shell: pwsh
         run: |
-          ${{ steps.release_path.outputs.path }}/NuGetLicenseFramework.exe -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json > ./licenses-output.json
-          cat ./licenses-output.json
-
+          & "${{ steps.release_path.outputs.path }}/NuGetLicenseFramework.exe" -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json 2>&1 | Tee-Object -FilePath ./licenses-output.json
+          $exitCode = $LASTEXITCODE
+          if ($exitCode -ne 0) {
+            exit $exitCode
+          }
+            
       - name: validate downloaded licenses
         shell: pwsh
         run: |
