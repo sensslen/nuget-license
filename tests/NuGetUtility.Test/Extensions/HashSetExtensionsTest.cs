@@ -3,53 +3,63 @@
 
 using System.Collections.Immutable;
 using AutoFixture;
-using AutoFixture.NUnit4;
 using NuGetUtility.Extensions;
 
 namespace NuGetUtility.Test.Extensions
 {
-    [TestFixture(typeof(string))]
-    [TestFixture(typeof(HashSetExtensionTestObject))]
-    [TestFixture(typeof(int))]
-    internal class HashSetExtensionsTest<T>
+    public abstract class HashSetExtensionsTestBase<T>
     {
-        [SetUp]
-        public void SetUp()
+        private readonly Fixture _fixture;
+
+        protected HashSetExtensionsTestBase()
         {
-            _uut = new HashSet<T>(new Fixture().CreateMany<T>());
-        }
-
-        private HashSet<T>? _uut;
-
-        [Test]
-        [AutoData]
-        public void AddMany_Should_AddNewElementsToHashSet(T[] newElements)
-        {
-            var initialElements = _uut!.ToImmutableList();
-            _uut!.AddRange(newElements);
-
-            Assert.That(_uut, Is.EquivalentTo(initialElements.AddRange(newElements).Distinct()));
+            _fixture = new Fixture();
         }
 
         [Test]
-        [AutoData]
-        public void AddMany_Should_OnlyAddNewItems(T[] newElements)
+        public async Task AddMany_Should_AddNewElementsToHashSet()
         {
-            var initialElements = _uut!.ToImmutableList();
-            _uut!.AddRange(initialElements.AddRange(newElements));
+            HashSet<T> uut = new HashSet<T>(_fixture.CreateMany<T>());
+            T[] newElements = _fixture.CreateMany<T>().ToArray();
+            ImmutableList<T> initialElements = [.. uut];
 
-            Assert.That(_uut, Is.EquivalentTo(initialElements.AddRange(newElements).Distinct()));
+            uut.AddRange(newElements);
+
+            await Assert.That(uut).IsEquivalentTo(initialElements.AddRange(newElements).Distinct());
         }
 
         [Test]
-        public void AddMany_Should_KeepSameHashSetIfOnlyAddingSameElements()
+        public async Task AddMany_Should_OnlyAddNewItems()
         {
-            var initialElements = _uut!.ToImmutableList();
-            _uut!.AddRange(initialElements);
-            _uut!.AddRange(initialElements);
-            _uut!.AddRange(initialElements);
+            HashSet<T> uut = new HashSet<T>(_fixture.CreateMany<T>());
+            T[] newElements = _fixture.CreateMany<T>().ToArray();
+            ImmutableList<T> initialElements = [.. uut];
 
-            Assert.That(_uut, Is.EquivalentTo(initialElements));
+            uut.AddRange(initialElements.AddRange(newElements));
+
+            await Assert.That(uut).IsEquivalentTo(initialElements.AddRange(newElements).Distinct());
+        }
+
+        [Test]
+        public async Task AddMany_Should_KeepSameHashSetIfOnlyAddingSameElements()
+        {
+            HashSet<T> uut = new HashSet<T>(_fixture.CreateMany<T>());
+            ImmutableList<T> initialElements = [.. uut];
+
+            uut.AddRange(initialElements);
+            uut.AddRange(initialElements);
+            uut.AddRange(initialElements);
+
+            await Assert.That(uut).IsEquivalentTo(initialElements);
         }
     }
+
+    [InheritsTests]
+    public sealed class HashSetExtensionsStringTest : HashSetExtensionsTestBase<string>;
+
+    [InheritsTests]
+    public sealed class HashSetExtensionsObjectTest : HashSetExtensionsTestBase<HashSetExtensionTestObject>;
+
+    [InheritsTests]
+    public sealed class HashSetExtensionsIntTest : HashSetExtensionsTestBase<int>;
 }

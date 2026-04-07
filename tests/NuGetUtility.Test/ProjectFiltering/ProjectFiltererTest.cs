@@ -5,42 +5,40 @@ using NuGetUtility.ProjectFiltering;
 
 namespace NuGetUtility.Test.ProjectFiltering
 {
-    [TestFixture]
     class ProjectFiltererTest
     {
-        private ProjectFilter _filterer = null!;
+        private readonly ProjectFilter _filterer;
 
-        [SetUp]
-        public void Setup()
+        public ProjectFiltererTest()
         {
             _filterer = new ProjectFilter();
         }
 
         [Test]
-        public void FilterProjects_ExcludesSharedProjects_WhenIncludeSharedProjectsIsFalse()
+        public async Task FilterProjects_ExcludesSharedProjects_WhenIncludeSharedProjectsIsFalse()
         {
             string[] projects = ["one.csproj", "two.shproj", "three.csproj", "four.SHPROJ"];
 
             string[] result = _filterer.FilterProjects(projects, false).ToArray();
 
-            Assert.That(result.Count, Is.EqualTo(2));
-            Assert.That(result, Does.Contain("one.csproj"));
-            Assert.That(result, Does.Contain("three.csproj"));
-            Assert.That(result, Does.Not.Contain("two.shproj"));
-            Assert.That(result, Does.Not.Contain("four.SHPROJ"));
+            await Assert.That(result.Count).IsEqualTo(2);
+            await Assert.That(result.Contains("one.csproj")).IsTrue();
+            await Assert.That(result.Contains("three.csproj")).IsTrue();
+            await Assert.That(result.Contains("two.shproj")).IsFalse();
+            await Assert.That(result.Contains("four.SHPROJ")).IsFalse();
         }
 
         [Test]
-        public void FilterProjects_IncludesAllProjects_WhenIncludeSharedProjectsIsTrue()
+        public async Task FilterProjects_IncludesAllProjects_WhenIncludeSharedProjectsIsTrue()
         {
             string[] projects = ["one.csproj", "two.shproj", "three.csproj", "four.SHPROJ"];
 
             string[] result = _filterer.FilterProjects(projects, true).ToArray();
 
-            Assert.That(result.Count, Is.EqualTo(4));
-            Assert.That(result, Does.Contain("one.csproj"));
-            Assert.That(result, Does.Contain("two.shproj"));
-            Assert.That(result, Does.Contain("three.csproj"));
+            await Assert.That(result.Count).IsEqualTo(4);
+            await Assert.That(result.Contains("one.csproj")).IsTrue();
+            await Assert.That(result.Contains("two.shproj")).IsTrue();
+            await Assert.That(result.Contains("three.csproj")).IsTrue();
         }
     }
 }
