@@ -1,89 +1,234 @@
-[
-  {
-    "Id": "NetArchTest.Rules",
-    "Version": "1.3.2",
-    "ProjectUrl": "https://www.ben-morris.com/writing-archunit-style-tests-for-net-and-c-for-self-testing-architectures/",
-    "Copyright": "Copyright (c) 2021 Ben Morris",
-    "Authors": "Ben Morris",
-    "License": "MIT"
+[{
+    "Id": "Fare",
+    "Version": "2.2.1",
+    "ProjectUrl": "https://github.com/moodmosaic/Fare",
+    "Copyright": "Copyright \u00A9 Nikos Baxevanis 2016",
+    "Authors": "Nikos Baxevanis",
+    "License": "MIT",
+    "LicenseUrl": "https://github.com/moodmosaic/Fare/blob/master/LICENSE"
   },
-  { 
-    "Id": "System.Text.RegularExpressions",
-    "Version": "4.3.1",
+  {
+    "Id": "Microsoft.NETCore.Platforms",
+    "Version": "1.1.1",
     "ProjectUrl": "https://dot.net/",
-    "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
     "Authors": "Microsoft",
-    "Description": "Provides the System.Text.RegularExpressions.Regex class, an implementation of a regular expression engine.\n\nCommonly Used Types:\nSystem.Text.RegularExpressions.Regex\nSystem.Text.RegularExpressions.RegexOptions\nSystem.Text.RegularExpressions.Match\nSystem.Text.RegularExpressions.Group\nSystem.Text.RegularExpressions.Capture\nSystem.Text.RegularExpressions.MatchEvaluator\n \nWhen using NuGet 3.x this package requires at least version 3.4.",
     "License": "MIT",
     "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
   },
   {
-    "Id": "System.Security.Cryptography.X509Certificates",
+    "Id": "Microsoft.NETCore.Targets",
+    "Version": "1.1.3",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl",
+    "Version": "4.3.2",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl",
+    "Version": "4.3.2",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "runtime.fedora.24-x64.runtime.native.System.Security.Cryptography.OpenSsl",
+    "Version": "4.3.2",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "runtime.native.System",
     "Version": "4.3.0",
     "ProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
     "Authors": "Microsoft",
-    "Description": "Provides types for reading, exporting and verifying Authenticode X.509 v3 certificates. These certificates are signed with a private key that uniquely and positively identifies the holder of the certificate.\n\nCommonly Used Types:\nSystem.Security.Cryptography.X509Certificates.X509Certificate2\nSystem.Security.Cryptography.X509Certificates.X509Certificate\nSystem.Security.Cryptography.X509Certificates.X509ContentType\nSystem.Security.Cryptography.X509Certificates.StoreLocation\nSystem.Security.Cryptography.X509Certificates.StoreName\nSystem.Security.Cryptography.X509Certificates.X509FindType\nSystem.Security.Cryptography.X509Certificates.X509ChainStatus\nSystem.Security.Cryptography.X509Certificates.X509Certificate2Collection\nSystem.Security.Cryptography.X509Certificates.X509EnhancedKeyUsageExtension\nSystem.Security.Cryptography.X509Certificates.X509Chain\n \nWhen using NuGet 3.x this package requires at least version 3.4.",
     "License": "MIT",
     "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
   },
   {
-    "Id": "System.Security.Cryptography.Primitives",
+    "Id": "runtime.native.System.Net.Http",
     "Version": "4.3.0",
     "ProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
     "Authors": "Microsoft",
-    "Description": "Provides common types for the cryptographic libraries.\n\nCommonly Used Types:\nSystem.Security.Cryptography.ICryptoTransform\nSystem.Security.Cryptography.AsymmetricAlgorithm\nSystem.Security.Cryptography.SymmetricAlgorithm\nSystem.Security.Cryptography.HashAlgorithm\nSystem.Security.Cryptography.KeyedHashAlgorithm\nSystem.Security.Cryptography.HMAC\nSystem.Security.Cryptography.KeySizes\nSystem.Security.Cryptography.CryptographicException\nSystem.Security.Cryptography.CipherMode\nSystem.Security.Cryptography.PaddingMode\nSystem.Security.Cryptography.CryptoStream\nSystem.Security.Cryptography.CryptoStreamMode\n \nWhen using NuGet 3.x this package requires at least version 3.4.",
     "License": "MIT",
     "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
   },
   {
-    "Id": "System.Runtime.InteropServices.RuntimeInformation",
+    "Id": "runtime.native.System.Security.Cryptography.Apple",
     "Version": "4.3.0",
     "ProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
     "Authors": "Microsoft",
-    "Description": "Provides APIs to query about runtime and OS information.\n\nCommonly Used Types:\nSystem.Runtime.InteropServices.RuntimeInformation\nSystem.Runtime.InteropServices.OSPlatform\n \nWhen using NuGet 3.x this package requires at least version 3.4.",
     "License": "MIT",
     "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
   },
   {
-    "Id": "System.Security.Cryptography.Algorithms",
+    "Id": "runtime.native.System.Security.Cryptography.OpenSsl",
+    "Version": "4.3.2",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "runtime.opensuse.13.2-x64.runtime.native.System.Security.Cryptography.OpenSsl",
+    "Version": "4.3.2",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "runtime.opensuse.42.1-x64.runtime.native.System.Security.Cryptography.OpenSsl",
+    "Version": "4.3.2",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "runtime.osx.10.10-x64.runtime.native.System.Security.Cryptography.Apple",
     "Version": "4.3.0",
     "ProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
     "Authors": "Microsoft",
-    "Description": "Provides base types for cryptographic algorithms, including hashing, encryption, and signing operations.\n\nCommonly Used Types:\nSystem.Security.Cryptography.Aes\nSystem.Security.Cryptography.RSA\nSystem.Security.Cryptography.RSAParameters\nSystem.Security.Cryptography.HMACSHA1\nSystem.Security.Cryptography.SHA256\nSystem.Security.Cryptography.SHA1\nSystem.Security.Cryptography.SHA512\nSystem.Security.Cryptography.SHA384\nSystem.Security.Cryptography.HMACSHA256\nSystem.Security.Cryptography.MD5\nSystem.Security.Cryptography.HMACSHA384\nSystem.Security.Cryptography.HMACSHA512\n \nWhen using NuGet 3.x this package requires at least version 3.4.",
     "License": "MIT",
     "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
   },
   {
-    "Id": "System.Security.Cryptography.Encoding",
+    "Id": "runtime.osx.10.10-x64.runtime.native.System.Security.Cryptography.OpenSsl",
+    "Version": "4.3.2",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "runtime.rhel.7-x64.runtime.native.System.Security.Cryptography.OpenSsl",
+    "Version": "4.3.2",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "runtime.ubuntu.14.04-x64.runtime.native.System.Security.Cryptography.OpenSsl",
+    "Version": "4.3.2",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "runtime.ubuntu.16.04-x64.runtime.native.System.Security.Cryptography.OpenSsl",
+    "Version": "4.3.2",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl",
+    "Version": "4.3.2",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Collections",
     "Version": "4.3.0",
     "ProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
     "Authors": "Microsoft",
-    "Description": "Provides types for representing Abstract Syntax Notation One (ASN.1)-encoded data.\n\nCommonly Used Types:\nSystem.Security.Cryptography.AsnEncodedData\nSystem.Security.Cryptography.Oid\nSystem.Security.Cryptography.OidCollection\n \nWhen using NuGet 3.x this package requires at least version 3.4.",
     "License": "MIT",
     "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
   },
   {
-    "Id": "System.Runtime",
+    "Id": "System.Collections.Concurrent",
     "Version": "4.3.0",
     "ProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
     "Authors": "Microsoft",
-    "Description": "Provides the fundamental primitives, classes and base classes that define commonly-used value and reference data types, events and event handlers, interfaces, attributes, and exceptions. This packages represents the core package, and provides the minimal set of types required to build a managed application.\n\nCommonly Used Types:\nSystem.Object\nSystem.Exception\nSystem.Int16\nSystem.Int32\nSystem.Int64\nSystem.Enum\nSystem.String\nSystem.Char\nSystem.Boolean\nSystem.SByte\nSystem.Byte\nSystem.DateTime\nSystem.DateTimeOffset\nSystem.Single\nSystem.Double\nSystem.UInt16\nSystem.UInt32\nSystem.UInt64\nSystem.IDisposable\nSystem.Uri\n \nWhen using NuGet 3.x this package requires at least version 3.4.",
     "License": "MIT",
     "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
   },
   {
-    "Id": "System.Net.Http",
-    "Version": "4.3.4",
+    "Id": "System.Diagnostics.Debug",
+    "Version": "4.3.0",
     "ProjectUrl": "https://dot.net/",
-    "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
     "Authors": "Microsoft",
-    "Description": "Provides a programming interface for modern HTTP applications, including HTTP client components that allow applications to consume web services over HTTP and HTTP components that can be used by both clients and servers for parsing HTTP headers.\n\nCommonly Used Types:\nSystem.Net.Http.HttpResponseMessage\nSystem.Net.Http.DelegatingHandler\nSystem.Net.Http.HttpRequestException\nSystem.Net.Http.HttpClient\nSystem.Net.Http.MultipartContent\nSystem.Net.Http.Headers.HttpContentHeaders\nSystem.Net.Http.HttpClientHandler\nSystem.Net.Http.StreamContent\nSystem.Net.Http.FormUrlEncodedContent\nSystem.Net.Http.HttpMessageHandler\n \nWhen using NuGet 3.x this package requires at least version 3.4.",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Diagnostics.DiagnosticSource",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Diagnostics.Tracing",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Globalization",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Globalization.Calendars",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Globalization.Extensions",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
     "License": "MIT",
     "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
   },
@@ -93,18 +238,265 @@
     "ProjectUrl": "https://dot.net/",
     "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
     "Authors": "Microsoft",
-    "Description": "Provides base input and output (I/O) types, including System.IO.Stream, System.IO.StreamReader and System.IO.StreamWriter, that allow reading and writing to data streams\n\nCommonly Used Types:\nSystem.IO.Stream\nSystem.IO.EndOfStreamException\nSystem.IO.MemoryStream\nSystem.IO.StreamReader\nSystem.IO.StreamWriter\nSystem.IO.StringWriter\nSystem.IO.TextWriter\nSystem.IO.TextReader\n \nWhen using NuGet 3.x this package requires at least version 3.4.",
     "License": "MIT",
     "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
   },
   {
-    "Id": "Fare",
-    "Version": "2.2.1",
-    "ProjectUrl": "https://github.com/moodmosaic/Fare",
-    "Copyright": "Copyright \u00A9 Nikos Baxevanis 2016",
-    "Authors": "Nikos Baxevanis",
-    "Description": ".NET port of dk.brics.automaton - Project Fare is an effort to bring a DFA/NFA (finite-state automata) implementation from Java to .NET. There are quite a few implementations available in other languages today. This project aims to fill the gap in .NET.",
+    "Id": "System.IO.FileSystem",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
     "License": "MIT",
-    "LicenseUrl": "https://github.com/moodmosaic/Fare/blob/master/LICENSE"
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.IO.FileSystem.Primitives",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Linq",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Net.Http",
+    "Version": "4.3.4",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Net.Primitives",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Reflection",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Reflection.Primitives",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Resources.ResourceManager",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Runtime",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Runtime",
+    "Version": "4.3.1",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Runtime.Extensions",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Runtime.Handles",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Runtime.InteropServices",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Runtime.Numerics",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Security.Cryptography.Algorithms",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Security.Cryptography.Cng",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Security.Cryptography.Csp",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Security.Cryptography.Encoding",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Security.Cryptography.OpenSsl",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Security.Cryptography.Primitives",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Security.Cryptography.X509Certificates",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Security.Cryptography.X509Certificates",
+    "Version": "4.3.2",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Text.Encoding",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Text.RegularExpressions",
+    "Version": "4.3.1",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation. All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Threading",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Threading.Tasks",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "System.Runtime.InteropServices.RuntimeInformation",
+    "Version": "4.3.0",
+    "ProjectUrl": "https://dot.net/",
+    "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+    "Authors": "Microsoft",
+    "License": "MIT",
+    "LicenseUrl": "http://go.microsoft.com/fwlink/?LinkId=329770"
+  },
+  {
+    "Id": "NetArchTest.Rules",
+    "Version": "1.3.2",
+    "ProjectUrl": "https://www.ben-morris.com/writing-archunit-style-tests-for-net-and-c-for-self-testing-architectures/",
+    "Copyright": "Copyright (c) 2021 Ben Morris",
+    "Authors": "Ben Morris",
+    "License": "MIT"
+  },
+  {
+    "Id": "Bogus",
+    "Version": "35.6.3",
+    "ProjectUrl": "https://github.com/bchavez/Bogus",
+    "Authors": "Brian Chavez",
+    "License": "MIT AND BSD-3-Clause"
   }
 ]
