@@ -142,7 +142,7 @@ jobs:
     strategy:
       matrix:
         framework: [net8.0, net9.0, net10.0]
-        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense, ProjectWithReferenceContainingWindowsSpecificPath]
+        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense, ProjectWithReferenceContainingWindowsSpecificPath, Sln, Slnx]
 
     steps:
       - uses: actions/checkout@v6
