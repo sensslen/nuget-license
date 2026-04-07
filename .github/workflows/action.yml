@@ -39,10 +39,10 @@ jobs:
             10.0.x
 
       - name: restore
-        run: dotnet restore
+        run: dotnet restore NuGetUtility.slnx
 
       - name: build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --configuration Release --no-restore NuGetUtility.slnx
 
       - name: test (NuGetUtility.Test.dll)
         run: dotnet test --project ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore --no-build
@@ -65,7 +65,7 @@ jobs:
             10.0.x
          
       - name: restore
-        run: dotnet restore
+        run: dotnet restore NuGetUtility.slnx
       
       - name: test
         run: dotnet test --project ./tests/FileLicenseMatcher.Test/FileLicenseMatcher.Test.csproj --configuration Release --no-restore
@@ -84,7 +84,7 @@ jobs:
       - uses: browser-actions/setup-chrome@v2.1.1
       
       - name: restore
-        run: dotnet restore
+        run: dotnet restore NuGetUtility.slnx
       
       - name: test
         run: dotnet test --project ./tests/NuGetUtility.UrlToLicenseMapping.Test/NuGetUtility.UrlToLicenseMapping.Test.csproj --configuration Release --no-restore
@@ -109,7 +109,7 @@ jobs:
         uses: microsoft/setup-msbuild@v3
 
       - name: build
-        run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=TestWindows
+        run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=TestWindows NuGetUtility.slnx
 
       - name: test
         uses: josepho0918/vstest-action@15c7e288a18f04395431c4940afe15013a12098e
@@ -132,10 +132,10 @@ jobs:
             10.0.x
 
       - name: restore
-        run: dotnet restore
+        run: dotnet restore NuGetUtility.slnx
 
       - name: check format
-        run: dotnet format --verify-no-changes
+        run: dotnet format --verify-no-changes NuGetUtility.slnx
 
   check_licenses:
     runs-on: ubuntu-latest
