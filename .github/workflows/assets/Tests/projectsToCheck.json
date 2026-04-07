@@ -1,3 +1,6 @@
 [
-    "./tests/NuGetUtility.Test/NuGetUtility.Test.csproj"
+    "./tests/NuGetUtility.Test/NuGetUtility.Test.csproj",
+    "./tests/NuGetLicense.Test/NuGetLicense.Test.csproj",
+    "./tests/FileLicenseMatcher.Test/FileLicenseMatcher.Test.csproj",
+    "./tests/NuGetUtility.UrlToLicenseMapping.Test/NuGetUtility.UrlToLicenseMapping.Test.csproj"
 ]
