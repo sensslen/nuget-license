@@ -4,8 +4,6 @@
     <BuildType Name="Release" />
     <BuildType Name="TestWindows" />
     <Platform Name="Any CPU" />
-    <Platform Name="x64" />
-    <Platform Name="x86" />
   </Configurations>
   <Folder Name="/integration/">
     <Project Path="integration/ProjectWithReferenceContainingFileLicense/ProjectWithReferenceContainingFileLicense.csproj">
