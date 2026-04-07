@@ -26,14 +26,14 @@ namespace NuGetLicense.Test.LicenseValidator
                 obj.PackageVersion,
                 obj.PackageProjectUrl);
         }
-        private static HashCode GetHashCode(List<ValidationError> validationErrors)
+        private static int GetHashCode(List<ValidationError> validationErrors)
         {
             var code = new HashCode();
             foreach (ValidationError error in validationErrors)
             {
                 code.Add(error);
             }
-            return code;
+            return code.ToHashCode();
         }
     }
 }

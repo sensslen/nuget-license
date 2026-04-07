@@ -16,6 +16,7 @@ namespace NuGetLicense.LicenseValidator
 {
     public class LicenseValidator
     {
+        private static readonly SemaphoreSlim s_spdxParserSemaphore = new SemaphoreSlim(1, 1);
         private readonly IEnumerable<string> _allowedLicenses;
         private readonly IFileDownloader _fileDownloader;
         private readonly IFileLicenseMatcher _fileLicenseMatcher;
@@ -141,7 +142,7 @@ namespace NuGetLicense.LicenseValidator
                 case LicenseType.Overwrite:
                     {
                         string licenseId = info.LicenseMetadata!.License;
-                        SpdxExpression? licenseExpression = SpdxExpressionParser.Parse(licenseId, _ => true, _ => true);
+                        SpdxExpression? licenseExpression = await ParseSpdxExpressionAsync(licenseId, token);
                         if (IsValidLicenseExpression(licenseExpression))
                         {
                             await DownloadLicenseAsync(GetLicenseUrl(licenseId), info.Identity, context, token);
@@ -174,7 +175,7 @@ namespace NuGetLicense.LicenseValidator
                             break;
                         }
 
-                        SpdxExpression? licenseExpression = SpdxExpressionParser.Parse(matchedLicense, _ => true, _ => true);
+                        SpdxExpression? licenseExpression = await ParseSpdxExpressionAsync(matchedLicense, token);
                         if (IsValidLicenseExpression(licenseExpression))
                         {
                             await StoreLicenseAsync(info.LicenseMetadata.License, info.Identity, token);
@@ -226,7 +227,7 @@ namespace NuGetLicense.LicenseValidator
 
             if (_licenseMapping.TryGetValue(info.LicenseUrl, out string? licenseId))
             {
-                SpdxExpression? licenseExpression = SpdxExpressionParser.Parse(licenseId, _ => true, _ => true);
+                SpdxExpression? licenseExpression = await ParseSpdxExpressionAsync(licenseId, token);
 
                 if (IsValidLicenseExpression(licenseExpression))
                 {
@@ -325,6 +326,19 @@ namespace NuGetLicense.LicenseValidator
             LicenseType.Expression => LicenseInformationOrigin.Expression,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, $"This conversion method only supports the {nameof(LicenseType.Overwrite)} and {nameof(LicenseType.Expression)} types for conversion")
         };
+
+        private static async Task<SpdxExpression?> ParseSpdxExpressionAsync(string expression, CancellationToken token)
+        {
+            await s_spdxParserSemaphore.WaitAsync(token);
+            try
+            {
+                return SpdxExpressionParser.Parse(expression, _ => true, _ => true);
+            }
+            finally
+            {
+                s_spdxParserSemaphore.Release();
+            }
+        }
 
         private sealed record LicenseNameAndVersion(string LicenseName, INuGetVersion Version);
     }
