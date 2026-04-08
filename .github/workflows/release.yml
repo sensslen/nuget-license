@@ -33,7 +33,7 @@ jobs:
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release NuGetUtility.slnx
 
       - name: test
-        uses: josepho0918/vstest-action@15c7e288a18f04395431c4940afe15013a12098e
+        uses: josepho0918/vstest-action@678efa7c0bdf7a46f6977b47c50f9c6a184ae00e
         with:
           testAssembly: "NuGet*.Test.dll"
           searchFolder: "tests/*/bin/Release/net10.0/"
