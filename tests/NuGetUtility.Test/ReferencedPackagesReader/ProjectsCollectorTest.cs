@@ -1,4 +1,4 @@
-﻿// Licensed to the projects contributors.
+﻿// Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.IO.Abstractions;
@@ -11,44 +11,41 @@ using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
 
 namespace NuGetUtility.Test.ReferencedPackagesReader
 {
-    [TestFixture]
     public class ProjectsCollectorTest
     {
         public ProjectsCollectorTest()
         {
             _osPlatformSpecificVerifySettings = new();
             _osPlatformSpecificVerifySettings.UniqueForOSPlatform();
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
             _fixture = new Fixture();
             _solutionPersistanceWrapper = Substitute.For<ISolutionPersistanceWrapper>();
             _fileSystem = new MockFileSystem();
             _uut = new ProjectsCollector(_solutionPersistanceWrapper, _fileSystem);
         }
-        private ISolutionPersistanceWrapper _solutionPersistanceWrapper = null!;
-        private IFileSystem _fileSystem = null!;
-        private ProjectsCollector _uut = null!;
-        private Fixture _fixture = null!;
+
+        private readonly ISolutionPersistanceWrapper _solutionPersistanceWrapper;
+        private readonly IFileSystem _fileSystem;
+        private readonly ProjectsCollector _uut;
+        private readonly Fixture _fixture;
         private readonly VerifySettings _osPlatformSpecificVerifySettings;
 
-        [TestCase("A.csproj")]
-        [TestCase("B.fsproj")]
-        [TestCase("C.vbproj")]
-        [TestCase("D.dbproj")]
+        [Test]
+        [Arguments("A.csproj")]
+        [Arguments("B.fsproj")]
+        [Arguments("C.vbproj")]
+        [Arguments("D.dbproj")]
         public async Task GetProjects_Should_ReturnProjectsAsListDirectly(string projectFile)
         {
             IEnumerable<string> result = await _uut.GetProjectsAsync(projectFile);
-            Assert.That(result, Is.EqualTo([_fileSystem.Path.GetFullPath(projectFile)]));
+            await Assert.That(result).IsEquivalentTo([_fileSystem.Path.GetFullPath(projectFile)]);
             await _solutionPersistanceWrapper.DidNotReceive().GetProjectsFromSolutionAsync(Arg.Any<string>());
         }
 
-        [TestCase("A.sln")]
-        [TestCase("B.sln")]
-        [TestCase("C.sln")]
-        [TestCase("A.slnx")]
+        [Test]
+        [Arguments("A.sln")]
+        [Arguments("B.sln")]
+        [Arguments("C.sln")]
+        [Arguments("A.slnx")]
         public async Task GetProjects_Should_QueryMsBuildToGetProjectsForSolutionFiles(string solutionFile)
         {
             _ = await _uut.GetProjectsAsync(solutionFile);
@@ -56,39 +53,42 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(_fileSystem.Path.GetFullPath(solutionFile));
         }
 
-        [TestCase("A.sln")]
-        [TestCase("B.sln")]
-        [TestCase("C.sln")]
-        [TestCase("C.slnx")]
+        [Test]
+        [Arguments("A.sln")]
+        [Arguments("B.sln")]
+        [Arguments("C.sln")]
+        [Arguments("C.slnx")]
         public async Task GetProjects_Should_ReturnEmptyArray_If_SolutionContainsNoProjects(string solutionFile)
         {
             _solutionPersistanceWrapper.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult(Enumerable.Empty<string>()));
 
             IEnumerable<string> result = await _uut.GetProjectsAsync(solutionFile);
-            Assert.That(result, Is.Empty);
+            await Assert.That(result).IsEmpty();
 
             await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(_fileSystem.Path.GetFullPath(solutionFile));
         }
 
-        [TestCase("A.sln")]
-        [TestCase("B.sln")]
-        [TestCase("C.sln")]
-        [TestCase("B.slnx")]
+        [Test]
+        [Arguments("A.sln")]
+        [Arguments("B.sln")]
+        [Arguments("C.sln")]
+        [Arguments("B.slnx")]
         public async Task GetProjects_Should_ReturnEmptyArray_If_SolutionContainsProjectsThatDontExist(string solutionFile)
         {
             IEnumerable<string> projects = _fixture.CreateMany<string>();
             _solutionPersistanceWrapper.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult(projects));
 
             IEnumerable<string> result = await _uut.GetProjectsAsync(solutionFile);
-            Assert.That(result, Is.Empty);
+            await Assert.That(result).IsEmpty();
 
             await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(_fileSystem.Path.GetFullPath(solutionFile));
         }
 
-        [TestCase("A.sln")]
-        [TestCase("B.sln")]
-        [TestCase("C.sln")]
-        [TestCase("C.slnx")]
+        [Test]
+        [Arguments("A.sln")]
+        [Arguments("B.sln")]
+        [Arguments("C.sln")]
+        [Arguments("C.slnx")]
         public async Task GetProjects_Should_ReturnArrayOfProjects_If_SolutionContainsProjectsThatDoExist(string solutionFile)
         {
             string[] projects = _fixture.CreateMany<string>().ToArray();
@@ -96,15 +96,16 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _solutionPersistanceWrapper.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(projects));
 
             IEnumerable<string> result = await _uut.GetProjectsAsync(solutionFile);
-            Assert.That(result, Is.EqualTo(projects.Select(_fileSystem.Path.GetFullPath)));
+            await Assert.That(result).IsEquivalentTo(projects.Select(_fileSystem.Path.GetFullPath));
 
             await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(_fileSystem.Path.GetFullPath(solutionFile));
         }
 
-        [TestCase("A.sln")]
-        [TestCase("B.sln")]
-        [TestCase("C.sln")]
-        [TestCase("A.slnx")]
+        [Test]
+        [Arguments("A.sln")]
+        [Arguments("B.sln")]
+        [Arguments("C.sln")]
+        [Arguments("A.slnx")]
         public async Task GetProjects_Should_ReturnOnlyExistingProjectsInSolutionFile(string solutionFile)
         {
             string[] existingProjects = _fixture.CreateMany<string>().ToArray();
@@ -116,7 +117,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 .Returns(existingProjects.Concat(missingProjects).Shuffle(54321));
 
             IEnumerable<string> result = await _uut.GetProjectsAsync(solutionFile);
-            Assert.That(result, Is.EquivalentTo(existingProjects.Select(_fileSystem.Path.GetFullPath)));
+            await Assert.That(result).IsEquivalentTo(existingProjects.Select(_fileSystem.Path.GetFullPath));
 
             await _solutionPersistanceWrapper.Received(1).GetProjectsFromSolutionAsync(_fileSystem.Path.GetFullPath(solutionFile));
         }
@@ -129,7 +130,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             string solutionFileName = "Projects.sln";
             IEnumerable<string> result = await solutionPersistance.GetProjectsFromSolutionAsync(_fileSystem.Path.Combine(solutionFolder, solutionFileName));
 
-            Assert.That(result.Select(_fileSystem.Path.IsPathRooted), Is.All.True);
+            await Assert.That(result.Select(_fileSystem.Path.IsPathRooted).All(v => v)).IsTrue();
 
             await Verify(string.Join(",", result.Select(p => GetPathRelativeTo(solutionFolder, p))), _osPlatformSpecificVerifySettings);
         }
@@ -142,7 +143,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             string solutionFileName = "slnx.slnx";
             IEnumerable<string> result = await solutionPersistance.GetProjectsFromSolutionAsync(_fileSystem.Path.Combine(solutionFolder, solutionFileName));
 
-            Assert.That(result.Select(_fileSystem.Path.IsPathRooted), Is.All.True);
+            await Assert.That(result.Select(_fileSystem.Path.IsPathRooted).All(v => v)).IsTrue();
 
             await Verify(string.Join(",", result.Select(p => GetPathRelativeTo(solutionFolder, p))), _osPlatformSpecificVerifySettings);
         }

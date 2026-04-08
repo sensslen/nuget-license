@@ -1,0 +1,69 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="TestWindows" />
+    <Platform Name="Any CPU" />
+  </Configurations>
+  <Folder Name="/integration/">
+    <Project Path="integration/ProjectWithReferenceContainingFileLicense/ProjectWithReferenceContainingFileLicense.csproj">
+      <BuildType Solution="TestWindows|*" Project="Release" />
+    </Project>
+    <Project Path="integration/ProjectWithReferenceContainingLicenseExpression/ProjectWithReferenceContainingLicenseExpression.csproj" />
+    <Project Path="integration/ProjectWithReferenceContainingWindowsSpecificPath/ProjectWithReferenceContainingWindowsSpecificPath.csproj">
+      <BuildType Solution="TestWindows|*" Project="Release" />
+    </Project>
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".globalconfig" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/FileLicenseMatcher/FileLicenseMatcher.csproj" />
+    <Project Path="src/NuGetLicense/NuGetLicense.csproj">
+      <BuildType Solution="TestWindows|*" Project="Release" />
+    </Project>
+    <Project Path="src/NuGetLicenseCore/NuGetLicenseCore.csproj">
+      <BuildType Solution="TestWindows|*" Project="Release" />
+    </Project>
+    <Project Path="src/NuGetLicenseFramework/NuGetLicenseFramework.csproj">
+      <BuildType Solution="TestWindows|*" Project="Release" />
+    </Project>
+    <Project Path="src/NuGetUtility/NuGetUtility.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FileLicenseMatcher.Test/FileLicenseMatcher.Test.csproj" />
+    <Project Path="tests/NuGetLicense.Test/NuGetLicense.Test.csproj" />
+    <Project Path="tests/NuGetUtility.Test.Extensions/NuGetUtility.Test.Extensions.csproj" />
+    <Project Path="tests/NuGetUtility.Test/NuGetUtility.Test.csproj" />
+    <Project Path="tests/NuGetUtility.UrlToLicenseMapping.Test/NuGetUtility.UrlToLicenseMapping.Test.csproj" />
+  </Folder>
+  <Folder Name="/tests/targets/">
+    <Project Path="tests/targets/EmptyCppProject/EmptyCppProject.vcxproj" Id="9b107a91-87f9-420c-adf8-732c77dafb93">
+      <BuildType Solution="TestWindows|*" Project="Release" />
+      <Build Solution="Debug|Any CPU" Project="false" />
+      <Build Solution="Release|Any CPU" Project="false" />
+    </Project>
+    <Project Path="tests/targets/MultiTargetProjectWithDifferentDependencies/MultiTargetProjectWithDifferentDependencies.csproj">
+      <BuildType Solution="TestWindows|*" Project="Release" />
+    </Project>
+    <Project Path="tests/targets/PackageReferenceProject/PackageReferenceProject.csproj" />
+    <Project Path="tests/targets/PackagesConfigProject/PackagesConfigProject.csproj" Id="bbb24a05-8a1f-4840-8c70-befe3f0b8f5d">
+      <Build Solution="Debug|Any CPU" Project="false" />
+      <Build Solution="Release|Any CPU" Project="false" />
+    </Project>
+    <Project Path="tests/targets/ProjectWithoutNugetReferences/ProjectWithoutNugetReferences.csproj" />
+    <Project Path="tests/targets/ProjectWithTransitiveNuget/ProjectWithTransitiveNuget.csproj" />
+    <Project Path="tests/targets/ProjectWithTransitiveReferences/ProjectWithTransitiveReferences.csproj" />
+    <Project Path="tests/targets/SimpleCppProject/SimpleCppProject.vcxproj" Id="380fbd90-2cf0-4f83-a58e-eb98ce2eae15">
+      <BuildType Solution="TestWindows|*" Project="Release" />
+      <Build Solution="Debug|Any CPU" Project="false" />
+      <Build Solution="Release|Any CPU" Project="false" />
+    </Project>
+    <Project Path="tests/targets/VersionRangesProject/VersionRangesProject.csproj">
+      <BuildType Solution="TestWindows|*" Project="Debug" />
+    </Project>
+  </Folder>
+</Solution>

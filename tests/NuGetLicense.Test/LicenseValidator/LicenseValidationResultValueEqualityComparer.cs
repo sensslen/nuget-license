@@ -1,4 +1,4 @@
-﻿// Licensed to the projects contributors.
+﻿// Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
 using NuGetLicense.LicenseValidator;
@@ -26,14 +26,14 @@ namespace NuGetLicense.Test.LicenseValidator
                 obj.PackageVersion,
                 obj.PackageProjectUrl);
         }
-        private static HashCode GetHashCode(List<ValidationError> validationErrors)
+        private static int GetHashCode(List<ValidationError> validationErrors)
         {
             var code = new HashCode();
             foreach (ValidationError error in validationErrors)
             {
                 code.Add(error);
             }
-            return code;
+            return code.ToHashCode();
         }
     }
 }

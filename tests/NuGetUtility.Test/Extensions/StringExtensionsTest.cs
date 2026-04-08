@@ -1,104 +1,104 @@
-// Licensed to the projects contributors.
+// Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
 using NuGetUtility.Extensions;
 
 namespace NuGetUtility.Test.Extensions
 {
-    [TestFixture]
-    internal class StringExtensionsTest
+    public class StringExtensionsTest
     {
-        [TestFixture]
-        internal class LikeTests
+        public class LikeTests
         {
-            [TestCase("test", "test", true)]
-            [TestCase("test", "TEST", true)]
-            [TestCase("test", "t*", true)]
-            [TestCase("test", "*st", true)]
-            [TestCase("test", "t*st", true)]
-            [TestCase("test", "t?st", true)]
-            [TestCase("test", "t??t", true)]
-            [TestCase("test", "????", true)]
-            [TestCase("test", "*", true)]
-            [TestCase("test", "?*", true)]
-            [TestCase("test", "*?", true)]
-            [TestCase("test", "fail", false)]
-            [TestCase("test", "t?t", false)]
-            [TestCase("test", "???", false)]
-            [TestCase("test", "?????", false)]
-            [TestCase("MyProject.csproj", "*.csproj", true)]
-            [TestCase("MyProject.csproj", "MyProject.*", true)]
-            [TestCase("MyProject.csproj", "My*.*", true)]
-            [TestCase("MyProject.csproj", "*.vbproj", false)]
-            public void Like_Should_MatchPattern(string input, string pattern, bool expected)
+            [Test]
+            [Arguments("test", "test", true)]
+            [Arguments("test", "TEST", true)]
+            [Arguments("test", "t*", true)]
+            [Arguments("test", "*st", true)]
+            [Arguments("test", "t*st", true)]
+            [Arguments("test", "t?st", true)]
+            [Arguments("test", "t??t", true)]
+            [Arguments("test", "????", true)]
+            [Arguments("test", "*", true)]
+            [Arguments("test", "?*", true)]
+            [Arguments("test", "*?", true)]
+            [Arguments("test", "fail", false)]
+            [Arguments("test", "t?t", false)]
+            [Arguments("test", "???", false)]
+            [Arguments("test", "?????", false)]
+            [Arguments("MyProject.csproj", "*.csproj", true)]
+            [Arguments("MyProject.csproj", "MyProject.*", true)]
+            [Arguments("MyProject.csproj", "My*.*", true)]
+            [Arguments("MyProject.csproj", "*.vbproj", false)]
+            public async Task Like_Should_MatchPattern(string input, string pattern, bool expected)
             {
-                Assert.That(input.Like(pattern), Is.EqualTo(expected));
+                await Assert.That(input.Like(pattern)).IsEqualTo(expected);
             }
         }
 
-        [TestFixture]
-        internal class PathLikeTests
+        public class PathLikeTests
         {
-            [TestCase("test", "test", true)]
-            [TestCase("test", "TEST", true)]
-            [TestCase("C:\\Projects\\MyProject\\MyProject.csproj", "*.csproj", true, TestName = "PathLike_Windows_MyProject_ExtensionMatch")]
-            [TestCase("C:\\Projects\\MyProject\\MyProject.csproj", "MyProject.csproj", true, TestName = "PathLike_Windows_MyProject_ExactFileNameMatch")]
-            [TestCase("C:\\Projects\\MyProject\\MyProject.csproj", "MyProject.*", true, TestName = "PathLike_Windows_MyProject_WildcardFileNameMatch")]
-            [TestCase("C:\\Projects\\MyProject\\MyProject.csproj", "*MyProject.csproj", true, TestName = "PathLike_Windows_MyProject_SuffixFileNameMatch")]
-            [TestCase("C:\\Projects\\MyProject\\MyProject.csproj", "C:\\Projects\\*\\*.csproj", true, TestName = "PathLike_Windows_MyProject_FullPathPatternMatch")]
-            [TestCase("C:\\Projects\\MyProject\\MyProject.csproj", "*.vbproj", false, TestName = "PathLike_Windows_MyProject_NonMatchingExtension")]
-            [TestCase("C:\\Projects\\MyProject\\MyProject.csproj", "OtherProject.csproj", false, TestName = "PathLike_Windows_MyProject_NonMatchingFileName")]
-            [TestCase("/home/user/projects/MyProject/MyProject.csproj", "*.csproj", true)]
-            [TestCase("/home/user/projects/MyProject/MyProject.csproj", "MyProject.csproj", true)]
-            [TestCase("/home/user/projects/MyProject/MyProject.csproj", "MyProject.*", true)]
-            [TestCase("/home/user/projects/MyProject/MyProject.csproj", "*MyProject.csproj", true)]
-            [TestCase("/home/user/projects/MyProject/MyProject.csproj", "/home/user/*/MyProject/*.csproj", true)]
-            [TestCase("/home/user/projects/MyProject/MyProject.csproj", "*.vbproj", false)]
-            [TestCase("/home/user/projects/MyProject/MyProject.csproj", "OtherProject.csproj", false)]
-            [TestCase("C:\\Projects\\Testing\\Test.pyproj", "*.pyproj", true, TestName = "PathLike_Windows_Testing_PythonProjectExtensionMatch")]
-            [TestCase("C:\\Projects\\Testing\\Test.pyproj", "Test.pyproj", true, TestName = "PathLike_Windows_Testing_PythonProjectFileNameMatch")]
-            [TestCase("C:\\Projects\\Testing\\Test.pyproj", "*Testing*", true, TestName = "PathLike_Windows_Testing_FolderPatternMatch")]
-            [TestCase("C:\\Projects\\Mosaik.Testing.Something\\Project.csproj", "*Mosaik.Testing*", true, TestName = "PathLike_Windows_MosaikTesting_FolderPatternMatch")]
-            [TestCase("C:\\Projects\\Mosaik.Testing.Something\\Project.csproj", "Project.csproj", true, TestName = "PathLike_Windows_MosaikTesting_FileNameMatch")]
-            [TestCase("Project.Name.Test", "Project.Name*", true)]
-            [TestCase("Some\\Path\\Project.Name.Test", "Project.Name*", true, TestName = "PathLike_Windows_RelativePath_FileNamePatternMatch")]
-            public void PathLike_Should_MatchPattern_AgainstFullPathOrFileName(string path, string pattern, bool expected)
+            [Test]
+            [Arguments("test", "test", true)]
+            [Arguments("test", "TEST", true)]
+            [Arguments("C:\\Projects\\MyProject\\MyProject.csproj", "*.csproj", true)]
+            [Arguments("C:\\Projects\\MyProject\\MyProject.csproj", "MyProject.csproj", true)]
+            [Arguments("C:\\Projects\\MyProject\\MyProject.csproj", "MyProject.*", true)]
+            [Arguments("C:\\Projects\\MyProject\\MyProject.csproj", "*MyProject.csproj", true)]
+            [Arguments("C:\\Projects\\MyProject\\MyProject.csproj", "C:\\Projects\\*\\*.csproj", true)]
+            [Arguments("C:\\Projects\\MyProject\\MyProject.csproj", "*.vbproj", false)]
+            [Arguments("C:\\Projects\\MyProject\\MyProject.csproj", "OtherProject.csproj", false)]
+            [Arguments("/home/user/projects/MyProject/MyProject.csproj", "*.csproj", true)]
+            [Arguments("/home/user/projects/MyProject/MyProject.csproj", "MyProject.csproj", true)]
+            [Arguments("/home/user/projects/MyProject/MyProject.csproj", "MyProject.*", true)]
+            [Arguments("/home/user/projects/MyProject/MyProject.csproj", "*MyProject.csproj", true)]
+            [Arguments("/home/user/projects/MyProject/MyProject.csproj", "/home/user/*/MyProject/*.csproj", true)]
+            [Arguments("/home/user/projects/MyProject/MyProject.csproj", "*.vbproj", false)]
+            [Arguments("/home/user/projects/MyProject/MyProject.csproj", "OtherProject.csproj", false)]
+            [Arguments("C:\\Projects\\Testing\\Test.pyproj", "*.pyproj", true)]
+            [Arguments("C:\\Projects\\Testing\\Test.pyproj", "Test.pyproj", true)]
+            [Arguments("C:\\Projects\\Testing\\Test.pyproj", "*Testing*", true)]
+            [Arguments("C:\\Projects\\Mosaik.Testing.Something\\Project.csproj", "*Mosaik.Testing*", true)]
+            [Arguments("C:\\Projects\\Mosaik.Testing.Something\\Project.csproj", "Project.csproj", true)]
+            [Arguments("Project.Name.Test", "Project.Name*", true)]
+            [Arguments("Some\\Path\\Project.Name.Test", "Project.Name*", true)]
+            public async Task PathLike_Should_MatchPattern_AgainstFullPathOrFileName(string path, string pattern, bool expected)
             {
-                Assert.That(path.PathLike(pattern), Is.EqualTo(expected));
+                await Assert.That(path.PathLike(pattern)).IsEqualTo(expected);
             }
 
             [Test]
-            public void PathLike_Should_MatchFullPath_WhenPatternMatchesFullPath()
+            public async Task PathLike_Should_MatchFullPath_WhenPatternMatchesFullPath()
             {
                 string path = "C:\\Projects\\MyProject\\MyProject.csproj";
                 string pattern = "C:\\Projects\\*\\*.csproj";
 
-                Assert.That(path.PathLike(pattern), Is.True);
+                await Assert.That(path.PathLike(pattern)).IsTrue();
             }
 
             [Test]
-            public void PathLike_Should_MatchFileName_WhenPatternMatchesFileName()
+            public async Task PathLike_Should_MatchFileName_WhenPatternMatchesFileName()
             {
                 string path = "C:\\Projects\\MyProject\\MyProject.csproj";
                 string pattern = "*.csproj";
 
-                Assert.That(path.PathLike(pattern), Is.True);
+                await Assert.That(path.PathLike(pattern)).IsTrue();
             }
 
             [Test]
-            public void PathLike_Should_NotMatch_WhenNeitherFullPathNorFileNameMatches()
+            public async Task PathLike_Should_NotMatch_WhenNeitherFullPathNorFileNameMatches()
             {
                 string path = "C:\\Projects\\MyProject\\MyProject.csproj";
                 string pattern = "*.vbproj";
 
-                Assert.That(path.PathLike(pattern), Is.False);
+                await Assert.That(path.PathLike(pattern)).IsFalse();
             }
 
-            [TestCase("", "*", true)]
-            [TestCase("test", "", false)]
-            public void PathLike_Should_HandleEdgeCases(string path, string pattern, bool expected)
+            [Test]
+            [Arguments("", "*", true)]
+            [Arguments("test", "", false)]
+            public async Task PathLike_Should_HandleEdgeCases(string path, string pattern, bool expected)
             {
-                Assert.That(path.PathLike(pattern), Is.EqualTo(expected));
+                await Assert.That(path.PathLike(pattern)).IsEqualTo(expected);
             }
         }
     }

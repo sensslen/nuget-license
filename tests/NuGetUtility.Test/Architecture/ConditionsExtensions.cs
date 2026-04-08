@@ -1,4 +1,4 @@
-// Licensed to the projects contributors.
+// Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
 using NetArchTest.Rules;
@@ -7,11 +7,16 @@ namespace NuGetUtility.Test.Architecture
 {
     internal static class ConditionsExtensions
     {
-        public static void Assert(this ConditionList conditions, string message = "Architecture rule broken.")
+        public static Task Assert(this ConditionList conditions, string message = "Architecture rule broken.")
         {
-            TestResult ruleResult = conditions.GetResult();
+            NetArchTest.Rules.TestResult ruleResult = conditions.GetResult();
+            if (ruleResult.IsSuccessful)
+            {
+                return Task.CompletedTask;
+            }
+
             string failingTypeNames = string.Join(Environment.NewLine, ruleResult.FailingTypeNames ?? Array.Empty<string>());
-            NUnit.Framework.Assert.That(ruleResult.IsSuccessful, Is.True, $"{message}{Environment.NewLine}Offending types:{Environment.NewLine}{failingTypeNames}");
+            throw new Exception($"{message}{Environment.NewLine}Offending types:{Environment.NewLine}{failingTypeNames}");
         }
     }
 }

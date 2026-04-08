@@ -39,10 +39,10 @@ jobs:
             10.0.x
 
       - name: restore
-        run: dotnet restore
+        run: dotnet restore NuGetUtility.slnx
 
       - name: build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --configuration Release --no-restore NuGetUtility.slnx
 
       - name: test (NuGetUtility.Test.dll)
         run: dotnet test --project ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f ${{ matrix.framework }} --no-restore --no-build
@@ -65,7 +65,7 @@ jobs:
             10.0.x
          
       - name: restore
-        run: dotnet restore
+        run: dotnet restore NuGetUtility.slnx
       
       - name: test
         run: dotnet test --project ./tests/FileLicenseMatcher.Test/FileLicenseMatcher.Test.csproj --configuration Release --no-restore
@@ -84,7 +84,7 @@ jobs:
       - uses: browser-actions/setup-chrome@v2.1.1
       
       - name: restore
-        run: dotnet restore
+        run: dotnet restore NuGetUtility.slnx
       
       - name: test
         run: dotnet test --project ./tests/NuGetUtility.UrlToLicenseMapping.Test/NuGetUtility.UrlToLicenseMapping.Test.csproj --configuration Release --no-restore
@@ -109,14 +109,18 @@ jobs:
         uses: microsoft/setup-msbuild@v3
 
       - name: build
-        run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=TestWindows
+        run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=TestWindows NuGetUtility.slnx
 
       - name: test
-        uses: josepho0918/vstest-action@15c7e288a18f04395431c4940afe15013a12098e
-        with:
-          testAssembly: "NuGet*.Test.dll"
-          searchFolder: "tests/*/bin/TestWindows/${{ matrix.framework }}/"
-          runInParallel: true
+        shell: pwsh
+        run: |
+          $failed = $false
+          Get-ChildItem "tests\*\bin\TestWindows\${{ matrix.framework }}\NuGet*.Test.exe" | ForEach-Object {
+            Write-Host "Running: $_"
+            & "$_"
+            if ($LASTEXITCODE -ne 0) { $failed = $true }
+          }
+          if ($failed) { exit 1 }
 
   check_code_format:
     runs-on: ubuntu-latest
@@ -132,10 +136,10 @@ jobs:
             10.0.x
 
       - name: restore
-        run: dotnet restore
+        run: dotnet restore NuGetUtility.slnx
 
       - name: check format
-        run: dotnet format --verify-no-changes
+        run: dotnet format --verify-no-changes NuGetUtility.slnx
 
   check_licenses:
     runs-on: ubuntu-latest
@@ -158,15 +162,16 @@ jobs:
             10.0.x
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet restore NuGetUtility.slnx -p:TargetFramework=${{ matrix.framework }}
 
       - name: build
         run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.framework }} --no-restore
 
       - name: check
+        shell: bash
         run: |
-          dotnet ./release/nuget-license.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.framework }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json > ./licenses-output.json
-          cat ./licenses-output.json
+          set -o pipefail
+          dotnet ./release/nuget-license.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.framework }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json 2>&1 | tee ./licenses-output.json
 
       - name: validate downloaded licenses
         shell: pwsh
@@ -234,7 +239,7 @@ jobs:
     runs-on: windows-2025-vs2026
     strategy:
       matrix:
-        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense, ProjectWithReferenceContainingWindowsSpecificPath]
+        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression, ProjectWithReferenceContainingFileLicense, ProjectWithReferenceContainingWindowsSpecificPath, Sln, Slnx]
 
     steps:
       - uses: actions/checkout@v6
@@ -251,7 +256,7 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v3
 
-      - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.sln
+      - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.slnx
 
       - name: fully qualify release path
         id: release_path
@@ -265,10 +270,14 @@ jobs:
         run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }} /p:TargetFramework=net472
 
       - name: check
+        shell: pwsh
         run: |
-          ${{ steps.release_path.outputs.path }}/NuGetLicenseFramework.exe -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json > ./licenses-output.json
-          cat ./licenses-output.json
-
+          & "${{ steps.release_path.outputs.path }}/NuGetLicenseFramework.exe" -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }} -file-mapping ./.github/workflows/assets/${{ matrix.project }}/fileToLicenseMapping.json 2>&1 | Tee-Object -FilePath ./licenses-output.json
+          $exitCode = $LASTEXITCODE
+          if ($exitCode -ne 0) {
+            exit $exitCode
+          }
+            
       - name: validate downloaded licenses
         shell: pwsh
         run: |
@@ -351,7 +360,7 @@ jobs:
             10.0.x
 
       - name: restore
-        run: dotnet restore NuGetUtility.sln -p:TargetFramework=${{ matrix.framework }}
+        run: dotnet restore NuGetUtility.slnx -p:TargetFramework=${{ matrix.framework }}
 
       - uses: paulhatch/semantic-version@v6.0.2
         id: version
@@ -388,7 +397,7 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v3
 
-      - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.sln
+      - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.slnx
 
       - name: fully qualify release path
         id: release_path

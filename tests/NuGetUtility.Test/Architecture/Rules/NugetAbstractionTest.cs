@@ -1,4 +1,4 @@
-// Licensed to the projects contributors.
+// Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
 namespace NuGetUtility.Test.Architecture.Rules
@@ -8,9 +8,9 @@ namespace NuGetUtility.Test.Architecture.Rules
         public NugetAbstractionTest() : base() { }
 
         [Test]
-        public void TestOnlyNugetWrapperHasDependencyToNuget()
+        public async Task TestOnlyNugetWrapperHasDependencyToNuget()
         {
-            Types.That()
+            await Types.That()
                 .DoNotResideInNamespace($"{AssemblyNames.NuGetUtility}.{nameof(Wrapper)}.{nameof(Wrapper.NuGetWrapper)}")
                 .ShouldNot().HaveDependencyOn(nameof(NuGet))
                 .Assert($"Only the {nameof(Wrapper.NuGetWrapper)} should have dependencies to {nameof(NuGet)}.");

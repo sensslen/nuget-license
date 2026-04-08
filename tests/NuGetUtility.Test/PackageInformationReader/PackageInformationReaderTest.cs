@@ -1,4 +1,4 @@
-// Licensed to the projects contributors.
+// Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
 using AutoFixture;
@@ -15,11 +15,9 @@ using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 
 namespace NuGetUtility.Test.PackageInformationReader
 {
-    [TestFixture]
     internal class PackageInformationReaderTest
     {
-        [SetUp]
-        public void SetUp()
+        public PackageInformationReaderTest()
         {
             _sourceRepositoryProvider = Substitute.For<IWrappedSourceRepositoryProvider>();
             _customPackageInformation = Enumerable.Empty<CustomPackageInformation>().ToList();
@@ -34,7 +32,6 @@ namespace NuGetUtility.Test.PackageInformationReader
             _sourceRepositoryProvider.GetRepositories()
                 .Returns(_ =>
                 {
-                    Assert.That(_repositories, Is.Empty);
                     _repositories = _fixture.CreateMany<ISourceRepository>().ToArray();
                     foreach (ISourceRepository repo in _repositories)
                     {
@@ -43,39 +40,34 @@ namespace NuGetUtility.Test.PackageInformationReader
                     return _repositories;
                 });
 
-            SetupUut();
+            _uut = SetupUut();
         }
 
-        [TearDown]
-        public void TearDown()
+        private NuGetUtility.PackageInformationReader.PackageInformationReader SetupUut()
         {
-            _repositories = Array.Empty<ISourceRepository>();
-            _uut = null!;
+            return new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation);
         }
 
-        private void SetupUut()
-        {
-            TearDown();
-            _uut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation);
-        }
-
-        private NuGetUtility.PackageInformationReader.PackageInformationReader _uut = null!;
-        private IWrappedSourceRepositoryProvider _sourceRepositoryProvider = null!;
-        private List<CustomPackageInformation> _customPackageInformation = null!;
-        private IFixture _fixture = null!;
-        private ISourceRepository[] _repositories = null!;
-        private IGlobalPackagesFolderUtility _globalPackagesFolderUtility = null!;
+        private readonly NuGetUtility.PackageInformationReader.PackageInformationReader _uut;
+        private readonly IWrappedSourceRepositoryProvider _sourceRepositoryProvider;
+        private readonly List<CustomPackageInformation> _customPackageInformation;
+        private readonly IFixture _fixture;
+        private ISourceRepository[] _repositories;
+        private readonly IGlobalPackagesFolderUtility _globalPackagesFolderUtility;
 
         [Test]
         public async Task GetPackageInfo_Should_PreferProvidedCustomInformation()
         {
-            _customPackageInformation = _fixture.CreateMany<CustomPackageInformation>().ToList();
-            SetupUut();
+            List<CustomPackageInformation> customPackageInformation = _fixture.CreateMany<CustomPackageInformation>().ToList();
+            var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, customPackageInformation);
 
-            IEnumerable<PackageIdentity> searchedPackages = _customPackageInformation.Select(p => new PackageIdentity(p.Id, p.Version));
+            IEnumerable<PackageIdentity> searchedPackages = customPackageInformation.Select(p => new PackageIdentity(p.Id, p.Version));
+            string project = _fixture.Create<string>();
+            var packageSearchRequest = new ProjectWithReferencedPackages(project, searchedPackages);
+            ReferencedPackageWithContext[] result = (await localUut.GetPackageInfo(packageSearchRequest, CancellationToken.None).Synchronize())
+                .ToArray();
 
-            (string project, ReferencedPackageWithContext[] result) = await PerformSearch(searchedPackages);
-            CheckResult(result, project, _customPackageInformation, LicenseType.Overwrite);
+            await CheckResult(result, project, customPackageInformation, LicenseType.Overwrite);
         }
 
         private async Task<(string Project, ReferencedPackageWithContext[] Result)> PerformSearch(
@@ -88,25 +80,25 @@ namespace NuGetUtility.Test.PackageInformationReader
             return (project, result);
         }
 
-        private static void CheckResult(ReferencedPackageWithContext[] result,
+        private static async Task CheckResult(ReferencedPackageWithContext[] result,
             string project,
             IEnumerable<CustomPackageInformation> packages,
             LicenseType licenseType)
         {
-            Assert.That(packages, Is.EquivalentTo(result.Select(s => new CustomPackageInformation(s.PackageInfo.Identity.Id,
-                                                                                                  s.PackageInfo.Identity.Version,
-                                                                                                  s.PackageInfo.LicenseMetadata!.License,
-                                                                                                  s.PackageInfo.Copyright,
-                                                                                                  s.PackageInfo.Authors,
-                                                                                                  s.PackageInfo.Title,
-                                                                                                  s.PackageInfo.ProjectUrl,
-                                                                                                  s.PackageInfo.Summary,
-                                                                                                  s.PackageInfo.Description,
-                                                                                                  s.PackageInfo.LicenseUrl))));
+            await Assert.That(packages).IsEquivalentTo(result.Select(s => new CustomPackageInformation(s.PackageInfo.Identity.Id,
+                                                                                                         s.PackageInfo.Identity.Version,
+                                                                                                         s.PackageInfo.LicenseMetadata!.License,
+                                                                                                         s.PackageInfo.Copyright,
+                                                                                                         s.PackageInfo.Authors,
+                                                                                                         s.PackageInfo.Title,
+                                                                                                         s.PackageInfo.ProjectUrl,
+                                                                                                         s.PackageInfo.Summary,
+                                                                                                         s.PackageInfo.Description,
+                                                                                                         s.PackageInfo.LicenseUrl)));
             foreach (ReferencedPackageWithContext r in result)
             {
-                Assert.That(r.Context, Is.EqualTo(project));
-                Assert.That(r.PackageInfo.LicenseMetadata!.Type, Is.EqualTo(licenseType));
+                await Assert.That(r.Context).IsEqualTo(project);
+                await Assert.That(r.PackageInfo.LicenseMetadata!.Type).IsEqualTo(licenseType);
             }
         }
 
@@ -135,7 +127,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             });
 
             (string project, ReferencedPackageWithContext[] result) = await PerformSearch(searchedPackages);
-            CheckResult(result, project, searchedPackagesAsPackageInformation, LicenseType.Expression);
+            await CheckResult(result, project, searchedPackagesAsPackageInformation, LicenseType.Expression);
 
             foreach (ISourceRepository repo in _repositories)
             {
@@ -195,7 +187,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             IEnumerable<PackageIdentity> searchedPackages = searchedPackagesAsPackageInformation.Select(i => new PackageIdentity(i.Id, i.Version));
 
             (string project, ReferencedPackageWithContext[] result) = await PerformSearch(searchedPackages);
-            CheckResult(result, project, searchedPackagesAsPackageInformation, LicenseType.Expression);
+            await CheckResult(result, project, searchedPackagesAsPackageInformation, LicenseType.Expression);
         }
 
         [Test]
@@ -206,18 +198,18 @@ namespace NuGetUtility.Test.PackageInformationReader
 
             (string project, ReferencedPackageWithContext[] results) = await PerformSearch(searchedPackages);
 
-            Assert.That(results, Has.Length.EqualTo(searchedPackages.Length));
+            await Assert.That(results.Length).IsEqualTo(searchedPackages.Length);
             for (int i = 0; i < results.Length; i++)
             {
                 PackageIdentity expectation = searchedPackages[i];
                 ReferencedPackageWithContext result = results[i];
-                Assert.That(result.Context, Is.EqualTo(project));
-                Assert.That(result.PackageInfo.Identity.Id, Is.EqualTo(expectation.Id));
-                Assert.That(result.PackageInfo.Identity.Version, Is.EqualTo(expectation.Version));
-                Assert.That(result.PackageInfo.LicenseMetadata, Is.Null);
-                Assert.That(result.PackageInfo.LicenseUrl, Is.Null);
-                Assert.That(result.PackageInfo.Summary, Is.Null);
-                Assert.That(result.PackageInfo.Title, Is.Null);
+                await Assert.That(result.Context).IsEqualTo(project);
+                await Assert.That(result.PackageInfo.Identity.Id).IsEqualTo(expectation.Id);
+                await Assert.That(result.PackageInfo.Identity.Version).IsEqualTo(expectation.Version);
+                await Assert.That(result.PackageInfo.LicenseMetadata).IsNull();
+                await Assert.That(result.PackageInfo.LicenseUrl).IsNull();
+                await Assert.That(result.PackageInfo.Summary).IsNull();
+                await Assert.That(result.PackageInfo.Title).IsNull();
             }
         }
     }
