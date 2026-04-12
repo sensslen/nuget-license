@@ -66,7 +66,7 @@ jobs:
           path: ${{ steps.artifacts_path.outputs.path }}
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           prerelease: ${{ steps.version.outputs.prerelease != '' }}
           generate_release_notes: true
