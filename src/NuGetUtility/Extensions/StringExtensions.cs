@@ -18,7 +18,7 @@ namespace NuGetUtility.Extensions
             return new Regex(
                 $"^{Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".")}$",
                 RegexOptions.IgnoreCase | RegexOptions.Singleline,
-                TimeSpan.FromMilliseconds(100)
+                TimeSpan.FromMilliseconds(1000)
             ).IsMatch(str);
         }
 
