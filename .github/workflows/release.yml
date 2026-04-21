@@ -19,7 +19,7 @@ jobs:
             9.0.x
             10.0.x
 
-      - uses: nowsprinting/check-version-format-action@v3
+      - uses: nowsprinting/check-version-format-action@v5.0.1
         id: version
         with:
           prefix: 'v'
