@@ -27,7 +27,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Verify.TUnit" Version="31.16.1" />
+    <PackageReference Include="Verify.TUnit" Version="31.16.2" />
     <PackageReference Include="Verify.ParametersHashing" Version="1.0.0" />
     <PackageReference Include="TestableIO.System.IO.Abstractions.TestingHelpers" Version="22.1.1" />
   </ItemGroup>
