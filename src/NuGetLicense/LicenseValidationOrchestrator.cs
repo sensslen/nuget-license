@@ -116,9 +116,19 @@ namespace NuGetLicense
 
         private Stream GetOutputStream(string? destinationFile)
         {
-            return destinationFile is null
-                ? _outputStream
-                : _fileSystem.File.Open(_fileSystem.Path.GetFullPath(destinationFile), FileMode.Create, FileAccess.Write, FileShare.None);
+            if (destinationFile is null)
+            {
+                return _outputStream;
+            }
+
+            string fullPath = _fileSystem.Path.GetFullPath(destinationFile);
+            string? directoryName = _fileSystem.Path.GetDirectoryName(fullPath);
+            if (directoryName != null && !_fileSystem.Directory.Exists(directoryName))
+            {
+                _fileSystem.Directory.CreateDirectory(directoryName);
+            }
+
+            return _fileSystem.File.Open(fullPath, FileMode.Create, FileAccess.Write, FileShare.None);
         }
 
         private async Task WriteValidationExceptions(IReadOnlyCollection<Exception> validationExceptions)

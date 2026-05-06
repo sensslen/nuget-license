@@ -123,6 +123,26 @@ namespace NuGetLicense.Test
         }
 
         [Test]
+        public async Task ValidateAsync_WithDestinationFileInNonExistentDirectory_CreatesDirectoryAndWritesToFile()
+        {
+            // Arrange
+            string destinationFile = "/nonexistent/subdir/output.txt";
+            _options.InputFile.Returns("/test/project.csproj");
+            _options.DestinationFile.Returns(destinationFile);
+
+            SetupDefaultMocks();
+            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+
+            // Act
+            int result = await _orchestrator.ValidateAsync(_options);
+
+            // Assert
+            await Assert.That(result).IsEqualTo(0);
+            await Assert.That(_fileSystem.File.Exists(destinationFile)).IsTrue();
+            await Assert.That(_fileSystem.Directory.Exists("/nonexistent/subdir")).IsTrue();
+        }
+
+        [Test]
         public async Task ValidateAsync_WithoutDestinationFile_WritesToOutputStream()
         {
             // Arrange
