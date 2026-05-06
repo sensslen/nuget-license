@@ -27,7 +27,7 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v3
 
-      - uses: browser-actions/setup-chrome@v2.1.1
+      - uses: browser-actions/setup-chrome@v2.1.2
 
       - name: build
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release NuGetUtility.slnx
