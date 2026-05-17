@@ -14,7 +14,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 
         public WrappedPackageMetadata(ManifestMetadata metadata)
         {
-            Identity = new PackageIdentity(metadata.Id, new WrappedNuGetVersion(metadata.Version));
+            Identity = new PackageIdentity(metadata.Id ?? throw new ArgumentNullException(nameof(metadata.Id)),
+                                           new WrappedNuGetVersion(metadata.Version ?? throw new ArgumentNullException(nameof(metadata.Version))));
             LicenseMetadata = metadata.LicenseMetadata;
             _metadata = metadata;
         }
