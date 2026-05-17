@@ -50,9 +50,9 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
         private async Task<string?> TryDownload(string fileNameStem, Uri url, CancellationToken token)
 #pragma warning restore S1172 // Unused parameter
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
 
-            HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
+            using HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
 #if NETFRAMEWORK
             // System.Net.HttpStatusCode.TooManyRequests does not exist in .net472
             if (response.StatusCode == (System.Net.HttpStatusCode)429)

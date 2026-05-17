@@ -11,8 +11,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 
     internal class WrappedPackageMetadata(ManifestMetadata metadata) : IWrappedPackageMetadata
     {
-        public PackageIdentity Identity { get; } = new(metadata.Id ?? throw new ArgumentNullException(nameof(metadata.Id)),
-                                                       new WrappedNuGetVersion(metadata.Version ?? throw new ArgumentNullException(nameof(metadata.Version))));
+        public PackageIdentity Identity { get; } = new(metadata.Id ?? throw new ArgumentException("Id must not be null", nameof(metadata)),
+                                                       new WrappedNuGetVersion(metadata.Version ?? throw new ArgumentException("Version must not be null", nameof(metadata))));
 
         public string? Title => metadata.Title;
 
