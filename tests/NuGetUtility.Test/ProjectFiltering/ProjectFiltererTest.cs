@@ -14,10 +14,10 @@ namespace NuGetUtility.Test.ProjectFiltering
         [Arguments("two.shproj", true, false)]
         [Arguments("three.csproj", false, false)]
         [Arguments("four.SHPROJ", true, false)]
-        [Arguments("one.csproj", true, true)]
-        [Arguments("two.shproj", true, true)]
-        [Arguments("three.csproj", true, true)]
-        [Arguments("four.SHPROJ", true, true)]
+        [Arguments("one.csproj", false, true)]
+        [Arguments("two.shproj", false, true)]
+        [Arguments("three.csproj", false, true)]
+        [Arguments("four.SHPROJ", false, true)]
         public async Task FilterProjects_ExcludesSharedProjects_WhenIncludeSharedProjectsIsFalse(string project, bool isFiltered, bool includeSharedProjects)
         {
             string[] result = _filterer.FilterProjects([project], includeSharedProjects).ToArray();
