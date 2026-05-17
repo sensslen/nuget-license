@@ -3,3 +3,6 @@ reviews:
   path_filters:
     # Exclude all Verify snapshot testing files
     - "!**/*.verified.txt"
+  # Provide custom prompt instructions to CodeRabbit
+  instructions: |
+    Do not suggest adding XML documentation comments or summary tags to public methods, classes, or properties unless specifically requested.
