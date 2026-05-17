@@ -3,10 +3,5 @@
 
 namespace NuGetUtility.Wrapper.HttpClientWrapper
 {
-    public class DownloadFailedException : Exception
-    {
-        public DownloadFailedException(Uri url) : base($"Download failed for URL: {url}")
-        {
-        }
-    }
+    public class DownloadFailedException(Uri url) : Exception($"Download failed for URL: {url}");
 }

@@ -6,20 +6,12 @@ using System.Net.Http;
 
 namespace NuGetUtility.Wrapper.HttpClientWrapper
 {
-    public class FileDownloader : IFileDownloader
+    public class FileDownloader(HttpClient client, string downloadDirectory) : IFileDownloader
     {
         private readonly SemaphoreSlim _parallelDownloadLimiter = new(10, 10);
-        private readonly HttpClient _client;
-        private readonly string _downloadDirectory;
         private readonly ConcurrentDictionary<Uri, Task<string>> _downloadedLicenses = new();
         private const int EXPONENTIAL_BACKOFF_WAIT_TIME_MILLISECONDS = 200;
         private const int MAX_RETRIES = 5;
-
-        public FileDownloader(HttpClient client, string downloadDirectory)
-        {
-            _client = client;
-            _downloadDirectory = downloadDirectory;
-        }
 
         public async Task DownloadFile(Uri url, string fileNameStem, CancellationToken token)
         {
@@ -28,7 +20,7 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
             if (!initialDownloadName.StartsWith(fileNameStem))
             {
                 string destinationFile = $"{fileNameStem}{Path.GetExtension(initialDownloadName)}";
-                File.Copy(Path.Combine(_downloadDirectory, initialDownloadName), Path.Combine(_downloadDirectory, destinationFile), true);
+                File.Copy(Path.Combine(downloadDirectory, initialDownloadName), Path.Combine(downloadDirectory, destinationFile), true);
             }
         }
 
@@ -60,12 +52,11 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
         {
             var request = new HttpRequestMessage(HttpMethod.Get, url);
 
+            HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
 #if NETFRAMEWORK
-            HttpResponseMessage response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             // System.Net.HttpStatusCode.TooManyRequests does not exist in .net472
             if (response.StatusCode == (System.Net.HttpStatusCode)429)
 #else
-            HttpResponseMessage response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
             if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
 #endif
             {
@@ -80,9 +71,9 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
             }
             string fileName = $"{fileNameStem}.{extension}";
 #if NETFRAMEWORK
-            using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
+            using FileStream file = File.OpenWrite(Path.Combine(downloadDirectory, fileName));
 #else
-            await using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
+            await using FileStream file = File.OpenWrite(Path.Combine(downloadDirectory, fileName));
 #endif
             using Stream downloadStream = await response.Content.ReadAsStreamAsync();
 
@@ -98,10 +89,10 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
         {
             string fileName = $"{fileNameStem}.txt";
 #if NETFRAMEWORK
-            File.WriteAllText(Path.Combine(_downloadDirectory, fileName), licenseText);
+            File.WriteAllText(Path.Combine(downloadDirectory, fileName), licenseText);
             return Task.CompletedTask;
 #else
-            return File.WriteAllTextAsync(Path.Combine(_downloadDirectory, fileName), licenseText, token);
+            return File.WriteAllTextAsync(Path.Combine(downloadDirectory, fileName), licenseText, token);
 #endif
         }
     }

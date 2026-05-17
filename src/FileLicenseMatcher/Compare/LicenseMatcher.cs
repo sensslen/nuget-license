@@ -8,27 +8,19 @@ using System.Linq;
 
 namespace FileLicenseMatcher.Compare
 {
-    public class LicenseMatcher : IFileLicenseMatcher
+    public class LicenseMatcher(IFileSystem fileSystem, IDictionary<string, string> fileLicenseMap)
+        : IFileLicenseMatcher
     {
-        private readonly IFileSystem _fileSystem;
-        private readonly IDictionary<string, string> _fileLicenseMap;
-
-        public LicenseMatcher(IFileSystem fileSystem, IDictionary<string, string> fileLicenseMap)
-        {
-            _fileSystem = fileSystem;
-            _fileLicenseMap = fileLicenseMap;
-        }
-
         public string Match(string licenseText)
         {
             string[] licenseContent = licenseText.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries);
-            foreach (KeyValuePair<string, string> kvp in _fileLicenseMap)
+            foreach (KeyValuePair<string, string> kvp in fileLicenseMap)
             {
-                if (!_fileSystem.File.Exists(kvp.Key))
+                if (!fileSystem.File.Exists(kvp.Key))
                 {
                     continue;
                 }
-                IEnumerable<string> fileContent = _fileSystem.File.ReadAllText(kvp.Key).Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries);
+                IEnumerable<string> fileContent = fileSystem.File.ReadAllText(kvp.Key).Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries);
                 if (licenseContent.SequenceEqual(fileContent))
                 {
                     return kvp.Value;

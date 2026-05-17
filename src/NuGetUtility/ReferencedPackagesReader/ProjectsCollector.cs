@@ -6,22 +6,14 @@ using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
 
 namespace NuGetUtility.ReferencedPackagesReader
 {
-    public class ProjectsCollector
+    public class ProjectsCollector(ISolutionPersistenceWrapper solutionPersistence, IFileSystem fileSystem)
     {
-        private readonly ISolutionPersistanceWrapper _solutionPersistance;
-        private readonly IFileSystem _fileSystem;
-
-        public ProjectsCollector(ISolutionPersistanceWrapper solutionPersistance, IFileSystem fileSystem)
-        {
-            _solutionPersistance = solutionPersistance;
-            _fileSystem = fileSystem;
-        }
-
         public async Task<IEnumerable<string>> GetProjectsAsync(string inputPath)
         {
-            return _fileSystem.Path.GetExtension(inputPath).StartsWith(".sln")
-                ? (await _solutionPersistance.GetProjectsFromSolutionAsync(_fileSystem.Path.GetFullPath(inputPath))).Where(_fileSystem.File.Exists).Select(_fileSystem.Path.GetFullPath)
-                : [_fileSystem.Path.GetFullPath(inputPath)];
+            var extension = Path.GetExtension(inputPath);
+            return new[] { ".sln", ".slnx" }.Contains(extension)
+                ? (await solutionPersistence.GetProjectsFromSolutionAsync(fileSystem.Path.GetFullPath(inputPath))).Where(fileSystem.File.Exists).Select(fileSystem.Path.GetFullPath)
+                : [fileSystem.Path.GetFullPath(inputPath)];
         }
     }
 }

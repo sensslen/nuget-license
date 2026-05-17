@@ -39,18 +39,16 @@ namespace NuGetLicense.Test.Output.Csv
     [Arguments(false, false, false, true, false)]
     [Arguments(false, false, false, false, true)]
     [Arguments(false, false, false, false, false)]
-    public class CsvOutputFormatterTests : TestBase
+    public class CsvOutputFormatterTests(bool omitValidLicensesOnError,
+                                         bool skipIgnoredPackages,
+                                         bool includeCopyright,
+                                         bool includeAuthors,
+                                         bool includeLicenseUrl)
+        : TestBase(includeCopyright, includeAuthors, includeLicenseUrl)
     {
-        private readonly bool _omitValidLicensesOnError;
-        private readonly bool _skipIgnoredPackages;
-        public CsvOutputFormatterTests(bool omitValidLicensesOnError, bool skipIgnoredPackages, bool includeCopyright, bool includeAuthors, bool includeLicenseUrl) : base(includeCopyright, includeAuthors, includeLicenseUrl)
-        {
-            _omitValidLicensesOnError = omitValidLicensesOnError;
-            _skipIgnoredPackages = skipIgnoredPackages;
-        }
         protected override IOutputFormatter CreateUut()
         {
-            return new CsvOutputFormatter(_omitValidLicensesOnError, _skipIgnoredPackages);
+            return new CsvOutputFormatter(omitValidLicensesOnError, skipIgnoredPackages);
         }
     }
 }

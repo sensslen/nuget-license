@@ -39,19 +39,16 @@ namespace NuGetLicense.Test.Output.Table
     [Arguments(false, false, false, true, false)]
     [Arguments(false, false, false, false, true)]
     [Arguments(false, false, false, false, false)]
-    public class MarkdownTableOutputFormatterTest : TestBase
+    public class MarkdownTableOutputFormatterTest(bool omitValidLicensesOnError,
+                                                  bool skipIgnoredPackages,
+                                                  bool includeCopyright,
+                                                  bool includeAuthors,
+                                                  bool includeLicenseUrl)
+        : TestBase(includeCopyright, includeAuthors, includeLicenseUrl)
     {
-        private readonly bool _omitValidLicensesOnError;
-        private readonly bool _skipIgnoredPackages;
-
-        public MarkdownTableOutputFormatterTest(bool omitValidLicensesOnError, bool skipIgnoredPackages, bool includeCopyright, bool includeAuthors, bool includeLicenseUrl) : base(includeCopyright, includeAuthors, includeLicenseUrl)
-        {
-            _omitValidLicensesOnError = omitValidLicensesOnError;
-            _skipIgnoredPackages = skipIgnoredPackages;
-        }
         protected override IOutputFormatter CreateUut()
         {
-            return new TableOutputFormatter(_omitValidLicensesOnError, _skipIgnoredPackages, true);
+            return new TableOutputFormatter(omitValidLicensesOnError, skipIgnoredPackages, true);
         }
     }
 }

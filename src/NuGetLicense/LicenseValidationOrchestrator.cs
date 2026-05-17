@@ -24,62 +24,48 @@ namespace NuGetLicense
     /// <summary>
     /// Orchestrates the license validation process.
     /// </summary>
-    public class LicenseValidationOrchestrator : ILicenseValidationOrchestrator
+    public class LicenseValidationOrchestrator(IFileSystem fileSystem,
+                                               ISolutionPersistenceWrapper solutionPersistence,
+                                               IMsBuildAbstraction msBuild,
+                                               IPackagesConfigReader packagesConfigReader,
+                                               ICommandLineOptionsParser optionsParser,
+                                               Stream outputStream,
+                                               Stream errorStream)
+        : ILicenseValidationOrchestrator
     {
-        private readonly IFileSystem _fileSystem;
-        private readonly ISolutionPersistanceWrapper _solutionPersistance;
-        private readonly IMsBuildAbstraction _msBuild;
-        private readonly IPackagesConfigReader _packagesConfigReader;
-        private readonly ICommandLineOptionsParser _optionsParser;
-        private readonly Stream _outputStream;
-        private readonly Stream _errorStream;
-
-        public LicenseValidationOrchestrator(
-            IFileSystem fileSystem,
-            ISolutionPersistanceWrapper solutionPersistance,
-            IMsBuildAbstraction msBuild,
-            IPackagesConfigReader packagesConfigReader,
-            ICommandLineOptionsParser optionsParser,
-            Stream outputStream,
-            Stream errorStream)
-        {
-            _fileSystem = fileSystem;
-            _solutionPersistance = solutionPersistance;
-            _msBuild = msBuild;
-            _packagesConfigReader = packagesConfigReader;
-            _optionsParser = optionsParser;
-            _outputStream = outputStream;
-            _errorStream = errorStream;
-        }
-
         public async Task<int> ValidateAsync(ICommandLineOptions options, CancellationToken cancellationToken = default)
         {
-            string[] inputFiles = _optionsParser.GetInputFiles(options.InputFile, options.InputJsonFile);
-            string[] ignoredPackagesArray = _optionsParser.GetIgnoredPackages(options.IgnoredPackages);
-            IImmutableDictionary<Uri, string> licenseMappings = _optionsParser.GetLicenseMappings(options.LicenseMapping);
-            string[] allowedLicensesArray = _optionsParser.GetAllowedLicenses(options.AllowedLicenses);
-            CustomPackageInformation[] overridePackageInformationArray = _optionsParser.GetOverridePackageInformation(options.OverridePackageInformation);
-            IFileDownloader licenseDownloader = _optionsParser.GetFileDownloader(options.DownloadLicenseInformation);
-            IOutputFormatter output = _optionsParser.GetOutputFormatter(options.OutputType, options.ReturnErrorsOnly, options.IncludeIgnoredPackages);
+            string[] inputFiles = optionsParser.GetInputFiles(options.InputFile, options.InputJsonFile);
+            string[] ignoredPackagesArray = optionsParser.GetIgnoredPackages(options.IgnoredPackages);
+            IImmutableDictionary<Uri, string> licenseMappings = optionsParser.GetLicenseMappings(options.LicenseMapping);
+            string[] allowedLicensesArray = optionsParser.GetAllowedLicenses(options.AllowedLicenses);
+            CustomPackageInformation[] overridePackageInformationArray = optionsParser.GetOverridePackageInformation(options.OverridePackageInformation);
+            IFileDownloader licenseDownloader = optionsParser.GetFileDownloader(options.DownloadLicenseInformation);
+            IOutputFormatter output = optionsParser.GetOutputFormatter(options.OutputType, options.ReturnErrorsOnly, options.IncludeIgnoredPackages);
 
-            var projectCollector = new ProjectsCollector(_solutionPersistance, _fileSystem);
-            var projectReader = new ReferencedPackageReader(
-                _msBuild,
-                new LockFileFactory(),
-                new NuGetFrameworkUtility(),
-                new AssetsPackageDependencyReader(new NuGetFrameworkUtility()),
-                _packagesConfigReader);
+            var projectCollector = new ProjectsCollector(solutionPersistence, fileSystem);
+            var projectReader = new ReferencedPackageReader(msBuild,
+                                                            new LockFileFactory(),
+                                                            new NuGetFrameworkUtility(),
+                                                            new AssetsPackageDependencyReader(new NuGetFrameworkUtility()),
+                                                            packagesConfigReader);
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
-                allowedLicensesArray,
-                licenseDownloader,
-                _optionsParser.GetLicenseMatcher(options.LicenseFileMappings),
-                ignoredPackagesArray);
+                                                                  allowedLicensesArray,
+                                                                  licenseDownloader,
+                                                                  optionsParser.GetLicenseMatcher(options.LicenseFileMappings),
+                                                                  ignoredPackagesArray);
 
-            string[] excludedProjectsArray = _optionsParser.GetExcludedProjects(options.ExcludedProjects);
-            IEnumerable<string> projects = (await inputFiles.SelectManyAsync(projectCollector.GetProjectsAsync)).Where(p => !Array.Exists(excludedProjectsArray, ignored => p.PathLike(ignored)));
-            IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects, projectReader, options.IncludeTransitive, options.TargetFramework, options.ExcludePublishFalse, options.IncludeSharedProjects, out IReadOnlyCollection<Exception> projectReaderExceptions);
+            string[] excludedProjectsArray = optionsParser.GetExcludedProjects(options.ExcludedProjects);
+            IEnumerable<string> projects = (await inputFiles.SelectManyAsync(projectCollector.GetProjectsAsync)).Where(p => !Array.Exists(excludedProjectsArray, p.PathLike));
+            IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects,
+                                                                                                  projectReader,
+                                                                                                  options.IncludeTransitive,
+                                                                                                  options.TargetFramework,
+                                                                                                  options.ExcludePublishFalse,
+                                                                                                  options.IncludeSharedProjects,
+                                                                                                  out IReadOnlyCollection<Exception> projectReaderExceptions);
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
-                packagesForProject.SelectMany(p => GetPackageInformations(p, overridePackageInformationArray, cancellationToken));
+                packagesForProject.SelectMany(p => GetPackageInformation(p, overridePackageInformationArray, cancellationToken));
             var results = (await validator.Validate(downloadedLicenseInformation, cancellationToken)).ToList();
 
             if (projectReaderExceptions.Count > 0)
@@ -91,19 +77,19 @@ namespace NuGetLicense
 
             try
             {
-                Stream outputStream = GetOutputStream(options.DestinationFile);
+                Stream os = GetOutputStream(options.DestinationFile);
                 bool shouldDisposeStream = options.DestinationFile != null;
 
                 try
                 {
-                    await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
+                    await output.Write(os, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
                     return results.Count(r => r.ValidationErrors.Any());
                 }
                 finally
                 {
                     if (shouldDisposeStream)
                     {
-                        outputStream.Dispose();
+                        await os.DisposeAsync();
                     }
                 }
             }
@@ -118,17 +104,17 @@ namespace NuGetLicense
         {
             if (destinationFile is null)
             {
-                return _outputStream;
+                return outputStream;
             }
 
-            string fullPath = _fileSystem.Path.GetFullPath(destinationFile);
-            string? directoryName = _fileSystem.Path.GetDirectoryName(fullPath);
-            if (directoryName != null && !_fileSystem.Directory.Exists(directoryName))
+            string fullPath = fileSystem.Path.GetFullPath(destinationFile);
+            string? directoryName = fileSystem.Path.GetDirectoryName(fullPath);
+            if (directoryName != null && !fileSystem.Directory.Exists(directoryName))
             {
-                _fileSystem.Directory.CreateDirectory(directoryName);
+                fileSystem.Directory.CreateDirectory(directoryName);
             }
 
-            return _fileSystem.File.Open(fullPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            return fileSystem.File.Open(fullPath, FileMode.Create, FileAccess.Write, FileShare.None);
         }
 
         private async Task WriteValidationExceptions(IReadOnlyCollection<Exception> validationExceptions)
@@ -142,24 +128,23 @@ namespace NuGetLicense
         private async Task WriteToErrorStreamAsync(string message)
         {
             byte[] messageBytes = System.Text.Encoding.UTF8.GetBytes(message + Environment.NewLine);
-            await _errorStream.WriteAsync(messageBytes, 0, messageBytes.Length);
-            await _errorStream.FlushAsync();
+            await errorStream.WriteAsync(messageBytes, 0, messageBytes.Length);
+            await errorStream.FlushAsync();
         }
 
-        private static IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(
-            IEnumerable<string> projects,
-            ReferencedPackageReader reader,
-            bool includeTransitive,
-            string? targetFramework,
-            bool excludePublishFalse,
-            bool includeSharedProjects,
-            out IReadOnlyCollection<Exception> exceptions)
+        private static IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(IEnumerable<string> projects,
+                                                                                                ReferencedPackageReader reader,
+                                                                                                bool includeTransitive,
+                                                                                                string? targetFramework,
+                                                                                                bool excludePublishFalse,
+                                                                                                bool includeSharedProjects,
+                                                                                                out IReadOnlyCollection<Exception> exceptions)
         {
             var encounteredExceptions = new List<Exception>();
             var result = new List<ProjectWithReferencedPackages>();
             exceptions = encounteredExceptions;
 
-            ProjectFilter filter = new ProjectFilter();
+            ProjectFilter filter = new();
             foreach (string project in filter.FilterProjects(projects, includeSharedProjects))
             {
                 try
@@ -176,10 +161,9 @@ namespace NuGetLicense
             return result;
         }
 
-        private static async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformations(
-            ProjectWithReferencedPackages projectWithReferences,
-            IEnumerable<CustomPackageInformation> overridePackageInformation,
-            [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellation)
+        private static async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformation(ProjectWithReferencedPackages projectWithReferences,
+                                                                                                  IEnumerable<CustomPackageInformation> overridePackageInformation,
+                                                                                                  [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellation)
         {
             ISettings settings = Settings.LoadDefaultSettings(projectWithReferences.Project);
             var sourceProvider = new PackageSourceProvider(settings);
@@ -188,7 +172,9 @@ namespace NuGetLicense
             var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
             var informationReader = new PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
 
-            await foreach (ReferencedPackageWithContext package in informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project, projectWithReferences.ReferencedPackages), cancellation))
+            await foreach (ReferencedPackageWithContext package in informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project,
+                                                                                                                                      projectWithReferences.ReferencedPackages),
+                                                                                                    cancellation))
             {
                 yield return package;
             }

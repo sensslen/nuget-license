@@ -13,14 +13,9 @@ using PackageIdentity = NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core.Package
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 {
-    public class GlobalPackagesFolderUtility : IGlobalPackagesFolderUtility
+    public class GlobalPackagesFolderUtility(ISettings settings) : IGlobalPackagesFolderUtility
     {
-        private readonly string _globalPackagesFolder;
-
-        public GlobalPackagesFolderUtility(ISettings settings)
-        {
-            _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(settings);
-        }
+        private readonly string _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(settings);
 
         public IWrappedPackageMetadata? GetPackage(PackageIdentity identity)
         {

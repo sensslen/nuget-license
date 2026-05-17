@@ -6,17 +6,10 @@ using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
-    internal class WrappedLockFileTarget : ILockFileTarget
+    internal class WrappedLockFileTarget(LockFileTarget target) : ILockFileTarget
     {
-        private readonly LockFileTarget _target;
+        public INuGetFramework TargetFramework => new WrappedNuGetFramework(target.TargetFramework);
 
-        public WrappedLockFileTarget(LockFileTarget target)
-        {
-            _target = target;
-        }
-
-        public INuGetFramework TargetFramework => new WrappedNuGetFramework(_target.TargetFramework);
-
-        public IEnumerable<ILockFileTargetLibrary> Libraries => _target.Libraries.Select(l => new WrappedLockFileTargetLibrary(l));
+        public IEnumerable<ILockFileTargetLibrary> Libraries => target.Libraries.Select(l => new WrappedLockFileTargetLibrary(l));
     }
 }

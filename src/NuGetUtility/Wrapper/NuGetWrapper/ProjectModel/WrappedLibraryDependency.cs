@@ -5,14 +5,8 @@ using NuGet.LibraryModel;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
-    internal class WrappedLibraryDependency : ILibraryDependency
+    internal class WrappedLibraryDependency(LibraryDependency dependency) : ILibraryDependency
     {
-        private readonly LibraryDependency _dependency;
-
-        public WrappedLibraryDependency(LibraryDependency dependency)
-        {
-            _dependency = dependency;
-        }
-        public string Name => _dependency.Name;
+        public string Name => dependency.Name;
     }
 }

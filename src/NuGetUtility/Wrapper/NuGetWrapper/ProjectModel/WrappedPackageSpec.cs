@@ -5,22 +5,15 @@ using NuGet.ProjectModel;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
-    internal class WrappedPackageSpec : IPackageSpec
+    internal class WrappedPackageSpec(PackageSpec? spec) : IPackageSpec
     {
-        private readonly PackageSpec? _spec;
-
-        public WrappedPackageSpec(PackageSpec? spec)
-        {
-            _spec = spec;
-        }
-
         public bool IsValid()
         {
-            return _spec != null;
+            return spec != null;
         }
 
         public IEnumerable<ITargetFrameworkInformation> TargetFrameworks =>
-            _spec?.TargetFrameworks.Select(t => new WrappedTargetFrameworkInformation(t)) ??
+            spec?.TargetFrameworks.Select(t => new WrappedTargetFrameworkInformation(t)) ??
             Enumerable.Empty<ITargetFrameworkInformation>();
     }
 }

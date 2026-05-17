@@ -4,38 +4,30 @@
 using NuGet.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
-using IWrappedPackageMetadata = NuGetUtility.Wrapper.NuGetWrapper.Packaging.IPackageMetadata;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 {
-    internal class WrappedPackageMetadata : IWrappedPackageMetadata
+    using IWrappedPackageMetadata = NuGetUtility.Wrapper.NuGetWrapper.Packaging.IPackageMetadata;
+
+    internal class WrappedPackageMetadata(ManifestMetadata metadata) : IWrappedPackageMetadata
     {
-        private readonly ManifestMetadata _metadata;
+        public PackageIdentity Identity { get; } = new(metadata.Id ?? throw new ArgumentNullException(nameof(metadata.Id)),
+                                                       new WrappedNuGetVersion(metadata.Version ?? throw new ArgumentNullException(nameof(metadata.Version))));
 
-        public WrappedPackageMetadata(ManifestMetadata metadata)
-        {
-            Identity = new PackageIdentity(metadata.Id ?? throw new ArgumentNullException(nameof(metadata.Id)),
-                                           new WrappedNuGetVersion(metadata.Version ?? throw new ArgumentNullException(nameof(metadata.Version))));
-            LicenseMetadata = metadata.LicenseMetadata;
-            _metadata = metadata;
-        }
+        public string? Title => metadata.Title;
 
-        public PackageIdentity Identity { get; }
+        public Uri? LicenseUrl => metadata.LicenseUrl;
 
-        public string? Title => _metadata.Title;
+        public string? ProjectUrl => metadata.ProjectUrl?.ToString();
 
-        public Uri? LicenseUrl => _metadata.LicenseUrl;
+        public string? Description => metadata.Description;
 
-        public string? ProjectUrl => _metadata.ProjectUrl?.ToString();
+        public string? Summary => metadata.Summary;
 
-        public string? Description => _metadata.Description;
+        public string? Copyright => metadata.Copyright;
 
-        public string? Summary => _metadata.Summary;
+        public string? Authors => string.Join(",", metadata.Authors); // https://learn.microsoft.com/en-us/nuget/reference/nuspec#authors
 
-        public string? Copyright => _metadata.Copyright;
-
-        public string? Authors => string.Join(",", _metadata.Authors); // https://learn.microsoft.com/en-us/nuget/reference/nuspec#authors
-
-        public Packaging.LicenseMetadata? LicenseMetadata { get; }
+        public Packaging.LicenseMetadata? LicenseMetadata { get; } = metadata.LicenseMetadata;
     }
 }

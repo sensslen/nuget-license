@@ -5,14 +5,9 @@ using NuGet.Frameworks;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Frameworks
 {
-    internal class WrappedNuGetFramework : INuGetFramework
+    internal class WrappedNuGetFramework(NuGetFramework framework) : INuGetFramework
     {
-        private readonly NuGetFramework _framework;
-
-        public WrappedNuGetFramework(NuGetFramework framework)
-        {
-            _framework = framework;
-        }
+        private readonly NuGetFramework _framework = framework;
 
         public override bool Equals(object? obj)
         {

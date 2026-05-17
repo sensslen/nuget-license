@@ -3,18 +3,11 @@
 
 namespace NuGetUtility.Test.Extensions.Helper.AsyncEnumerableExtension
 {
-    internal class AsyncEnumerator<T> : IAsyncEnumerator<T>
+    internal class AsyncEnumerator<T>(IEnumerator<T> sync) : IAsyncEnumerator<T>
     {
-        private readonly IEnumerator<T> _sync;
-
-        public AsyncEnumerator(IEnumerator<T> sync)
-        {
-            _sync = sync;
-        }
-
         public ValueTask DisposeAsync()
         {
-            _sync.Dispose();
+            sync.Dispose();
 #if NETFRAMEWORK
             return new ValueTask(Task.CompletedTask);
 #else
@@ -24,7 +17,7 @@ namespace NuGetUtility.Test.Extensions.Helper.AsyncEnumerableExtension
 
         public ValueTask<bool> MoveNextAsync()
         {
-            bool result = _sync.MoveNext();
+            bool result = sync.MoveNext();
 #if NETFRAMEWORK
             return new ValueTask<bool>(Task.FromResult(result));
 #else
@@ -32,6 +25,6 @@ namespace NuGetUtility.Test.Extensions.Helper.AsyncEnumerableExtension
 #endif
         }
 
-        public T Current => _sync.Current;
+        public T Current => sync.Current;
     }
 }

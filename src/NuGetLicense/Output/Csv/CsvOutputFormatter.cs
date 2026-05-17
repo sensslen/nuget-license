@@ -6,25 +6,16 @@ using NuGetLicense.LicenseValidator;
 
 namespace NuGetLicense.Output.Csv
 {
-    public class CsvOutputFormatter : IOutputFormatter
+    public class CsvOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages) : IOutputFormatter
     {
-        private readonly bool _printErrorsOnly;
-        private readonly bool _skipIgnoredPackages;
-
-        public CsvOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages)
-        {
-            _printErrorsOnly = printErrorsOnly;
-            _skipIgnoredPackages = skipIgnoredPackages;
-        }
-
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
         {
-            if (_printErrorsOnly)
+            if (printErrorsOnly)
             {
                 results = results.Where(r => r.ValidationErrors.Any()).ToList();
             }
 
-            if (_skipIgnoredPackages)
+            if (skipIgnoredPackages)
             {
                 results = results
                     .Where(r => r.LicenseInformationOrigin != LicenseInformationOrigin.Ignored)
@@ -38,8 +29,8 @@ namespace NuGetLicense.Output.Csv
 
             foreach (LicenseValidationResult license in results)
             {
-                string[] row = new[]
-                {
+                string[] row =
+                [
                     EscapeCsvValue(license.PackageId), EscapeCsvValue(license.PackageVersion.ToString()),
                     EscapeCsvValue(license.LicenseInformationOrigin.ToString()),
                     EscapeCsvValue(license.License ?? string.Empty),
@@ -48,7 +39,7 @@ namespace NuGetLicense.Output.Csv
                     EscapeCsvValue(license.Authors ?? string.Empty),
                     EscapeCsvValue(license.PackageProjectUrl ?? string.Empty),
                     GetValidationErrorsString(license.ValidationErrors)
-                };
+                ];
 
                 await writer.WriteLineAsync(string.Join(",", row));
             }

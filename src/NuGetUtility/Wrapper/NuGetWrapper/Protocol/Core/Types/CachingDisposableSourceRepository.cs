@@ -5,17 +5,11 @@ using NuGet.Protocol.Core.Types;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
-    internal sealed class CachingDisposableSourceRepository : IDisposableSourceRepository
+    internal sealed class CachingDisposableSourceRepository(SourceRepository sourceRepository) : IDisposableSourceRepository
     {
         private readonly SourceCacheContext _cacheContext = new();
-        private readonly SourceRepository _sourceRepository;
         private IPackageMetadataResource? _packageMetadataResource;
         private IFindPackageByIdResource? _findPackageByIdResource;
-
-        public CachingDisposableSourceRepository(SourceRepository repo)
-        {
-            _sourceRepository = repo;
-        }
 
         public void Dispose()
         {
@@ -30,9 +24,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
                 return _packageMetadataResource;
             }
 
-            _packageMetadataResource = new CachingPackageMetadataResource(
-                await _sourceRepository.GetResourceAsync<PackageMetadataResource>(token),
-                _cacheContext);
+            _packageMetadataResource = new CachingPackageMetadataResource(await sourceRepository.GetResourceAsync<PackageMetadataResource>(token),
+                                                                          _cacheContext);
             return _packageMetadataResource;
         }
 
@@ -43,9 +36,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
                 return _findPackageByIdResource;
             }
 
-            _findPackageByIdResource = new CachingFindPackageByIdResource(
-                await _sourceRepository.GetResourceAsync<FindPackageByIdResource>(token),
-                _cacheContext);
+            _findPackageByIdResource = new CachingFindPackageByIdResource(await sourceRepository.GetResourceAsync<FindPackageByIdResource>(token),
+                                                                          _cacheContext);
             return _findPackageByIdResource;
         }
     }

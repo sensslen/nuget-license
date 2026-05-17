@@ -66,7 +66,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 
         private Dictionary<string, HashSet<string>> BuildDependencyMapFromAssetsFile(ILockFile lockFile, string requestedTargetFramework)
         {
-            Dictionary<string, HashSet<string>> packageDependencies = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, HashSet<string>> packageDependencies = new(StringComparer.OrdinalIgnoreCase);
 
             foreach (ILockFileTarget target in lockFile.Targets)
             {

@@ -10,26 +10,18 @@ using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
-    internal class CachingPackageMetadataResource : IPackageMetadataResource
+    internal class CachingPackageMetadataResource(PackageMetadataResource metadataResource, SourceCacheContext cacheContext)
+        : IPackageMetadataResource
     {
-        private readonly SourceCacheContext _cacheContext;
-        private readonly PackageMetadataResource _metadataResource;
-
-        public CachingPackageMetadataResource(PackageMetadataResource metadataResource, SourceCacheContext cacheContext)
-        {
-            _metadataResource = metadataResource;
-            _cacheContext = cacheContext;
-        }
-
         public async Task<IPackageMetadata?> TryGetMetadataAsync(PackageIdentity identity,
             CancellationToken cancellationToken)
         {
             try
             {
-                IPackageSearchMetadata result = await _metadataResource.GetMetadataAsync(new NuGet.Packaging.Core.PackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString()!)),
-                    _cacheContext,
-                    NullLogger.Instance,
-                    cancellationToken);
+                IPackageSearchMetadata result = await metadataResource.GetMetadataAsync(new NuGet.Packaging.Core.PackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString()!)),
+                                                                                        cacheContext,
+                                                                                        NullLogger.Instance,
+                                                                                        cancellationToken);
                 return new WrappedPackageSearchMetadata(result);
             }
             catch (Exception)
@@ -38,34 +30,25 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             }
         }
 
-        private sealed class WrappedPackageSearchMetadata : IPackageMetadata
+        private sealed class WrappedPackageSearchMetadata(IPackageSearchMetadata searchMetadata) : IPackageMetadata
         {
-            private readonly IPackageSearchMetadata _searchMetadata;
+            public PackageIdentity Identity { get; } = new(searchMetadata.Identity.Id, new WrappedNuGetVersion(searchMetadata.Identity.Version));
 
-            public WrappedPackageSearchMetadata(IPackageSearchMetadata searchMetadata)
-            {
-                Identity = new PackageIdentity(searchMetadata.Identity.Id, new WrappedNuGetVersion(searchMetadata.Identity.Version));
-                LicenseMetadata = searchMetadata.LicenseMetadata;
-                _searchMetadata = searchMetadata;
-            }
+            public string? Title => searchMetadata.Title;
 
-            public PackageIdentity Identity { get; }
+            public Uri? LicenseUrl => searchMetadata.LicenseUrl;
 
-            public string? Title => _searchMetadata.Title;
+            public string? ProjectUrl => searchMetadata.ProjectUrl?.ToString();
 
-            public Uri? LicenseUrl => _searchMetadata.LicenseUrl;
+            public string? Description => searchMetadata.Description;
 
-            public string? ProjectUrl => _searchMetadata.ProjectUrl?.ToString();
-
-            public string? Description => _searchMetadata.Description;
-
-            public string? Summary => _searchMetadata.Summary;
+            public string? Summary => searchMetadata.Summary;
 
             public string? Copyright => null;
 
-            public string? Authors => _searchMetadata.Authors;
+            public string? Authors => searchMetadata.Authors;
 
-            public LicenseMetadata? LicenseMetadata { get; }
+            public LicenseMetadata? LicenseMetadata { get; } = searchMetadata.LicenseMetadata;
         }
     }
 }

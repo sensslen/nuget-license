@@ -24,25 +24,25 @@ public static class LicenseTextHelper
 {
 
     private const string TOKEN_SPLIT_REGEX = "(^|[^\\s.,?'();:\"/\\[\\]<>]{1,100})((\\s|\\.|,|\\?|'|\"|\\(|\\)|;|:|/|\\[|]|<|>|$){1,100})";
-    public static readonly Regex TOKEN_SPLIT_PATTERN = new Regex(TOKEN_SPLIT_REGEX, RegexOptions.Compiled);
+    public static readonly Regex TOKEN_SPLIT_PATTERN = new(TOKEN_SPLIT_REGEX, RegexOptions.Compiled);
 #pragma warning disable IDE1006
     private static readonly ImmutableHashSet<string> PUNCTUATION = [".", ",", "?", "\"", "'", "(", ")", ";", ":", "/", "[", "]", "<", ">"];
     // most of these are comments for common programming languages (C style, Java, Ruby, Python)
     private static readonly ImmutableHashSet<string> SKIPPABLE_TOKENS = ["//", "/*", "*/", "/**", "#", "##", "*", "**", "\"\"\"", "/", "=begin", "=end"];
-    static readonly Regex DASHES_REGEX = new Regex("[\\u2010\\u2011\\u2012\\u2013\\u2014\\u2015\\uFE58\\uFF0D\\-]{1,2}", RegexOptions.Compiled);
-    static readonly Regex SPACE_PATTERN = new Regex("[\\u202F\\u2007\\u2060\\u2009]", RegexOptions.Compiled);
-    static readonly Regex COMMA_PATTERN = new Regex("[\\uFF0C\\uFE10\\uFE50]");
-    static readonly Regex PER_CENT_PATTERN = new Regex("per cent", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    static readonly Regex COPYRIGHT_HOLDER_PATTERN = new Regex("copyright holder", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    static readonly Regex COPYRIGHT_HOLDERS_PATTERN = new Regex("copyright holders", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    static readonly Regex COPYRIGHT_OWNERS_PATTERN = new Regex("copyright owners", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    static readonly Regex COPYRIGHT_OWNER_PATTERN = new Regex("copyright owner", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    static readonly Regex PER_CENT_PATTERN_LF = new Regex("per\\s{0,100}\\n{1,10}\\s{0,100}cent", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    static readonly Regex COPYRIGHT_HOLDERS_PATTERN_LF = new Regex("copyright\\s{0,100}\\n{1,10}\\s{0,100}holders", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    static readonly Regex COPYRIGHT_HOLDER_PATTERN_LF = new Regex("copyright\\s{0,100}\\n{1,10}\\s{0,100}holder", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    static readonly Regex COPYRIGHT_OWNERS_PATTERN_LF = new Regex("copyright\\s{0,100}\\n{1,10}\\s{0,100}owners", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    static readonly Regex COPYRIGHT_OWNER_PATTERN_LF = new Regex("copyright\\s{0,100}\\n{1,10}\\s{0,100}owner", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-    static readonly Regex COPYRIGHT_SYMBOL_PATTERN = new Regex("\\(c\\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    static readonly Regex DASHES_REGEX = new("[\\u2010\\u2011\\u2012\\u2013\\u2014\\u2015\\uFE58\\uFF0D\\-]{1,2}", RegexOptions.Compiled);
+    static readonly Regex SPACE_PATTERN = new("[\\u202F\\u2007\\u2060\\u2009]", RegexOptions.Compiled);
+    static readonly Regex COMMA_PATTERN = new("[\\uFF0C\\uFE10\\uFE50]");
+    static readonly Regex PER_CENT_PATTERN = new("per cent", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    static readonly Regex COPYRIGHT_HOLDER_PATTERN = new("copyright holder", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    static readonly Regex COPYRIGHT_HOLDERS_PATTERN = new("copyright holders", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    static readonly Regex COPYRIGHT_OWNERS_PATTERN = new("copyright owners", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    static readonly Regex COPYRIGHT_OWNER_PATTERN = new("copyright owner", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    static readonly Regex PER_CENT_PATTERN_LF = new("per\\s{0,100}\\n{1,10}\\s{0,100}cent", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    static readonly Regex COPYRIGHT_HOLDERS_PATTERN_LF = new("copyright\\s{0,100}\\n{1,10}\\s{0,100}holders", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    static readonly Regex COPYRIGHT_HOLDER_PATTERN_LF = new("copyright\\s{0,100}\\n{1,10}\\s{0,100}holder", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    static readonly Regex COPYRIGHT_OWNERS_PATTERN_LF = new("copyright\\s{0,100}\\n{1,10}\\s{0,100}owners", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    static readonly Regex COPYRIGHT_OWNER_PATTERN_LF = new("copyright\\s{0,100}\\n{1,10}\\s{0,100}owner", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    static readonly Regex COPYRIGHT_SYMBOL_PATTERN = new("\\(c\\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 #pragma warning restore IDE1006
     public static readonly IImmutableDictionary<string, string> NORMALIZE_TOKENS = ImmutableDictionary.CreateRange(
         [
@@ -97,90 +97,6 @@ public static class LicenseTextHelper
     );
 
     /**
-     * Returns true if two sets of license text is considered a match per
-     * the SPDX License matching guidelines documented at spdx.org (currently <a href="https://spdx.github.io/spdx-spec/v2.3/license-matching-guidelines-and-templates/">license matching guidelines</a>)
-     * There are 2 unimplemented features - bullets/numbering is not considered and comments with no whitespace between text is not skipped
-     * @param licenseTextA text to compare
-     * @param licenseTextB text to compare
-     * @return true if the license text is equivalent
-     */
-    public static bool isLicenseTextEquivalent(string licenseTextA, string licenseTextB)
-    {
-        // Need to take care of multi-word equivalent words - convert to single words with hyphens
-
-        // tokenize each of the strings
-        if (licenseTextA == null)
-        {
-            return string.IsNullOrEmpty(licenseTextB);
-        }
-        if (licenseTextB == null)
-        {
-            return string.IsNullOrEmpty(licenseTextA);
-        }
-        if (licenseTextA.Equals(licenseTextB))
-        {
-            return true;
-        }
-        IDictionary<int, LineColumn> tokenToLocationA = new Dictionary<int, LineColumn>();
-        IDictionary<int, LineColumn> tokenToLocationB = new Dictionary<int, LineColumn>();
-        IReadOnlyList<string> licenseATokens = tokenizeLicenseText(licenseTextA, tokenToLocationA);
-        IReadOnlyList<string> licenseBTokens = tokenizeLicenseText(licenseTextB, tokenToLocationB);
-        int bTokenCounter = 0;
-        int aTokenCounter = 0;
-        string? nextAToken = getTokenAt(licenseATokens, aTokenCounter++);
-        string? nextBToken = getTokenAt(licenseBTokens, bTokenCounter++);
-        while (nextAToken != null)
-        {
-            if (nextBToken == null)
-            {
-                // end of b stream
-                while (canSkip(nextAToken))
-                {
-                    nextAToken = getTokenAt(licenseATokens, aTokenCounter++);
-                }
-                if (nextAToken != null)
-                {
-                    return false;   // there is more stuff in the license text B, so not equal
-                }
-            }
-            else if (tokensEquivalent(nextAToken, nextBToken))
-            {
-                // just move onto the next set of tokens
-                nextAToken = getTokenAt(licenseATokens, aTokenCounter++);
-                nextBToken = getTokenAt(licenseBTokens, bTokenCounter++);
-            }
-            else
-            {
-                // see if we can skip through some B tokens to find a match
-                while (canSkip(nextBToken))
-                {
-                    nextBToken = getTokenAt(licenseBTokens, bTokenCounter++);
-                }
-                // just to be sure, skip forward on the A license
-                while (canSkip(nextAToken))
-                {
-                    nextAToken = getTokenAt(licenseATokens, aTokenCounter++);
-                }
-                if (!tokensEquivalent(nextAToken, nextBToken))
-                {
-                    return false;
-                }
-                else
-                {
-                    nextAToken = getTokenAt(licenseATokens, aTokenCounter++);
-                    nextBToken = getTokenAt(licenseBTokens, bTokenCounter++);
-                }
-            }
-        }
-        // need to make sure B is at the end
-        while (canSkip(nextBToken))
-        {
-            nextBToken = getTokenAt(licenseBTokens, bTokenCounter++);
-        }
-        return nextBToken == null;
-    }
-
-    /**
      * Tokenizes the license text, normalizes quotes, lowercases and converts
      * multi-words for better equiv. comparisons
      * 
@@ -231,7 +147,7 @@ public static class LicenseTextHelper
         {
             // Don't fill in the lines, take a simpler approach
             MatchCollection m = TOKEN_SPLIT_PATTERN.Matches(textToTokenize);
-            foreach (GroupCollection groups in m.Cast<Match>().Select(m => m.Groups))
+            foreach (GroupCollection groups in m.Cast<Match>().Select(match => match.Groups))
             {
                 string word = groups[1].Value.Trim();
                 string separator = groups[2].Value.Trim();
@@ -357,9 +273,9 @@ public static class LicenseTextHelper
      * @param s String to normalize
      * @return String normalized for comparison
      */
-    private static readonly Regex s_singleQuotePattern = new Regex("[‘’‛‚`]", RegexOptions.Compiled);
-    private static readonly Regex s_doubleQuotePattern = new Regex("[“”‟„]", RegexOptions.Compiled);
-    private static readonly Regex s_dashPattern = new Regex("[—–]", RegexOptions.Compiled);
+    private static readonly Regex s_singleQuotePattern = new("[‘’‛‚`]", RegexOptions.Compiled);
+    private static readonly Regex s_doubleQuotePattern = new("[“”‟„]", RegexOptions.Compiled);
+    private static readonly Regex s_dashPattern = new("[—–]", RegexOptions.Compiled);
     public static string normalizeText(string s)
     {
         // First normalize single quotes, then normalize two single quotes to a double quote, normalize double quotes 
@@ -377,7 +293,7 @@ public static class LicenseTextHelper
      * @param s Input string
      * @return s without any line separators (---, ***, ===)
      */
-    private static readonly Regex s_removeLineSeparatorsRegex = new Regex("[-=*]{3,}\\s*$", RegexOptions.Compiled);
+    private static readonly Regex s_removeLineSeparatorsRegex = new("[-=*]{3,}\\s*$", RegexOptions.Compiled);
     public static string removeLineSeparators(string s)
     {
         return s_removeLineSeparatorsRegex.Replace(s, "");  // Remove ----, ***,  and ====

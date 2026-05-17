@@ -9,24 +9,14 @@ using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 
 namespace NuGetUtility.PackageInformationReader
 {
-    public class PackageInformationReader
+    public class PackageInformationReader(IWrappedSourceRepositoryProvider sourceRepositoryProvider,
+                                          IGlobalPackagesFolderUtility globalPackagesFolderUtility,
+                                          IEnumerable<CustomPackageInformation> customPackageInformation)
     {
-        private readonly IGlobalPackagesFolderUtility _globalPackagesFolderUtility;
-        private readonly IEnumerable<CustomPackageInformation> _customPackageInformation;
-        private readonly ISourceRepository[] _repositories;
+        private readonly ISourceRepository[] _repositories = sourceRepositoryProvider.GetRepositories();
 
-        public PackageInformationReader(IWrappedSourceRepositoryProvider sourceRepositoryProvider,
-            IGlobalPackagesFolderUtility globalPackagesFolderUtility,
-            IEnumerable<CustomPackageInformation> customPackageInformation)
-        {
-            _globalPackagesFolderUtility = globalPackagesFolderUtility;
-            _customPackageInformation = customPackageInformation;
-            _repositories = sourceRepositoryProvider.GetRepositories();
-        }
-
-        public async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfo(
-            ProjectWithReferencedPackages projectWithReferencedPackages,
-            [EnumeratorCancellation] CancellationToken cancellation)
+        public async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfo(ProjectWithReferencedPackages projectWithReferencedPackages,
+                                                                                   [EnumeratorCancellation] CancellationToken cancellation)
         {
             foreach (PackageIdentity package in projectWithReferencedPackages.ReferencedPackages)
             {
@@ -54,7 +44,7 @@ namespace NuGetUtility.PackageInformationReader
         }
         private PackageSearchResult TryGetPackageInformationFromGlobalPackageFolder(PackageIdentity package)
         {
-            IPackageMetadata? metadata = _globalPackagesFolderUtility.GetPackage(package);
+            IPackageMetadata? metadata = globalPackagesFolderUtility.GetPackage(package);
             if (metadata is not null)
             {
                 return new PackageSearchResult(metadata);
@@ -62,10 +52,9 @@ namespace NuGetUtility.PackageInformationReader
             return new PackageSearchResult();
         }
 
-        private static async Task<PackageSearchResult> TryGetPackageInformationFromRepositories(
-            ISourceRepository[] repositories,
-            PackageIdentity package,
-            CancellationToken cancellation)
+        private static async Task<PackageSearchResult> TryGetPackageInformationFromRepositories(ISourceRepository[] repositories,
+                                                                                                PackageIdentity package,
+                                                                                                CancellationToken cancellation)
         {
             foreach (ISourceRepository repository in repositories)
             {
@@ -83,7 +72,8 @@ namespace NuGetUtility.PackageInformationReader
                         IPackageDownloader? downloader = await TryGetPackageDownloaderAsync(repository, package, cancellation);
                         if (downloader is not null)
                         {
-                            return new PackageSearchResult(new LicenseAugmentedPackageMetadata(updatedPackageMetadata, await downloader.ReadAsync(updatedPackageMetadata.LicenseMetadata.License, cancellation)));
+                            return new PackageSearchResult(new LicenseAugmentedPackageMetadata(updatedPackageMetadata,
+                                                                                               await downloader.ReadAsync(updatedPackageMetadata.LicenseMetadata.License, cancellation)));
                         }
                         return new PackageSearchResult();
                     }
@@ -97,7 +87,7 @@ namespace NuGetUtility.PackageInformationReader
 
         private PackageSearchResult TryGetPackageInfoFromCustomInformation(PackageIdentity package)
         {
-            CustomPackageInformation resolvedCustomInformation = _customPackageInformation.FirstOrDefault(info =>
+            CustomPackageInformation resolvedCustomInformation = customPackageInformation.FirstOrDefault(info =>
                 info.Id.Equals(package.Id) && info.Version.Equals(package.Version));
             if (resolvedCustomInformation == default)
             {

@@ -8,7 +8,7 @@ namespace NuGetUtility.Test.Extensions.Helper.AutoFixture.NuGet.Versioning
 {
     public class NuGetVersionBuilder : ISpecimenBuilder
     {
-        private readonly Random _rnd = new Random();
+        private readonly Random _rnd = new();
 
         public object Create(object request, ISpecimenContext context)
         {
@@ -35,20 +35,13 @@ namespace NuGetUtility.Test.Extensions.Helper.AutoFixture.NuGet.Versioning
             return _rnd.Next() % 2 == 0;
         }
 
-        private class NuGetVersion : INuGetVersion
+        private class NuGetVersion(string version) : INuGetVersion
         {
-            private readonly string _version;
-
-            public NuGetVersion(string version)
-            {
-                _version = version;
-            }
-
             public int CompareTo(INuGetVersion? other) => throw new NotImplementedException();
 
             public override string ToString()
             {
-                return _version;
+                return version;
             }
         }
     }

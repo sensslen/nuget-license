@@ -8,29 +8,22 @@ using NuGetUtility.Serialization;
 
 namespace NuGetLicense.Output.Json
 {
-    public class JsonOutputFormatter : IOutputFormatter
+    public class JsonOutputFormatter(bool prettyPrint, bool printErrorsOnly, bool skipIgnoredPackages)
+        : IOutputFormatter
     {
-        private readonly bool _printErrorsOnly;
-        private readonly bool _skipIgnoredPackages;
-        private readonly JsonSerializerOptions _options;
-        public JsonOutputFormatter(bool prettyPrint, bool printErrorsOnly, bool skipIgnoredPackages)
+        private readonly JsonSerializerOptions _options = new()
         {
-            _printErrorsOnly = printErrorsOnly;
-            _skipIgnoredPackages = skipIgnoredPackages;
-            _options = new JsonSerializerOptions
-            {
-                Converters = { new NuGetVersionJsonConverter(), new ValidatedLicenseJsonConverterWithOmittingEmptyErrorList() },
-                WriteIndented = prettyPrint
-            };
-        }
+            Converters = { new NuGetVersionJsonConverter(), new ValidatedLicenseJsonConverterWithOmittingEmptyErrorList() },
+            WriteIndented = prettyPrint
+        };
 
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
         {
-            if (_printErrorsOnly)
+            if (printErrorsOnly)
             {
                 results = results.Where(r => r.ValidationErrors.Any()).ToList();
             }
-            else if (_skipIgnoredPackages)
+            else if (skipIgnoredPackages)
             {
                 results = results.Where(r => r.LicenseInformationOrigin != LicenseInformationOrigin.Ignored).ToList();
             }

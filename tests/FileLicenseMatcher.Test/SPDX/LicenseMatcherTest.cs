@@ -11,7 +11,7 @@ namespace FileLicenseMatcher.Test.SPDX
 
         public class AllSpdxLicensesFastLicenseMatcher : IFileLicenseMatcher
         {
-            private readonly FastLicenseMatcher _fastLicenseMatcher = new FastLicenseMatcher(Spdx.Licenses.SpdxLicenseStore.Licenses);
+            private readonly FastLicenseMatcher _fastLicenseMatcher = new(Spdx.Licenses.SpdxLicenseStore.Licenses);
             public string Match(string licenseText) => _fastLicenseMatcher.Match(licenseText);
         }
 
@@ -31,8 +31,11 @@ namespace FileLicenseMatcher.Test.SPDX
                 foreach (string name in executingAssembly.GetManifestResourceNames().Where(n => n.StartsWith(PREFIX)).Where(n => n.EndsWith("txt")))
                 {
                     string expectedIdentifier = name.Substring(s_prefixLength, name.Length - s_postfixLength - s_prefixLength);
-                    using var reader = new StreamReader(executingAssembly.GetManifestResourceStream(name)!);
-                    yield return () => new Case(expectedIdentifier, reader.ReadToEnd());
+                    yield return () =>
+                    {
+                        using var reader = new StreamReader(executingAssembly.GetManifestResourceStream(name)!);
+                        return new Case(expectedIdentifier, reader.ReadToEnd());
+                    };
                 }
             }
         }
@@ -47,8 +50,11 @@ namespace FileLicenseMatcher.Test.SPDX
                 var executingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
                 foreach (string name in executingAssembly.GetManifestResourceNames().Where(n => n.StartsWith(PREFIX)).Where(n => n.EndsWith("txt")))
                 {
-                    using var reader = new StreamReader(executingAssembly.GetManifestResourceStream(name)!);
-                    yield return () => reader.ReadToEnd();
+                    yield return () =>
+                    {
+                        using var reader = new StreamReader(executingAssembly.GetManifestResourceStream(name)!);
+                        return reader.ReadToEnd();
+                    };
                 }
             }
         }
@@ -64,8 +70,11 @@ namespace FileLicenseMatcher.Test.SPDX
                 {
                     string fileName = name.Substring(s_prefixLength);
                     string expectedIdentifier = fileName.Split("__")[0];
-                    using var reader = new StreamReader(executingAssembly.GetManifestResourceStream(name)!);
-                    yield return () => new Case(expectedIdentifier, reader.ReadToEnd());
+                    yield return () =>
+                    {
+                        using var reader = new StreamReader(executingAssembly.GetManifestResourceStream(name)!);
+                        return new Case(expectedIdentifier, reader.ReadToEnd());
+                    };
                 }
             }
         }
@@ -86,7 +95,7 @@ namespace FileLicenseMatcher.Test.SPDX
 
         [Test]
         [MethodDataSource(typeof(RealWorldLicenses), nameof(RealWorldLicenses.GetCases))]
-        public async Task Fast_License_Matcher_Should_Mattch_Real_World_Licenses(Case @case)
+        public async Task Fast_License_Matcher_Should_Match_Real_World_Licenses(Case @case)
         {
             _ = await Assert.That(FastlicenseMatcher.Match(@case.Content)).Contains(@case.Identifier);
         }

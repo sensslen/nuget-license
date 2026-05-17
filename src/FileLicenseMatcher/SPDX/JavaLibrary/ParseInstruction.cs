@@ -215,7 +215,7 @@ public sealed class ParseInstruction
                 // optimization, don't go through the effort to subset the text
                 foreach (ParseInstruction sub in _subInstructions)
                 {
-                    DifferenceDescription optionalDifference = new DifferenceDescription();
+                    DifferenceDescription optionalDifference = new();
                     nextToken = sub.match(matchTokens, nextToken, endToken, originalText,
                             optionalDifference, tokenToLocation, compareTokens);
                     if (nextToken < 0)
@@ -268,7 +268,7 @@ public sealed class ParseInstruction
     {
         foreach (int matchingStartToken in matchingStartTokens)
         {
-            DifferenceDescription matchDifferences = new DifferenceDescription();
+            DifferenceDescription matchDifferences = new();
             int matchLocation = startToken;
             foreach (ParseInstruction sub in _subInstructions)
             {
@@ -346,7 +346,7 @@ public sealed class ParseInstruction
         // Go through the preceding optional rules.  If there is enough token matches, add it to the result list
         foreach (int optionalSub in leadingOptionalSubInstructions)
         {
-            DifferenceDescription tempDiffDescription = new DifferenceDescription();
+            DifferenceDescription tempDiffDescription = new();
             int nextOptMatchingStart = nextMatchingStart;
             int optTokenAfterMatch = _subInstructions[optionalSub].match(matchTokens, nextOptMatchingStart, endToken, originalText, tempDiffDescription, tokenToLocation, true, compareTokens);
             while (optTokenAfterMatch <= nextOptMatchingStart && -optTokenAfterMatch <= endToken
@@ -417,7 +417,7 @@ public sealed class ParseInstruction
             else
             {
                 // Not enough text tokens, we need to make sure everything matches beyond this point
-                DifferenceDescription tempDiffDescription = new DifferenceDescription();
+                DifferenceDescription tempDiffDescription = new();
                 int nextCheckToken = _subInstructions[firstNormalTextIndex].match(matchTokens, nextMatchingStart, endToken, originalText, tempDiffDescription, tokenToLocation, true, compareTokens);
                 int nextCheckSubInstruction = firstNormalTextIndex + 1;
                 while (nextCheckToken > 0 &&

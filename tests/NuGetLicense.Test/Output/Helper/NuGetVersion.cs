@@ -5,20 +5,13 @@ using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetLicense.Test.Output.Helper
 {
-    public class NuGetVersion : INuGetVersion
+    public class NuGetVersion(string version) : INuGetVersion
     {
-        private readonly string _version;
-
-        public NuGetVersion(string version)
-        {
-            _version = version;
-        }
-
         public int CompareTo(INuGetVersion? other) => throw new NotImplementedException();
 
         public override string ToString()
         {
-            return _version;
+            return version;
         }
     }
 }

@@ -17,9 +17,9 @@ internal static class LicenseCompareHelper
     private const string START_COMMENT_CHAR_PATTERN = "(//|/\\*|\\*|#|' |REM |<!--|--|;|\\(\\*|\\{-)|\\.\\\\\"";
 
 #pragma warning disable IDE1006
-    private static readonly Regex END_COMMENT_PATTERN = new Regex("(\\*/|-->|-}|\\*\\)|\\s\\*)\\s*$", RegexOptions.Compiled);
-    private static readonly Regex START_COMMENT_PATTERN = new Regex("^\\s*" + START_COMMENT_CHAR_PATTERN, RegexOptions.Compiled);
-    private static readonly Regex BEGIN_OPTIONAL_COMMENT_PATTERN = new Regex("^\\s*<<beginOptional>>\\s*" + START_COMMENT_CHAR_PATTERN, RegexOptions.Compiled);
+    private static readonly Regex END_COMMENT_PATTERN = new("(\\*/|-->|-}|\\*\\)|\\s\\*)\\s*$", RegexOptions.Compiled);
+    private static readonly Regex START_COMMENT_PATTERN = new("^\\s*" + START_COMMENT_CHAR_PATTERN, RegexOptions.Compiled);
+    private static readonly Regex BEGIN_OPTIONAL_COMMENT_PATTERN = new("^\\s*<<beginOptional>>\\s*" + START_COMMENT_CHAR_PATTERN, RegexOptions.Compiled);
 #pragma warning restore IDE1006
 
     #region Additions to optimize matching performance (not available in the original java code)
@@ -155,7 +155,7 @@ internal static class LicenseCompareHelper
             if (end == null)
             {
                 // read until the end of the stream
-                StringBuilder sb = new StringBuilder(line.Substring(start.Column));
+                StringBuilder sb = new(line.Substring(start.Column));
                 currentLine++;
                 line = reader.ReadLine();
                 while (line != null)
@@ -172,7 +172,7 @@ internal static class LicenseCompareHelper
             }
             else
             {
-                StringBuilder sb = new StringBuilder(line.Substring(start.Column));
+                StringBuilder sb = new(line.Substring(start.Column));
                 currentLine++;
                 line = reader.ReadLine();
                 while (line != null && currentLine < end.Line)
@@ -193,7 +193,7 @@ internal static class LicenseCompareHelper
         catch (IOException)
         {
             // just build with spaces - not ideal, but close enough most of the time
-            StringBuilder sb = new StringBuilder(tokens[startToken]);
+            StringBuilder sb = new(tokens[startToken]);
             for (int i = startToken + 1; i <= endToken; i++)
             {
                 sb.Append(' ');
@@ -252,7 +252,7 @@ internal static class LicenseCompareHelper
         {
             return "";
         }
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         using var reader = new StringReader(s);
         try
         {

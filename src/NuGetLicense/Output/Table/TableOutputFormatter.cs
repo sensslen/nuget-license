@@ -6,34 +6,24 @@ using NuGetUtility.Output.Table;
 
 namespace NuGetLicense.Output.Table
 {
-    public class TableOutputFormatter : IOutputFormatter
+    public class TableOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages, bool printMarkdown = false)
+        : IOutputFormatter
     {
-        private readonly bool _printErrorsOnly;
-        private readonly bool _skipIgnoredPackages;
-        private readonly bool _printMarkdown;
-
-        public TableOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages, bool printMarkdown = false)
-        {
-            _printErrorsOnly = printErrorsOnly;
-            _skipIgnoredPackages = skipIgnoredPackages;
-            _printMarkdown = printMarkdown;
-        }
-
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
         {
             var errorColumnDefinition = new ColumnDefinition("Error", license => license.ValidationErrors.Select(e => e.Error), license => license.ValidationErrors.Any());
             ColumnDefinition[] columnDefinitions =
             [
-                new ColumnDefinition("Package", license => license.PackageId, license => true, true),
-                new ColumnDefinition("Version", license => license.PackageVersion, license => true, true),
-                new ColumnDefinition("License Information Origin", license => license.LicenseInformationOrigin, license => true, true),
-                new ColumnDefinition("License Expression", license => license.License?.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries), license => license.License != null),
-                new ColumnDefinition("License Url", license => license.LicenseUrl, license => license.LicenseUrl != null),
-                new ColumnDefinition("Copyright", license => license.Copyright, license => license.Copyright != null),
-                new ColumnDefinition("Authors", license => license.Authors, license => license.Authors != null),
-                new ColumnDefinition("Package Project Url",license => license.PackageProjectUrl, license => license.PackageProjectUrl != null),
+                new("Package", license => license.PackageId, license => true, true),
+                new("Version", license => license.PackageVersion, license => true, true),
+                new("License Information Origin", license => license.LicenseInformationOrigin, license => true, true),
+                new("License Expression", license => license.License?.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries), license => license.License != null),
+                new("License Url", license => license.LicenseUrl, license => license.LicenseUrl != null),
+                new("Copyright", license => license.Copyright, license => license.Copyright != null),
+                new("Authors", license => license.Authors, license => license.Authors != null),
+                new("Package Project Url",license => license.PackageProjectUrl, license => license.PackageProjectUrl != null),
                 errorColumnDefinition,
-                new ColumnDefinition("Error Context", license => license.ValidationErrors.Select(e => e.Context), license => license.ValidationErrors.Any()),
+                new("Error Context", license => license.ValidationErrors.Select(e => e.Context), license => license.ValidationErrors.Any()),
             ];
 
             foreach (LicenseValidationResult license in results)
@@ -44,18 +34,18 @@ namespace NuGetLicense.Output.Table
                 }
             }
 
-            if (_printErrorsOnly)
+            if (printErrorsOnly)
             {
                 results = results.Where(r => r.ValidationErrors.Any()).ToList();
             }
-            else if (_skipIgnoredPackages)
+            else if (skipIgnoredPackages)
             {
                 results = results.Where(r => r.LicenseInformationOrigin != LicenseInformationOrigin.Ignored).ToList();
             }
 
             ColumnDefinition[] relevantColumns = columnDefinitions.Where(c => c.Enabled).ToArray();
             await TablePrinterExtensions
-                .Create(stream, relevantColumns.Select(d => d.Title), _printMarkdown)
+                .Create(stream, relevantColumns.Select(d => d.Title), printMarkdown)
                 .FromValues(
                     results,
                     license => relevantColumns.Select(d => d.PropertyAccessor(license)))

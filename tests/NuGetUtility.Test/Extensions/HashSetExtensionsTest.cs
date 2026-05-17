@@ -9,17 +9,12 @@ namespace NuGetUtility.Test.Extensions
 {
     public abstract class HashSetExtensionsTestBase<T>
     {
-        private readonly Fixture _fixture;
-
-        protected HashSetExtensionsTestBase()
-        {
-            _fixture = new Fixture();
-        }
+        private readonly Fixture _fixture = new();
 
         [Test]
         public async Task AddMany_Should_AddNewElementsToHashSet()
         {
-            HashSet<T> uut = new HashSet<T>(_fixture.CreateMany<T>());
+            HashSet<T> uut = new(_fixture.CreateMany<T>());
             T[] newElements = _fixture.CreateMany<T>().ToArray();
             ImmutableList<T> initialElements = [.. uut];
 
@@ -31,7 +26,7 @@ namespace NuGetUtility.Test.Extensions
         [Test]
         public async Task AddMany_Should_OnlyAddNewItems()
         {
-            HashSet<T> uut = new HashSet<T>(_fixture.CreateMany<T>());
+            HashSet<T> uut = new(_fixture.CreateMany<T>());
             T[] newElements = _fixture.CreateMany<T>().ToArray();
             ImmutableList<T> initialElements = [.. uut];
 
@@ -43,7 +38,7 @@ namespace NuGetUtility.Test.Extensions
         [Test]
         public async Task AddMany_Should_KeepSameHashSetIfOnlyAddingSameElements()
         {
-            HashSet<T> uut = new HashSet<T>(_fixture.CreateMany<T>());
+            HashSet<T> uut = new(_fixture.CreateMany<T>());
             ImmutableList<T> initialElements = [.. uut];
 
             uut.AddRange(initialElements);

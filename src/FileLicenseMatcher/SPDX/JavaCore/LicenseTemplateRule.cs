@@ -22,13 +22,13 @@ public class LicenseTemplateRule
     public enum RuleType { VARIABLE, BEGIN_OPTIONAL, END_OPTIONAL }
 
     public RuleType? Type { get; set; }
-    public string? Original { get; set; } = null;
+    public string? Original { get; set; }
     public string? Name { get; set; }
-    public string? Example { get; set; } = null;
-    public string? Match { get; set; } = null;
+    public string? Example { get; set; }
+    public string? Match { get; set; }
 
 #pragma warning disable IDE1006
-    static readonly Regex SPLIT_REGEX = new Regex("[^\\\\];", RegexOptions.Compiled);
+    static readonly Regex SPLIT_REGEX = new("[^\\\\];", RegexOptions.Compiled);
 #pragma warning restore IDE1006
     private const string EXAMPLE_KEYWORD = "example";
     private const string NAME_KEYWORD = "name";
@@ -144,7 +144,7 @@ public class LicenseTemplateRule
         string typeStr;
         if (rulePartMatcher.Count > 0)
         {
-            typeStr = parseableLicenseTemplateRule.Substring(start, rulePartMatcher[0].Index + 1 - start).Trim();
+            typeStr = parseableLicenseTemplateRule.Substring(start, rulePartMatcher[0].Index + 1).Trim();
             start = rulePartMatcher[0].Index + rulePartMatcher[0].Length;
         }
         else

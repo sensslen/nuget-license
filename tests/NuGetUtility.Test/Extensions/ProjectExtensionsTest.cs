@@ -9,12 +9,7 @@ namespace NuGetUtility.Test.Extensions
 {
     public class ProjectExtensionsTest
     {
-        private readonly IProject _project;
-
-        public ProjectExtensionsTest()
-        {
-            _project = Substitute.For<IProject>();
-        }
+        private readonly IProject _project = Substitute.For<IProject>();
 
         [Test]
         public async Task GetPackagesConfigPath_Should_Return_CorrectPath()
@@ -30,13 +25,13 @@ namespace NuGetUtility.Test.Extensions
         [Test]
         [Arguments(new string?[] { }, false)]
         [Arguments(new string?[] { null }, false)]
-        [Arguments(new string?[] { null, "not-packages.config" }, false)]
-        [Arguments(new string?[] { "not-packages.config" }, false)]
-        [Arguments(new string?[] { "packages.config" }, true)]
-        [Arguments(new string?[] { null, "packages.config" }, true)]
-        [Arguments(new string?[] { "not-packages.config", "packages.config" }, true)]
-        [Arguments(new string?[] { null, "not-packages.config", "packages.config" }, true)]
-        public async Task HasPackagesConfigFile_Should_Return_Correct_Result(IEnumerable<string> evaluatedIncludes, bool expectation)
+        [Arguments(new[] { null, "not-packages.config" }, false)]
+        [Arguments(new[] { "not-packages.config" }, false)]
+        [Arguments(new[] { "packages.config" }, true)]
+        [Arguments(new[] { null, "packages.config" }, true)]
+        [Arguments(new[] { "not-packages.config", "packages.config" }, true)]
+        [Arguments(new[] { null, "not-packages.config", "packages.config" }, true)]
+        public async Task HasPackagesConfigFile_Should_Return_Correct_Result(IEnumerable<string?> evaluatedIncludes, bool expectation)
         {
             _project.GetEvaluatedIncludes().Returns(evaluatedIncludes);
 
