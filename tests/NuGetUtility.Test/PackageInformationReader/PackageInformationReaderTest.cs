@@ -24,7 +24,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             _fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
             _fixture.Customizations.Add(new NuGetVersionBuilder());
             _fixture.Customizations.Add(new CustomPackageInformationBuilderWithOptionalFileds());
-            _repositories = Array.Empty<ISourceRepository>();
+            _repositories = [];
             _globalPackagesFolderUtility = Substitute.For<IGlobalPackagesFolderUtility>();
 
             _globalPackagesFolderUtility.GetPackage(Arg.Any<PackageIdentity>()).Returns(default(IPackageMetadata?));

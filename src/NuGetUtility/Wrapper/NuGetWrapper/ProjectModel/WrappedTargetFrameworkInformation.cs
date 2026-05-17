@@ -6,22 +6,15 @@ using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
-    internal class WrappedTargetFrameworkInformation : ITargetFrameworkInformation
+    internal class WrappedTargetFrameworkInformation(TargetFrameworkInformation info) : ITargetFrameworkInformation
     {
-        private readonly TargetFrameworkInformation _info;
+        public INuGetFramework FrameworkName => new WrappedNuGetFramework(info.FrameworkName);
 
-        public WrappedTargetFrameworkInformation(TargetFrameworkInformation info)
-        {
-            _info = info;
-        }
-
-        public INuGetFramework FrameworkName => new WrappedNuGetFramework(_info.FrameworkName);
-
-        public IEnumerable<ILibraryDependency> Dependencies => _info.Dependencies.Select(library => new WrappedLibraryDependency(library));
+        public IEnumerable<ILibraryDependency> Dependencies => info.Dependencies.Select(library => new WrappedLibraryDependency(library));
 
         public override string ToString()
         {
-            return _info.ToString();
+            return info.ToString();
         }
     }
 }

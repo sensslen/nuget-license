@@ -21,17 +21,8 @@ namespace NuGetLicense
     /// <summary>
     /// Parses and transforms command line options into the format required by the license validation orchestrator.
     /// </summary>
-    public class CommandLineOptionsParser : ICommandLineOptionsParser
+    public class CommandLineOptionsParser(IFileSystem fileSystem, HttpClient httpClient) : ICommandLineOptionsParser
     {
-        private readonly IFileSystem _fileSystem;
-        private readonly HttpClient _httpClient;
-
-        public CommandLineOptionsParser(IFileSystem fileSystem, HttpClient httpClient)
-        {
-            _fileSystem = fileSystem;
-            _httpClient = httpClient;
-        }
-
         public string[] GetInputFiles(string? inputFile, string? inputJsonFile)
         {
             if (inputFile is not null)
@@ -41,7 +32,7 @@ namespace NuGetLicense
 
             if (inputJsonFile is not null)
             {
-                return JsonSerializer.Deserialize<string[]>(_fileSystem.File.ReadAllText(inputJsonFile))!;
+                return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(inputJsonFile))!;
             }
 
             // Defensive check: validation should already be done at command line parsing level,
@@ -71,7 +62,7 @@ namespace NuGetLicense
                 return UrlToLicenseMapping.Default;
             }
 
-            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(_fileSystem.File.ReadAllText(licenseMapping))!;
+            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(fileSystem.File.ReadAllText(licenseMapping))!;
 
             return UrlToLicenseMapping.Default.SetItems(userDictionary);
         }
@@ -80,12 +71,12 @@ namespace NuGetLicense
         {
             if (overridePackageInformation is null)
             {
-                return Array.Empty<CustomPackageInformation>();
+                return [];
             }
 
             try
             {
-                string fileContent = _fileSystem.File.ReadAllText(overridePackageInformation);
+                string fileContent = fileSystem.File.ReadAllText(overridePackageInformation);
                 var serializerOptions = new JsonSerializerOptions();
                 serializerOptions.Converters.Add(new NuGetVersionJsonConverter());
                 CustomPackageInformation[]? result = JsonSerializer.Deserialize<CustomPackageInformation[]>(fileContent, serializerOptions);
@@ -105,12 +96,12 @@ namespace NuGetLicense
                 return spdxLicenseMatcher;
             }
 
-            string containingDirectory = _fileSystem.Path.GetDirectoryName(_fileSystem.Path.GetFullPath(licenseFileMappings))!;
-            Dictionary<string, string> rawMappings = JsonSerializer.Deserialize<Dictionary<string, string>>(_fileSystem.File.ReadAllText(licenseFileMappings))!;
-            var fullPathMappings = rawMappings.ToDictionary(kvp => _fileSystem.Path.GetFullPath(_fileSystem.Path.Combine(containingDirectory, kvp.Key)), kvp => kvp.Value);
+            string containingDirectory = fileSystem.Path.GetDirectoryName(fileSystem.Path.GetFullPath(licenseFileMappings))!;
+            Dictionary<string, string> rawMappings = JsonSerializer.Deserialize<Dictionary<string, string>>(fileSystem.File.ReadAllText(licenseFileMappings))!;
+            var fullPathMappings = rawMappings.ToDictionary(kvp => fileSystem.Path.GetFullPath(fileSystem.Path.Combine(containingDirectory, kvp.Key)), kvp => kvp.Value);
 
             return new FileLicenseMatcher.Combine.LicenseMatcher([
-                new FileLicenseMatcher.Compare.LicenseMatcher(_fileSystem, fullPathMappings),
+                new FileLicenseMatcher.Compare.LicenseMatcher(fileSystem, fullPathMappings),
                 spdxLicenseMatcher
             ]);
         }
@@ -122,12 +113,12 @@ namespace NuGetLicense
                 return new NopFileDownloader();
             }
 
-            if (!_fileSystem.Directory.Exists(downloadLicenseInformation))
+            if (!fileSystem.Directory.Exists(downloadLicenseInformation))
             {
-                _fileSystem.Directory.CreateDirectory(downloadLicenseInformation);
+                fileSystem.Directory.CreateDirectory(downloadLicenseInformation);
             }
 
-            return new FileDownloader(_httpClient, downloadLicenseInformation);
+            return new FileDownloader(httpClient, downloadLicenseInformation);
         }
 
         public IOutputFormatter GetOutputFormatter(OutputType outputType, bool returnErrorsOnly, bool includeIgnoredPackages)
@@ -147,15 +138,15 @@ namespace NuGetLicense
         {
             if (value is null)
             {
-                return Array.Empty<string>();
+                return [];
             }
 
             // Check if the value is a path to an existing file
-            if (_fileSystem.File.Exists(value))
+            if (fileSystem.File.Exists(value))
             {
                 try
                 {
-                    string fileContent = _fileSystem.File.ReadAllText(value);
+                    string fileContent = fileSystem.File.ReadAllText(value);
                     string[]? result = JsonSerializer.Deserialize<string[]>(fileContent);
                     return result ?? throw new ArgumentException($"File '{value}' contains invalid JSON: expected an array of strings but got null.");
                 }

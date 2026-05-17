@@ -3,7 +3,7 @@
 
 namespace NuGetUtility.Wrapper.SolutionPersistenceWrapper
 {
-    public interface ISolutionPersistanceWrapper
+    public interface ISolutionPersistenceWrapper
     {
         Task<IEnumerable<string>> GetProjectsFromSolutionAsync(string inputPath);
     }

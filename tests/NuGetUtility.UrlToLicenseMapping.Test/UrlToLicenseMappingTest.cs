@@ -71,7 +71,7 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
                     retryCount++;
 
                     Console.WriteLine($"Failed to check license. Retry count: {retryCount}\n\n");
-                    Console.WriteLine($"Error:");
+                    Console.WriteLine("Error:");
                     Console.WriteLine(licenseResult.Error);
                     Console.WriteLine($"\n\nRetrying after {retryTimeout}ms\n\n");
 

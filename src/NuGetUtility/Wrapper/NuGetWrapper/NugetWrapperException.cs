@@ -3,9 +3,5 @@
 
 namespace NuGetUtility.Wrapper.NuGetWrapper
 {
-    public class NugetWrapperException : Exception
-    {
-        public NugetWrapperException(string message)
-            : base(message) { }
-    }
+    public class NugetWrapperException(string message) : Exception(message);
 }

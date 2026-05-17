@@ -6,22 +6,15 @@ using Microsoft.Build.Evaluation;
 
 namespace NuGetUtility.Wrapper.MsBuildWrapper
 {
-    internal class ProjectWrapper : IProject
+    internal class ProjectWrapper(Project project) : IProject
     {
         private const string ProjectAssetsFile = "ProjectAssetsFile";
         private const string PackageReferenceItemType = "PackageReference";
         private const string TargetFrameworkProperty = "TargetFramework";
 
-        private readonly Project _project;
-
-        public ProjectWrapper(Project project)
-        {
-            _project = project;
-        }
-
         public bool TryGetAssetsPath([NotNullWhen(true)] out string assetsFile)
         {
-            assetsFile = _project.GetPropertyValue(ProjectAssetsFile);
+            assetsFile = project.GetPropertyValue(ProjectAssetsFile);
             if (string.IsNullOrEmpty(assetsFile))
             {
                 return false;
@@ -30,7 +23,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             if (!File.Exists(assetsFile))
             {
                 throw new MsBuildAbstractionException(
-                    $"Failed to get the project assets file for project {_project.FullPath} ({assetsFile})");
+                    $"Failed to get the project assets file for project {project.FullPath} ({assetsFile})");
             }
 
             return true;
@@ -38,26 +31,26 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
         public IEnumerable<string> GetEvaluatedIncludes()
         {
-            return _project.AllEvaluatedItems.Select(projectItem => projectItem.EvaluatedInclude);
+            return project.AllEvaluatedItems.Select(projectItem => projectItem.EvaluatedInclude);
         }
 
         public IEnumerable<PackageReferenceMetadata> GetPackageReferences()
         {
             // Read evaluated PackageReference items from the current project context.
-            return _project.GetItems(PackageReferenceItemType)
+            return project.GetItems(PackageReferenceItemType)
                 .Select(item => new PackageReferenceMetadata(item.EvaluatedInclude, CreateMetadata(item)));
         }
 
         public IEnumerable<PackageReferenceMetadata> GetPackageReferencesForTarget(string targetFramework)
         {
             // Re-evaluate the project for a specific target framework to read conditional references.
-            Dictionary<string, string> properties = new Dictionary<string, string>(_project.GlobalProperties, StringComparer.OrdinalIgnoreCase)
+            Dictionary<string, string> properties = new(project.GlobalProperties, StringComparer.OrdinalIgnoreCase)
             {
                 [TargetFrameworkProperty] = targetFramework
             };
 
-            using ProjectCollection projectCollection = new ProjectCollection();
-            Project targetProject = new Project(_project.FullPath, properties, _project.ToolsVersion, projectCollection);
+            using ProjectCollection projectCollection = new();
+            Project targetProject = new(project.FullPath, properties, project.ToolsVersion, projectCollection);
             try
             {
                 return targetProject.GetItems(PackageReferenceItemType)
@@ -70,12 +63,12 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             }
         }
 
-        public string FullPath => _project.FullPath;
+        public string FullPath => project.FullPath;
 
         private static IReadOnlyDictionary<string, string> CreateMetadata(ProjectItem item)
         {
             // Normalize metadata names for case-insensitive lookups (e.g., Publish).
-            Dictionary<string, string> metadata = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, string> metadata = new(StringComparer.OrdinalIgnoreCase);
             foreach (ProjectMetadata projectMetadata in item.Metadata)
             {
                 metadata[projectMetadata.Name] = projectMetadata.EvaluatedValue;

@@ -30,6 +30,6 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
         public string? Summary => _metadata.Summary;
         public string? Copyright => _metadata.Copyright;
         public string? Authors => _metadata.Authors;
-        public Packaging.LicenseMetadata? LicenseMetadata => new Packaging.LicenseMetadata(Packaging.LicenseType.File, _licenseText);
+        public Packaging.LicenseMetadata? LicenseMetadata => new(Packaging.LicenseType.File, _licenseText);
     }
 }

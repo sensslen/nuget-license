@@ -52,8 +52,8 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 return true;
             });
             _projectMock.FullPath.Returns(_projectPath);
-            _projectMock.GetPackageReferences().Returns(Array.Empty<PackageReferenceMetadata>());
-            _projectMock.GetPackageReferencesForTarget(Arg.Any<string>()).Returns(Array.Empty<PackageReferenceMetadata>());
+            _projectMock.GetPackageReferences().Returns([]);
+            _projectMock.GetPackageReferencesForTarget(Arg.Any<string>()).Returns([]);
             _lockFileFactory.GetFromFile(_assetsFilePath).Returns(_lockFileMock);
             _lockFileMock.PackageSpec.Returns(_packageSpecMock);
             _packageSpecMock.IsValid().Returns(true);
@@ -172,7 +172,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Arguments(false)]
         public async Task GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_TargetsArrayDoesNotContainAnyElement(bool includeTransitive)
         {
-            _lockFileMock.Targets.Returns(Enumerable.Empty<ILockFileTarget>());
+            _lockFileMock.Targets.Returns([]);
 
             await Assert.That(() => _uut.GetInstalledPackages(_projectPath, includeTransitive))
                 .Throws<ReferencedPackageReaderException>()
@@ -183,7 +183,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public async Task GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_NotIncludingTransitive_And_PackageSpecFrameworkInformationGetFails()
         {
             _packageSpecMock.TargetFrameworks
-                .Returns(Enumerable.Empty<ITargetFrameworkInformation>());
+                .Returns([]);
 
             ReferencedPackageReaderException exception = (await Assert.That(() => _uut.GetInstalledPackages(_projectPath, false))
                 .Throws<ReferencedPackageReaderException>())!;
@@ -202,13 +202,13 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             INuGetFramework frameworkNet80 = Substitute.For<INuGetFramework>();
             frameworkNet80.ToString().Returns("net8.0");
             targetNet80.TargetFramework.Returns(frameworkNet80);
-            targetNet80.Libraries.Returns(Array.Empty<ILockFileTargetLibrary>());
+            targetNet80.Libraries.Returns([]);
 
             ILockFileTarget targetNet90 = Substitute.For<ILockFileTarget>();
             INuGetFramework frameworkNet90 = Substitute.For<INuGetFramework>();
             frameworkNet90.ToString().Returns("net9.0");
             targetNet90.TargetFramework.Returns(frameworkNet90);
-            targetNet90.Libraries.Returns(Array.Empty<ILockFileTargetLibrary>());
+            targetNet90.Libraries.Returns([]);
 
 
 
@@ -222,7 +222,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Test]
         public async Task GetInstalledPackages_Should_ReturnCorrectValues_If_TargetFrameworks_Returns_Empty_And_Requested_Transitive_Packages()
         {
-            _packageSpecMock.TargetFrameworks.Returns(Enumerable.Empty<ITargetFrameworkInformation>());
+            _packageSpecMock.TargetFrameworks.Returns([]);
             IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true);
             await Assert.That(result).IsEquivalentTo(_referencedPackagesForFramework.SelectMany(kvp => kvp.Value).Distinct());
         }
@@ -362,7 +362,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public async Task GetInstalledPackages_Should_ReturnEmptyCollection_If_Cannot_Get_Asset_File_Path_And_Has_No_Packages_Config()
         {
             _projectMock.TryGetAssetsPath(out Arg.Any<string>()).Returns(false);
-            _projectMock.GetEvaluatedIncludes().Returns(Enumerable.Empty<string>());
+            _projectMock.GetEvaluatedIncludes().Returns([]);
             IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, false);
 
             await Assert.That(result).Count().IsEqualTo(0);
@@ -502,7 +502,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 })
             ]);
 
-            _projectMock.GetPackageReferencesForTarget("net9.0").Returns(Array.Empty<PackageReferenceMetadata>());
+            _projectMock.GetPackageReferencesForTarget("net9.0").Returns([]);
 
             IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
 

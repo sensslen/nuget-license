@@ -21,8 +21,8 @@ public static class SpdxLicenseTemplateHelper
 {
     private const string START_RULE = "<<";
     private const string END_RULE = ">>";
-    public static readonly Regex RULE_PATTERN = new Regex(START_RULE + "\\s*(beginOptional|endOptional|var)", RegexOptions.Compiled);
-    public static readonly Regex END_RULE_PATTERN = new Regex(END_RULE, RegexOptions.Compiled);
+    public static readonly Regex RULE_PATTERN = new(START_RULE + "\\s*(beginOptional|endOptional|var)", RegexOptions.Compiled);
+    public static readonly Regex END_RULE_PATTERN = new(END_RULE, RegexOptions.Compiled);
 
     /**
 	 * Parses the license template calling the templateOutputHandler for any text
@@ -36,13 +36,13 @@ public static class SpdxLicenseTemplateHelper
 	 */
     public static void parseTemplate(string licenseTemplate, ILicenseTemplateOutputHandler templateOutputHandler)
     {
-        IEnumerator<Match> ruleMatcher = RULE_PATTERN.Matches(licenseTemplate).Cast<Match>().GetEnumerator();
+        using IEnumerator<Match> ruleMatcher = RULE_PATTERN.Matches(licenseTemplate).Cast<Match>().GetEnumerator();
         int end = 0;
         int optionalNestLevel = 0;
         while (ruleMatcher.MoveNext())
         {
             // copy everything up to the start of the find
-            string upToTheFind = licenseTemplate.Substring(end, ruleMatcher.Current.Index - end);
+            string upToTheFind = licenseTemplate.Substring(end, ruleMatcher.Current!.Index - end);
             if (!string.IsNullOrWhiteSpace(upToTheFind))
             {
                 templateOutputHandler.text(upToTheFind);
@@ -55,7 +55,7 @@ public static class SpdxLicenseTemplateHelper
             end = endMatch.Index + endMatch.Length;
             string ruleString = licenseTemplate.Substring(ruleMatcher.Current.Index + START_RULE.Length, end - END_RULE.Length - ruleMatcher.Current.Index - START_RULE.Length);
 
-            LicenseTemplateRule rule = new LicenseTemplateRule(ruleString);
+            LicenseTemplateRule rule = new(ruleString);
             if (rule.Type == LicenseTemplateRule.RuleType.VARIABLE)
             {
                 templateOutputHandler.variableRule(rule);
@@ -78,7 +78,7 @@ public static class SpdxLicenseTemplateHelper
             else
             {
                 throw new LicenseTemplateRuleException(
-                        "Unrecognized rule: " + rule.Type.ToString() + " after text '" + upToTheFind + "'");
+                        "Unrecognized rule: " + rule.Type + " after text '" + upToTheFind + "'");
             }
         }
         if (optionalNestLevel > 0)

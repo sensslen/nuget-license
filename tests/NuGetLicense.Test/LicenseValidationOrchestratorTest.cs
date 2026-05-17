@@ -6,7 +6,6 @@ using System.IO.Abstractions.TestingHelpers;
 using NSubstitute;
 using NuGetLicense.LicenseValidator;
 using NuGetUtility;
-using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
@@ -18,7 +17,7 @@ namespace NuGetLicense.Test
     public class LicenseValidationOrchestratorTest
     {
         private readonly MockFileSystem _fileSystem;
-        private readonly ISolutionPersistanceWrapper _solutionPersistance;
+        private readonly ISolutionPersistenceWrapper _solutionPersistence;
         private readonly ICommandLineOptionsParser _optionsParser;
         private readonly MemoryStream _outputStream;
         private readonly MemoryStream _errorStream;
@@ -28,7 +27,7 @@ namespace NuGetLicense.Test
         public LicenseValidationOrchestratorTest()
         {
             _fileSystem = new MockFileSystem();
-            _solutionPersistance = Substitute.For<ISolutionPersistanceWrapper>();
+            _solutionPersistence = Substitute.For<ISolutionPersistenceWrapper>();
             IMsBuildAbstraction msBuild = Substitute.For<IMsBuildAbstraction>();
             IPackagesConfigReader packagesConfigReader = Substitute.For<IPackagesConfigReader>();
             _optionsParser = Substitute.For<ICommandLineOptionsParser>();
@@ -40,7 +39,7 @@ namespace NuGetLicense.Test
 
             _orchestrator = new LicenseValidationOrchestrator(
                 _fileSystem,
-                _solutionPersistance,
+                _solutionPersistence,
                 msBuild,
                 packagesConfigReader,
                 _optionsParser,
@@ -69,12 +68,12 @@ namespace NuGetLicense.Test
             _optionsParser.GetIgnoredPackages(_options.IgnoredPackages).Returns(["TestPkg"]);
             _optionsParser.GetExcludedProjects(_options.ExcludedProjects).Returns(["*Test*"]);
             _optionsParser.GetLicenseMappings(null).Returns(ImmutableDictionary<Uri, string>.Empty);
-            _optionsParser.GetOverridePackageInformation(null).Returns(Array.Empty<CustomPackageInformation>());
+            _optionsParser.GetOverridePackageInformation(null).Returns([]);
             _optionsParser.GetFileDownloader(null).Returns(new NopFileDownloader());
             _optionsParser.GetOutputFormatter(OutputType.Table, false, false).Returns(new LicenseOutput.Table.TableOutputFormatter(false, false));
             _optionsParser.GetLicenseMatcher(null).Returns(new FileLicenseMatcher.SPDX.FastLicenseMatcher(Spdx.Licenses.SpdxLicenseStore.Licenses));
 
-            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+            _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
             // Act
             await _orchestrator.ValidateAsync(_options);
@@ -93,7 +92,7 @@ namespace NuGetLicense.Test
             _options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
-            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+            _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
             // Act
             int result = await _orchestrator.ValidateAsync(_options);
@@ -112,7 +111,7 @@ namespace NuGetLicense.Test
             _options.DestinationFile.Returns(destinationFile);
 
             SetupDefaultMocks();
-            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+            _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
             // Act
             int result = await _orchestrator.ValidateAsync(_options);
@@ -131,7 +130,7 @@ namespace NuGetLicense.Test
             _options.DestinationFile.Returns(destinationFile);
 
             SetupDefaultMocks();
-            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+            _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
             // Act
             int result = await _orchestrator.ValidateAsync(_options);
@@ -149,7 +148,7 @@ namespace NuGetLicense.Test
             _options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
-            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+            _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
             // Act
             int result = await _orchestrator.ValidateAsync(_options);
@@ -166,7 +165,7 @@ namespace NuGetLicense.Test
             _options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
-            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+            _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
             LicenseOutput.IOutputFormatter throwingFormatter = Substitute.For<LicenseOutput.IOutputFormatter>();
             throwingFormatter.Write(Arg.Any<Stream>(), Arg.Any<IList<LicenseValidationResult>>())
@@ -188,7 +187,7 @@ namespace NuGetLicense.Test
             _options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
-            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+            _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
             using var cancellationTokenSource = new CancellationTokenSource();
 #if NETFRAMEWORK
@@ -217,7 +216,7 @@ namespace NuGetLicense.Test
             _options.InputJsonFile.Returns(default(string?));
 
             SetupDefaultMocks();
-            _solutionPersistance.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>(Array.Empty<string>()));
+            _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
             // Act
             await _orchestrator.ValidateAsync(_options);
@@ -233,11 +232,11 @@ namespace NuGetLicense.Test
         private void SetupDefaultMocks()
         {
             _optionsParser.GetInputFiles(Arg.Any<string>(), Arg.Any<string>()).Returns(["/test/project.csproj"]);
-            _optionsParser.GetAllowedLicenses(Arg.Any<string>()).Returns(Array.Empty<string>());
-            _optionsParser.GetIgnoredPackages(Arg.Any<string>()).Returns(Array.Empty<string>());
-            _optionsParser.GetExcludedProjects(Arg.Any<string>()).Returns(Array.Empty<string>());
+            _optionsParser.GetAllowedLicenses(Arg.Any<string>()).Returns([]);
+            _optionsParser.GetIgnoredPackages(Arg.Any<string>()).Returns([]);
+            _optionsParser.GetExcludedProjects(Arg.Any<string>()).Returns([]);
             _optionsParser.GetLicenseMappings(Arg.Any<string>()).Returns(ImmutableDictionary<Uri, string>.Empty);
-            _optionsParser.GetOverridePackageInformation(Arg.Any<string>()).Returns(Array.Empty<CustomPackageInformation>());
+            _optionsParser.GetOverridePackageInformation(Arg.Any<string>()).Returns([]);
             _optionsParser.GetFileDownloader(Arg.Any<string>()).Returns(new NopFileDownloader());
             _optionsParser.GetOutputFormatter(Arg.Any<OutputType>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(new LicenseOutput.Table.TableOutputFormatter(false, false));
             _optionsParser.GetLicenseMatcher(Arg.Any<string>()).Returns(new FileLicenseMatcher.SPDX.FastLicenseMatcher(Spdx.Licenses.SpdxLicenseStore.Licenses));

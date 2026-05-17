@@ -17,7 +17,7 @@ namespace NuGetLicense.LicenseValidator
         LicenseInformationOrigin LicenseInformationOrigin,
         List<ValidationError>? ValidationErrors = null)
     {
-        public List<ValidationError> ValidationErrors { get; } = ValidationErrors ?? new List<ValidationError>();
+        public List<ValidationError> ValidationErrors { get; } = ValidationErrors ?? [];
 
         public string? License { get; set; } = License;
         public string? LicenseUrl { get; set; } = LicenseUrl;

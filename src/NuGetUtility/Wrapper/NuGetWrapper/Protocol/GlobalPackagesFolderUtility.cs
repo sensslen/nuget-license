@@ -5,6 +5,7 @@ using NuGet.Configuration;
 using NuGet.Packaging;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 using IWrappedPackageMetadata = NuGetUtility.Wrapper.NuGetWrapper.Packaging.IPackageMetadata;
 using OriginalGlobalPackagesFolderUtility = NuGet.Protocol.GlobalPackagesFolderUtility;
 using OriginalPackageIdentity = NuGet.Packaging.Core.PackageIdentity;
@@ -12,14 +13,9 @@ using PackageIdentity = NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core.Package
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 {
-    public class GlobalPackagesFolderUtility : IGlobalPackagesFolderUtility
+    public class GlobalPackagesFolderUtility(ISettings settings) : IGlobalPackagesFolderUtility
     {
-        private readonly string _globalPackagesFolder;
-
-        public GlobalPackagesFolderUtility(ISettings settings)
-        {
-            _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(settings);
-        }
+        private readonly string _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(settings);
 
         public IWrappedPackageMetadata? GetPackage(PackageIdentity identity)
         {
@@ -32,7 +28,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
             using PackageReaderBase pkgStream = cachedPackage.PackageReader;
             var manifest = Manifest.ReadFrom(pkgStream.GetNuspec(), true);
 
-            if (manifest.Metadata.Version.Equals(identity.Version))
+            if (manifest.Metadata.Version is not { } manifestVersion ||
+                !new WrappedNuGetVersion(manifestVersion).Equals(identity.Version))
             {
                 return null;
             }
@@ -40,7 +37,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
             var result = new WrappedPackageMetadata(manifest.Metadata);
             if (result.LicenseMetadata?.Type == Packaging.LicenseType.File)
             {
-                string normalizedPath = NuGet.Common.PathUtility.GetPathWithDirectorySeparator(manifest.Metadata.LicenseMetadata.License);
+                string normalizedPath = NuGet.Common.PathUtility.GetPathWithDirectorySeparator(result.LicenseMetadata.License);
                 using Stream licenseStream = pkgStream.GetStream(normalizedPath);
                 using var reader = new StreamReader(licenseStream);
                 return new LicenseAugmentedPackageMetadata(result, reader.ReadToEnd());

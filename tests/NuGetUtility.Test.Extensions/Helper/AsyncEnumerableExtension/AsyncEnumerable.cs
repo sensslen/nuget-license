@@ -3,18 +3,11 @@
 
 namespace NuGetUtility.Test.Extensions.Helper.AsyncEnumerableExtension
 {
-    internal class AsyncEnumerable<T> : IAsyncEnumerable<T>
+    internal class AsyncEnumerable<T>(IEnumerable<T> synchronous) : IAsyncEnumerable<T>
     {
-        private readonly IEnumerable<T> _synchronous;
-
-        public AsyncEnumerable(IEnumerable<T> synchronous)
+        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            _synchronous = synchronous;
-        }
-
-        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())
-        {
-            return new AsyncEnumerator<T>(_synchronous.GetEnumerator());
+            return new AsyncEnumerator<T>(synchronous.GetEnumerator());
         }
     }
 }

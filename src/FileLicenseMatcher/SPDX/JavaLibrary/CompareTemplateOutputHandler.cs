@@ -35,10 +35,10 @@ public class CompareTemplateOutputHandler : ILicenseTemplateOutputHandler
     private readonly IReadOnlyList<string> _compareTokens;
     private readonly string _compareText;
     private readonly IDictionary<int, LineColumn> _tokenToLocation = new Dictionary<int, LineColumn>();
-    private readonly ParseInstruction _topLevelInstruction = new ParseInstruction(null, null);
-    public DifferenceDescription Differences { get; } = new DifferenceDescription();
-    private ParseInstruction? _currentOptionalInstruction = null;
-    private bool _parsingComplete = false;
+    private readonly ParseInstruction _topLevelInstruction = new(null, null);
+    public DifferenceDescription Differences { get; } = new();
+    private ParseInstruction? _currentOptionalInstruction;
+    private bool _parsingComplete;
 
     /**
      * Construct a new {@link CompareTemplateOutputHandler} with the specified text to compare
@@ -199,7 +199,7 @@ public class CompareTemplateOutputHandler : ILicenseTemplateOutputHandler
      */
     public void beginOptional(LicenseTemplateRule rule)
     {
-        ParseInstruction optionalInstruction = new ParseInstruction(rule, null);
+        ParseInstruction optionalInstruction = new(rule, null);
         if (_currentOptionalInstruction != null)
         {
             _currentOptionalInstruction.addSubInstruction(optionalInstruction);
@@ -256,19 +256,5 @@ public class CompareTemplateOutputHandler : ILicenseTemplateOutputHandler
                     "Additional text found after the end of the expected license text", null, null, null);
         }
         _parsingComplete = true;
-    }
-
-    /**
-     * Compares the text against the compareText
-     *
-     * @param text text to compare
-     * @param startToken token of the compareText to being the comparison
-     * @return next token index (positive) if there is a match, negative first token where this is a miss-match if no match
-     */
-    public int textEquivalent(string text, int startToken)
-    {
-        IDictionary<int, LineColumn> textLocations = new Dictionary<int, LineColumn>();
-        IReadOnlyList<string> textTokens = LicenseTextHelper.tokenizeLicenseText(text, textLocations);
-        return compareText(textTokens, _compareTokens, startToken, null, _compareTokens);
     }
 }

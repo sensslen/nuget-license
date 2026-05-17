@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.SolutionPersistence.Serializer;
 
 namespace NuGetUtility.Wrapper.SolutionPersistenceWrapper
 {
-    public class SolutionPersistanceWrapper : ISolutionPersistanceWrapper
+    public class SolutionPersistenceWrapper : ISolutionPersistenceWrapper
     {
         public async Task<IEnumerable<string>> GetProjectsFromSolutionAsync(string inputPath)
         {

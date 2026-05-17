@@ -5,14 +5,9 @@ using System.Collections.Generic;
 
 namespace FileLicenseMatcher.Combine
 {
-    public class LicenseMatcher : IFileLicenseMatcher
+    public class LicenseMatcher(IReadOnlyList<IFileLicenseMatcher> matchers) : IFileLicenseMatcher
     {
-        private readonly IReadOnlyCollection<IFileLicenseMatcher> _matchers;
-
-        public LicenseMatcher(IReadOnlyList<IFileLicenseMatcher> matchers)
-        {
-            _matchers = matchers;
-        }
+        private readonly IReadOnlyCollection<IFileLicenseMatcher> _matchers = matchers;
 
         public string Match(string licenseText)
         {

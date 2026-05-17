@@ -5,13 +5,9 @@ using NuGet.Packaging.Core;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core
 {
-    internal class WrappedPackageDependency : IPackageDependency
+    internal class WrappedPackageDependency(PackageDependency dependency) : IPackageDependency
     {
-        public WrappedPackageDependency(PackageDependency dependency)
-        {
-            Id = dependency.Id;
-        }
-        public string Id { get; }
+        public string Id { get; } = dependency.Id;
     }
 }
 

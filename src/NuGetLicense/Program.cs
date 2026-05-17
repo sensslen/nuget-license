@@ -81,7 +81,7 @@ namespace NuGetLicense
 
             using var httpClient = new HttpClient();
             var fileSystem = new System.IO.Abstractions.FileSystem();
-            var solutionPersistance = new SolutionPersistanceWrapper();
+            var solutionPersistance = new SolutionPersistenceWrapper();
             var msBuild = new MsBuildAbstraction();
             IPackagesConfigReader packagesConfigReader = GetPackagesConfigReader();
 

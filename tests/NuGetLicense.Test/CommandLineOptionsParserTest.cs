@@ -324,7 +324,7 @@ namespace NuGetLicense.Test
                 string mappingFile = "/test/dir/license-mappings.json";
                 string licenseFile = "/test/dir/LICENSE.txt";
                 _fileSystem.AddFile(licenseFile, new MockFileData("MIT License content"));
-                _fileSystem.AddFile(mappingFile, new MockFileData($"{{\"LICENSE.txt\":\"MIT\"}}"));
+                _fileSystem.AddFile(mappingFile, new MockFileData("{\"LICENSE.txt\":\"MIT\"}"));
 
                 // Act
                 IFileLicenseMatcher result = _parser.GetLicenseMatcher(mappingFile);

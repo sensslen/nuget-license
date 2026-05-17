@@ -6,19 +6,12 @@ using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
-    internal class WrappedLockFileLibrary : ILockFileLibrary
+    internal class WrappedLockFileLibrary(LockFileLibrary library) : ILockFileLibrary
     {
-        private readonly LockFileLibrary _library;
+        public string Type => library.Type;
 
-        public WrappedLockFileLibrary(LockFileLibrary library)
-        {
-            _library = library;
-        }
+        public string Name => library.Name;
 
-        public string Type => _library.Type;
-
-        public string Name => _library.Name;
-
-        public INuGetVersion Version => new WrappedNuGetVersion(_library.Version);
+        public INuGetVersion Version => new WrappedNuGetVersion(library.Version);
     }
 }

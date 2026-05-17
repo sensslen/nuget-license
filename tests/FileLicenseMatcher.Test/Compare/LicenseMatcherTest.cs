@@ -9,14 +9,8 @@ namespace FileLicenseMatcher.Test.Compare
 {
     public class LicenseMatcherTest
     {
-        private readonly IFileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem = Substitute.For<IFileSystem>();
 
-        public LicenseMatcherTest()
-        {
-            _fileSystem = Substitute.For<IFileSystem>();
-        }
-
-#pragma warning disable S6966 //Awaitable method should be used
         [Test]
         public async Task Match_Should_Return_Empty_When_Map_Is_Empty()
         {
@@ -44,7 +38,9 @@ namespace FileLicenseMatcher.Test.Compare
             string result = uut.Match("license contents");
 
             await Assert.That(result).IsEmpty();
+#pragma warning disable S6966 //Awaitable method should be used
             file.DidNotReceive().ReadAllText(Arg.Any<string>());
+#pragma warning restore S6966 //Awaitable method should be used S6966
         }
 
         [Test]
@@ -62,14 +58,18 @@ namespace FileLicenseMatcher.Test.Compare
             IFile file = Substitute.For<IFile>();
             _fileSystem.File.Returns(file);
             file.Exists(path).Returns(true);
+#pragma warning disable S6966 //Awaitable method should be used
             file.ReadAllText(path).Returns(content);
+#pragma warning restore S6966 //Awaitable method should be used
 
             var uut = new LicenseMatcher(_fileSystem, map);
 
             string result = uut.Match(content);
 
             await Assert.That(result).EqualTo(mappedId);
+#pragma warning disable S6966 //Awaitable method should be used
             file.Received(1).ReadAllText(path);
+#pragma warning restore S6966 //Awaitable method should be used
         }
 
         [Test]
@@ -90,15 +90,19 @@ namespace FileLicenseMatcher.Test.Compare
             _fileSystem.File.Returns(file);
             file.Exists(firstPath).Returns(false);
             file.Exists(secondPath).Returns(true);
+#pragma warning disable S6966 //Awaitable method should be used
             file.ReadAllText(secondPath).Returns(licenseText);
+#pragma warning restore S6966 //Awaitable method should be used
 
             var uut = new LicenseMatcher(_fileSystem, map);
 
             string result = uut.Match(licenseText);
 
             await Assert.That(result).EqualTo(secondId);
+#pragma warning disable S6966 //Awaitable method should be used
             file.DidNotReceive().ReadAllText(firstPath);
             file.Received(1).ReadAllText(secondPath);
+#pragma warning restore S6966 //Awaitable method should be used
         }
 
         [Test]
@@ -114,14 +118,18 @@ namespace FileLicenseMatcher.Test.Compare
             IFile file = Substitute.For<IFile>();
             _fileSystem.File.Returns(file);
             file.Exists(path).Returns(true);
+#pragma warning disable S6966 //Awaitable method should be used
             file.ReadAllText(path).Returns("different content");
+#pragma warning restore S6966 //Awaitable method should be used
 
             var uut = new LicenseMatcher(_fileSystem, map);
 
             string result = uut.Match("license contents");
 
             await Assert.That(result).IsEmpty();
+#pragma warning disable S6966 //Awaitable method should be used
             file.Received(1).ReadAllText(path);
+#pragma warning restore S6966 //Awaitable method should be used
         }
 
         [Test]
@@ -140,15 +148,18 @@ namespace FileLicenseMatcher.Test.Compare
             IFile file = Substitute.For<IFile>();
             _fileSystem.File.Returns(file);
             file.Exists(path).Returns(true);
+#pragma warning disable S6966 //Awaitable method should be used
             file.ReadAllText(path).Returns(fileContent);
+#pragma warning restore S6966 //Awaitable method should be used
 
             var uut = new LicenseMatcher(_fileSystem, map);
 
             string result = uut.Match(inputContent);
 
             await Assert.That(result).EqualTo(mappedId);
+#pragma warning disable S6966 //Awaitable method should be used
             file.Received(1).ReadAllText(path);
-        }
 #pragma warning restore S6966 //Awaitable method should be used
+        }
     }
 }

@@ -8,14 +8,8 @@ namespace FileLicenseMatcher.Test.Combine
 {
     public class LicenseMatcherTest
     {
-        private readonly IFileLicenseMatcher _first;
-        private readonly IFileLicenseMatcher _second;
-
-        public LicenseMatcherTest()
-        {
-            _first = Substitute.For<IFileLicenseMatcher>();
-            _second = Substitute.For<IFileLicenseMatcher>();
-        }
+        private readonly IFileLicenseMatcher _first = Substitute.For<IFileLicenseMatcher>();
+        private readonly IFileLicenseMatcher _second = Substitute.For<IFileLicenseMatcher>();
 
         [Test]
         public async Task Match_Should_Return_Empty_If_No_Matchers()

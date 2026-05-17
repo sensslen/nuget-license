@@ -71,21 +71,17 @@ namespace NuGetLicense.Test.Output.Json
     [Arguments(false, false, false, false, true, false)]
     [Arguments(false, false, false, false, false, true)]
     [Arguments(false, false, false, false, false, false)]
-    public class JsonOutputFormatterTest : TestBase
+    public class JsonOutputFormatterTest(bool prettyPrint,
+                                         bool omitValidLicensesOnError,
+                                         bool skipIgnoredPackages,
+                                         bool includeCopyright,
+                                         bool includeAuthors,
+                                         bool includeLicenseUrl)
+        : TestBase(includeCopyright, includeAuthors, includeLicenseUrl)
     {
-        private readonly bool _prettyPrint;
-        private readonly bool _omitValidLicensesOnError;
-        private readonly bool _skipIgnoredPackages;
-
-        public JsonOutputFormatterTest(bool prettyPrint, bool omitValidLicensesOnError, bool skipIgnoredPackages, bool includeCopyright, bool includeAuthors, bool includeLicenseUrl) : base(includeCopyright, includeAuthors, includeLicenseUrl)
-        {
-            _prettyPrint = prettyPrint;
-            _omitValidLicensesOnError = omitValidLicensesOnError;
-            _skipIgnoredPackages = skipIgnoredPackages;
-        }
         protected override IOutputFormatter CreateUut()
         {
-            return new JsonOutputFormatter(_prettyPrint, _omitValidLicensesOnError, _skipIgnoredPackages);
+            return new JsonOutputFormatter(prettyPrint, omitValidLicensesOnError, skipIgnoredPackages);
         }
     }
 }

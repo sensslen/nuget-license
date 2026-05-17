@@ -15,7 +15,7 @@ namespace NuGetUtility.Test.Architecture
                 return Task.CompletedTask;
             }
 
-            string failingTypeNames = string.Join(Environment.NewLine, ruleResult.FailingTypeNames ?? Array.Empty<string>());
+            string failingTypeNames = string.Join(Environment.NewLine, ruleResult.FailingTypeNames ?? []);
             throw new Exception($"{message}{Environment.NewLine}Offending types:{Environment.NewLine}{failingTypeNames}");
         }
     }
