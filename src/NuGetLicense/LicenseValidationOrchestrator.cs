@@ -89,7 +89,11 @@ namespace NuGetLicense
                 {
                     if (shouldDisposeStream)
                     {
+#if NETFRAMEWORK
+                        os.Dispose();
+#else
                         await os.DisposeAsync();
+#endif
                     }
                 }
             }
