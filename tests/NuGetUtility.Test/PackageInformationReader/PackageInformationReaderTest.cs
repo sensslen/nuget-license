@@ -12,6 +12,7 @@ using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Test.PackageInformationReader
 {
@@ -56,7 +57,7 @@ namespace NuGetUtility.Test.PackageInformationReader
         private readonly IGlobalPackagesFolderUtility _globalPackagesFolderUtility;
 
         [Test]
-        public async Task GetPackageInfo_Should_PreferProvidedCustomInformation()
+        public async Task GetPackageInfo_Should_ReturnCustomInformation_IfPackageMetadataIsNotFound()
         {
             List<CustomPackageInformation> customPackageInformation = _fixture.CreateMany<CustomPackageInformation>().ToList();
             var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, customPackageInformation);
@@ -68,6 +69,244 @@ namespace NuGetUtility.Test.PackageInformationReader
                 .ToArray();
 
             await CheckResult(result, project, customPackageInformation, LicenseType.Overwrite);
+        }
+
+        [Test]
+        public async Task GetPackageInfo_Should_AugmentLocalPackageCacheWithCustomLicenseInformation()
+        {
+            CustomPackageInformation packageMetadata = _fixture.Create<CustomPackageInformation>();
+            var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
+            CustomPackageInformation customPackageInformation = new(packageMetadata.Id, packageMetadata.Version, _fixture.Create<string>());
+            var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
+                                                                                              _globalPackagesFolderUtility,
+                                                                                              [customPackageInformation]);
+            IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata, LicenseType.Expression);
+            _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
+
+            ReferencedPackageWithContext result = await GetSinglePackageInfo(localUut, identity);
+
+            await AssertMergedMetadata(result.PackageInfo, packageMetadata, customPackageInformation.License);
+            await Assert.That(result.PackageInfo.LicenseMetadata!.Type).IsEqualTo(LicenseType.Overwrite);
+        }
+
+        [Test]
+        public async Task GetPackageInfo_Should_FallBackToAllFetchedOptionalFields_WhenCustomInformationOnlyProvidesLicense()
+        {
+            CustomPackageInformation packageMetadata = CreatePackageInformationWithOptionalFields();
+            var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
+            CustomPackageInformation customPackageInformation = new(packageMetadata.Id, packageMetadata.Version, _fixture.Create<string>());
+            var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
+                                                                                              _globalPackagesFolderUtility,
+                                                                                              [customPackageInformation]);
+            IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata, LicenseType.Expression);
+            _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
+
+            ReferencedPackageWithContext result = await GetSinglePackageInfo(localUut, identity);
+
+            await AssertMergedMetadata(result.PackageInfo, packageMetadata, customPackageInformation.License);
+            await Assert.That(result.PackageInfo.LicenseMetadata!.Type).IsEqualTo(LicenseType.Overwrite);
+        }
+
+        [Test]
+        public async Task GetPackageInfo_Should_AugmentRepositoryPackageMetadataWithCustomLicenseInformation()
+        {
+            CustomPackageInformation packageMetadata = _fixture.Create<CustomPackageInformation>();
+            var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
+            CustomPackageInformation customPackageInformation = new(packageMetadata.Id, packageMetadata.Version, _fixture.Create<string>());
+            var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
+                                                                                              _globalPackagesFolderUtility,
+                                                                                              [customPackageInformation]);
+            IPackageMetadataResource metadataResource = Substitute.For<IPackageMetadataResource>();
+            _repositories[0].GetPackageMetadataResourceAsync(default).Returns(_ => Task.FromResult<IPackageMetadataResource?>(metadataResource));
+            metadataResource.TryGetMetadataAsync(identity, Arg.Any<CancellationToken>())
+                .Returns(_ => Task.FromResult<IPackageMetadata?>(CreatePackageMetadata(packageMetadata, LicenseType.Expression)));
+
+            ReferencedPackageWithContext result = await GetSinglePackageInfo(localUut, identity);
+
+            await AssertMergedMetadata(result.PackageInfo, packageMetadata, customPackageInformation.License);
+            await Assert.That(result.PackageInfo.LicenseMetadata!.Type).IsEqualTo(LicenseType.Overwrite);
+        }
+
+        [Test]
+        public async Task GetPackageInfo_Should_PreferCustomOptionalFieldsOverFetchedPackageMetadata()
+        {
+            CustomPackageInformation packageMetadata = CreatePackageInformationWithOptionalFields();
+            CustomPackageInformation customPackageInformation = CreatePackageInformationWithOptionalFields(packageMetadata.Id, packageMetadata.Version);
+            var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
+            var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
+                                                                                              _globalPackagesFolderUtility,
+                                                                                              [customPackageInformation]);
+            IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata, LicenseType.Expression);
+            _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
+
+            ReferencedPackageWithContext result = await GetSinglePackageInfo(localUut, identity);
+
+            await AssertPackageInformation(result.PackageInfo, customPackageInformation);
+            await Assert.That(result.PackageInfo.LicenseMetadata!.Type).IsEqualTo(LicenseType.Overwrite);
+        }
+
+        [Test]
+        public async Task GetPackageInfo_Should_MergeCustomAndFetchedOptionalFieldsIndividually()
+        {
+            CustomPackageInformation packageMetadata = CreatePackageInformationWithOptionalFields();
+            CustomPackageInformation customPackageInformation = new(packageMetadata.Id,
+                                                                     packageMetadata.Version,
+                                                                     _fixture.Create<string>(),
+                                                                     Authors: _fixture.Create<string>(),
+                                                                     Title: null,
+                                                                     ProjectUrl: _fixture.Create<string>(),
+                                                                     Summary: null,
+                                                                     Description: _fixture.Create<string>(),
+                                                                     LicenseUrl: null);
+            var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
+            var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
+                                                                                              _globalPackagesFolderUtility,
+                                                                                              [customPackageInformation]);
+            IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata, LicenseType.Expression);
+            _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
+
+            ReferencedPackageWithContext result = await GetSinglePackageInfo(localUut, identity);
+
+            await Assert.That(result.PackageInfo.LicenseMetadata!.License).IsEqualTo(customPackageInformation.License);
+            await Assert.That(result.PackageInfo.LicenseMetadata!.Type).IsEqualTo(LicenseType.Overwrite);
+            await Assert.That(result.PackageInfo.Copyright).IsEqualTo(packageMetadata.Copyright);
+            await Assert.That(result.PackageInfo.Authors).IsEqualTo(customPackageInformation.Authors);
+            await Assert.That(result.PackageInfo.Title).IsEqualTo(packageMetadata.Title);
+            await Assert.That(result.PackageInfo.ProjectUrl).IsEqualTo(customPackageInformation.ProjectUrl);
+            await Assert.That(result.PackageInfo.Summary).IsEqualTo(packageMetadata.Summary);
+            await Assert.That(result.PackageInfo.Description).IsEqualTo(customPackageInformation.Description);
+            await Assert.That(result.PackageInfo.LicenseUrl).IsEqualTo(packageMetadata.LicenseUrl);
+        }
+
+        [Test]
+        public async Task GetPackageInfo_Should_TreatEmptyCustomOptionalStringsAsOverrides()
+        {
+            CustomPackageInformation packageMetadata = CreatePackageInformationWithOptionalFields();
+            CustomPackageInformation customPackageInformation = new(packageMetadata.Id,
+                                                                     packageMetadata.Version,
+                                                                     _fixture.Create<string>(),
+                                                                     Copyright: string.Empty,
+                                                                     Authors: string.Empty,
+                                                                     Title: string.Empty,
+                                                                     ProjectUrl: string.Empty,
+                                                                     Summary: string.Empty,
+                                                                     Description: string.Empty);
+            var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
+            var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
+                                                                                              _globalPackagesFolderUtility,
+                                                                                              [customPackageInformation]);
+            IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata, LicenseType.Expression);
+            _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
+
+            ReferencedPackageWithContext result = await GetSinglePackageInfo(localUut, identity);
+
+            await Assert.That(result.PackageInfo.Copyright).IsEqualTo(string.Empty);
+            await Assert.That(result.PackageInfo.Authors).IsEqualTo(string.Empty);
+            await Assert.That(result.PackageInfo.Title).IsEqualTo(string.Empty);
+            await Assert.That(result.PackageInfo.ProjectUrl).IsEqualTo(string.Empty);
+            await Assert.That(result.PackageInfo.Summary).IsEqualTo(string.Empty);
+            await Assert.That(result.PackageInfo.Description).IsEqualTo(string.Empty);
+            await Assert.That(result.PackageInfo.LicenseUrl).IsEqualTo(packageMetadata.LicenseUrl);
+            await Assert.That(result.PackageInfo.LicenseMetadata!.License).IsEqualTo(customPackageInformation.License);
+            await Assert.That(result.PackageInfo.LicenseMetadata!.Type).IsEqualTo(LicenseType.Overwrite);
+        }
+
+        [Test]
+        public async Task GetPackageInfo_Should_ApplyCustomLicenseInformationAfterRepositoryFileLicenseIsDownloaded()
+        {
+            CustomPackageInformation packageMetadata = _fixture.Create<CustomPackageInformation>();
+            var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
+            CustomPackageInformation customPackageInformation = new(packageMetadata.Id, packageMetadata.Version, _fixture.Create<string>());
+            var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
+                                                                                              _globalPackagesFolderUtility,
+                                                                                              [customPackageInformation]);
+            IPackageMetadataResource metadataResource = Substitute.For<IPackageMetadataResource>();
+            IFindPackageByIdResource archiveReader = Substitute.For<IFindPackageByIdResource>();
+            IPackageDownloader packageDownloader = Substitute.For<IPackageDownloader>();
+            _repositories[0].GetPackageMetadataResourceAsync(default).Returns(_ => Task.FromResult<IPackageMetadataResource?>(metadataResource));
+            _repositories[0].GetPackageArchiveReaderAsync(default).Returns(_ => Task.FromResult<IFindPackageByIdResource?>(archiveReader));
+            metadataResource.TryGetMetadataAsync(identity, Arg.Any<CancellationToken>())
+                .Returns(_ => Task.FromResult<IPackageMetadata?>(CreatePackageMetadata(packageMetadata, LicenseType.File, "LICENSE.txt")));
+            archiveReader.TryGetPackageDownloader(identity, Arg.Any<CancellationToken>())
+                .Returns(_ => Task.FromResult<IPackageDownloader?>(packageDownloader));
+            packageDownloader.ReadAsync("LICENSE.txt", Arg.Any<CancellationToken>()).Returns(_ => Task.FromResult(_fixture.Create<string>()));
+
+            ReferencedPackageWithContext result = await GetSinglePackageInfo(localUut, identity);
+
+            await AssertMergedMetadata(result.PackageInfo, packageMetadata, customPackageInformation.License);
+            await Assert.That(result.PackageInfo.LicenseMetadata!.Type).IsEqualTo(LicenseType.Overwrite);
+        }
+
+        private async Task<ReferencedPackageWithContext> GetSinglePackageInfo(
+            NuGetUtility.PackageInformationReader.PackageInformationReader packageInformationReader,
+            PackageIdentity packageIdentity)
+        {
+            string project = _fixture.Create<string>();
+            var packageSearchRequest = new ProjectWithReferencedPackages(project, [packageIdentity]);
+            ReferencedPackageWithContext[] result = (await packageInformationReader.GetPackageInfo(packageSearchRequest, CancellationToken.None).Synchronize())
+                .ToArray();
+
+            await Assert.That(result.Length).IsEqualTo(1);
+            await Assert.That(result[0].Context).IsEqualTo(project);
+            return result[0];
+        }
+
+        private static IPackageMetadata CreatePackageMetadata(CustomPackageInformation packageInformation, LicenseType licenseType, string? license = null)
+        {
+            var identity = new PackageIdentity(packageInformation.Id, packageInformation.Version);
+            IPackageMetadata metadata = Substitute.For<IPackageMetadata>();
+            metadata.Identity.Returns(identity);
+            metadata.Copyright.Returns(packageInformation.Copyright);
+            metadata.Authors.Returns(packageInformation.Authors);
+            metadata.Title.Returns(packageInformation.Title);
+            metadata.ProjectUrl.Returns(packageInformation.ProjectUrl);
+            metadata.Summary.Returns(packageInformation.Summary);
+            metadata.Description.Returns(packageInformation.Description);
+            metadata.LicenseUrl.Returns(packageInformation.LicenseUrl);
+            metadata.LicenseMetadata.Returns(new LicenseMetadata(licenseType, license ?? packageInformation.License));
+            return metadata;
+        }
+
+        private CustomPackageInformation CreatePackageInformationWithOptionalFields(string? id = null, INuGetVersion? version = null)
+        {
+            return new CustomPackageInformation(id ?? _fixture.Create<string>(),
+                                                version ?? _fixture.Create<INuGetVersion>(),
+                                                _fixture.Create<string>(),
+                                                _fixture.Create<string>(),
+                                                _fixture.Create<string>(),
+                                                _fixture.Create<string>(),
+                                                _fixture.Create<string>(),
+                                                _fixture.Create<string>(),
+                                                _fixture.Create<string>(),
+                                                _fixture.Create<Uri>());
+        }
+
+        private static async Task AssertMergedMetadata(IPackageMetadata result, CustomPackageInformation packageMetadata, string expectedLicense)
+        {
+            await Assert.That(result.Identity.Id).IsEqualTo(packageMetadata.Id);
+            await Assert.That(result.Identity.Version).IsEqualTo(packageMetadata.Version);
+            await Assert.That(result.LicenseMetadata!.License).IsEqualTo(expectedLicense);
+            await Assert.That(result.Copyright).IsEqualTo(packageMetadata.Copyright);
+            await Assert.That(result.Authors).IsEqualTo(packageMetadata.Authors);
+            await Assert.That(result.Title).IsEqualTo(packageMetadata.Title);
+            await Assert.That(result.ProjectUrl).IsEqualTo(packageMetadata.ProjectUrl);
+            await Assert.That(result.Summary).IsEqualTo(packageMetadata.Summary);
+            await Assert.That(result.Description).IsEqualTo(packageMetadata.Description);
+            await Assert.That(result.LicenseUrl).IsEqualTo(packageMetadata.LicenseUrl);
+        }
+
+        private static async Task AssertPackageInformation(IPackageMetadata result, CustomPackageInformation expected)
+        {
+            await Assert.That(result.Identity.Id).IsEqualTo(expected.Id);
+            await Assert.That(result.Identity.Version).IsEqualTo(expected.Version);
+            await Assert.That(result.LicenseMetadata!.License).IsEqualTo(expected.License);
+            await Assert.That(result.Copyright).IsEqualTo(expected.Copyright);
+            await Assert.That(result.Authors).IsEqualTo(expected.Authors);
+            await Assert.That(result.Title).IsEqualTo(expected.Title);
+            await Assert.That(result.ProjectUrl).IsEqualTo(expected.ProjectUrl);
+            await Assert.That(result.Summary).IsEqualTo(expected.Summary);
+            await Assert.That(result.Description).IsEqualTo(expected.Description);
+            await Assert.That(result.LicenseUrl).IsEqualTo(expected.LicenseUrl);
         }
 
         private async Task<(string Project, ReferencedPackageWithContext[] Result)> PerformSearch(
@@ -110,17 +349,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             IEnumerable<PackageIdentity> searchedPackages = searchedPackagesAsPackageInformation.Select(info =>
             {
                 var identity = new PackageIdentity(info.Id, info.Version);
-                IPackageMetadata mockedInfo = Substitute.For<IPackageMetadata>();
-                mockedInfo.Identity.Returns(identity);
-                mockedInfo.Copyright.Returns(info.Copyright);
-                mockedInfo.Authors.Returns(info.Authors);
-                mockedInfo.Title.Returns(info.Title);
-                mockedInfo.ProjectUrl.Returns(info.ProjectUrl);
-                mockedInfo.Summary.Returns(info.Summary);
-                mockedInfo.Description.Returns(info.Description);
-                mockedInfo.LicenseUrl.Returns(info.LicenseUrl);
-                mockedInfo.LicenseMetadata.Returns(new LicenseMetadata(LicenseType.Expression, info.License));
-                mockedInfo.LicenseUrl.Returns(info.LicenseUrl);
+                IPackageMetadata mockedInfo = CreatePackageMetadata(info, LicenseType.Expression);
                 _globalPackagesFolderUtility.GetPackage(identity).Returns(mockedInfo);
 
                 return identity;
@@ -140,17 +369,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             foreach (CustomPackageInformation package in packages)
             {
                 IPackageMetadataResource metadataReturningProperInformation = packageMetadataResources.Shuffle(6435).First();
-                IPackageMetadata resultingInfo = Substitute.For<IPackageMetadata>();
-                resultingInfo.Identity.Returns(new PackageIdentity(package.Id, package.Version));
-                resultingInfo.LicenseMetadata.Returns(new LicenseMetadata(LicenseType.Expression, package.License));
-                resultingInfo.LicenseUrl.Returns(package.LicenseUrl);
-                resultingInfo.Copyright.Returns(package.Copyright);
-                resultingInfo.Authors.Returns(package.Authors);
-                resultingInfo.Title.Returns(package.Title);
-                resultingInfo.Summary.Returns(package.Summary);
-                resultingInfo.Description.Returns(package.Description);
-                resultingInfo.ProjectUrl.Returns(package.ProjectUrl);
-                resultingInfo.LicenseUrl.Returns(package.LicenseUrl);
+                IPackageMetadata resultingInfo = CreatePackageMetadata(package, LicenseType.Expression);
 
                 metadataReturningProperInformation.TryGetMetadataAsync(new PackageIdentity(package.Id, package.Version), Arg.Any<CancellationToken>()).
                     Returns(_ => Task.FromResult<IPackageMetadata?>(resultingInfo));

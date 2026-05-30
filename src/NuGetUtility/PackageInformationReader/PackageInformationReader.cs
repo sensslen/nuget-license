@@ -20,22 +20,25 @@ namespace NuGetUtility.PackageInformationReader
         {
             foreach (PackageIdentity package in projectWithReferencedPackages.ReferencedPackages)
             {
-                PackageSearchResult result = TryGetPackageInfoFromCustomInformation(package);
+                CustomPackageInformation? customInformation = TryGetPackageInfoFromCustomInformation(package);
+                PackageSearchResult result = TryGetPackageInformationFromGlobalPackageFolder(package);
                 if (result.Success)
                 {
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
-                    continue;
-                }
-                result = TryGetPackageInformationFromGlobalPackageFolder(package);
-                if (result.Success)
-                {
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
+                                                                  ApplyCustomInformation(result.Metadata!, customInformation));
                     continue;
                 }
                 result = await TryGetPackageInformationFromRepositories(_repositories, package, cancellation);
                 if (result.Success)
                 {
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
+                                                                  ApplyCustomInformation(result.Metadata!, customInformation));
+                    continue;
+                }
+                if (customInformation is not null)
+                {
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
+                                                                  new PackageMetadata(package, LicenseType.Overwrite, customInformation));
                     continue;
                 }
                 // simply return input - validation will fail later, as the required fields are missing
@@ -85,16 +88,21 @@ namespace NuGetUtility.PackageInformationReader
             return new PackageSearchResult();
         }
 
-        private PackageSearchResult TryGetPackageInfoFromCustomInformation(PackageIdentity package)
+        private CustomPackageInformation? TryGetPackageInfoFromCustomInformation(PackageIdentity package)
         {
             CustomPackageInformation? resolvedCustomInformation = customPackageInformation.FirstOrDefault(info =>
-                info.Id.Equals(package.Id) && info.Version.Equals(package.Version));
-            if (resolvedCustomInformation is null)
+                string.Equals(info.Id, package.Id, StringComparison.OrdinalIgnoreCase) && info.Version.Equals(package.Version));
+            return resolvedCustomInformation;
+        }
+
+        private static IPackageMetadata ApplyCustomInformation(IPackageMetadata metadata, CustomPackageInformation? customInformation)
+        {
+            if (customInformation is null)
             {
-                return new PackageSearchResult();
+                return metadata;
             }
 
-            return new PackageSearchResult(new PackageMetadata(package, LicenseType.Overwrite, resolvedCustomInformation));
+            return new OverridePackageMetadata(metadata, customInformation);
         }
 
         private static async Task<IPackageMetadataResource?> TryGetPackageMetadataResource(ISourceRepository repository, CancellationToken token)
