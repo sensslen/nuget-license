@@ -90,6 +90,25 @@ namespace NuGetUtility.Test.PackageInformationReader
         }
 
         [Test]
+        public async Task GetPackageInfo_Should_MatchCustomInformationPackageIdIgnoringCase()
+        {
+            CustomPackageInformation packageMetadata = CreatePackageInformationWithOptionalFields();
+            var identity = new PackageIdentity(packageMetadata.Id.ToUpperInvariant(), packageMetadata.Version);
+            CustomPackageInformation customPackageInformation = new(packageMetadata.Id.ToLowerInvariant(), packageMetadata.Version, _fixture.Create<string>());
+            var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
+                                                                                              _globalPackagesFolderUtility,
+                                                                                              [customPackageInformation]);
+            IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata with { Id = identity.Id }, LicenseType.Expression);
+            _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
+
+            ReferencedPackageWithContext result = await GetSinglePackageInfo(localUut, identity);
+
+            await Assert.That(result.PackageInfo.Identity.Id).IsEqualTo(identity.Id);
+            await Assert.That(result.PackageInfo.LicenseMetadata!.License).IsEqualTo(customPackageInformation.License);
+            await Assert.That(result.PackageInfo.LicenseMetadata!.Type).IsEqualTo(LicenseType.Overwrite);
+        }
+
+        [Test]
         public async Task GetPackageInfo_Should_FallBackToAllFetchedOptionalFields_WhenCustomInformationOnlyProvidesLicense()
         {
             CustomPackageInformation packageMetadata = CreatePackageInformationWithOptionalFields();

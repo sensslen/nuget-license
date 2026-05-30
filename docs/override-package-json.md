@@ -47,7 +47,6 @@ Each object must identify the package and provide the license to use for that pa
 
 **Notes:**
 - `Id`, `Version`, and `License` are required. All other fields are optional.
-- Optional fields only replace NuGet package metadata when they are present in the override entry. If they are omitted, the downloaded package metadata is used.
 - `Version` must match the NuGet version format.
 - `LicenseUrl` should be a valid URL string.
 
