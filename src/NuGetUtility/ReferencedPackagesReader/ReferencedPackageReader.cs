@@ -364,7 +364,11 @@ namespace NuGetUtility.ReferencedPackagesReader
             foreach (PackageReferenceMetadata packageReference in packageReferences ?? [])
             {
                 if (packageReference.Metadata.TryGetValue("PrivateAssets", out string? value) &&
-                    value != null && value.IndexOf("all", StringComparison.OrdinalIgnoreCase) >= 0)
+                    value != null &&
+                    value.Split(';')
+                        .Select(token => token.Trim())
+                        .Where(token => !string.IsNullOrEmpty(token))
+                        .Any(token => string.Equals(token, "all", StringComparison.OrdinalIgnoreCase)))
                 {
                     excludedPackages.Add(packageReference.PackageName);
                 }
