@@ -5,15 +5,17 @@ using System.Text.Json.Serialization;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Serialization;
 
-namespace NuGetLicense;
+namespace NuGetLicense
+{
 
-[JsonSourceGenerationOptions(
-    RespectRequiredConstructorParameters = true,
-    RespectNullableAnnotations = true,
-    Converters = [typeof(NuGetVersionJsonConverter)]
-)]
-[JsonSerializable(typeof(string[]))]
-[JsonSerializable(typeof(Dictionary<Uri, string>))]
-[JsonSerializable(typeof(Dictionary<string, string>))]
-[JsonSerializable(typeof(CustomPackageInformation[]))]
-internal partial class CommandLineOptionsJsonContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(
+        RespectRequiredConstructorParameters = true,
+        RespectNullableAnnotations = true,
+        Converters = [typeof(NuGetVersionJsonConverter)]
+    )]
+    [JsonSerializable(typeof(string[]))]
+    [JsonSerializable(typeof(Dictionary<Uri, string>))]
+    [JsonSerializable(typeof(Dictionary<string, string>))]
+    [JsonSerializable(typeof(CustomPackageInformation[]))]
+    internal partial class CommandLineOptionsJsonContext : JsonSerializerContext;
+}
