@@ -30,8 +30,16 @@ namespace NuGetLicense
 
             if (inputJsonFile is not null)
             {
-                string jsonContent = fileSystem.File.ReadAllText(inputJsonFile);
-                return JsonSerializer.Deserialize(jsonContent, CommandLineOptionsJsonContext.Default.StringArray)!;
+                try
+                {
+                    string jsonContent = fileSystem.File.ReadAllText(inputJsonFile);
+                    string[]? result = JsonSerializer.Deserialize(jsonContent, CommandLineOptionsJsonContext.Default.StringArray);
+                    return result ?? throw new ArgumentException($"File '{inputJsonFile}' contains invalid JSON: expected an array of strings but got null.");
+                }
+                catch (JsonException ex)
+                {
+                    throw new ArgumentException($"Failed to parse JSON file '{inputJsonFile}': {ex.Message}", ex);
+                }
             }
 
             // Defensive check: validation should already be done at command line parsing level,
