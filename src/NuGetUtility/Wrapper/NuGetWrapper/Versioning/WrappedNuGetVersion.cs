@@ -1,6 +1,7 @@
 // Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.Diagnostics.CodeAnalysis;
 using NuGet.Versioning;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Versioning
@@ -60,26 +61,26 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Versioning
             return _version;
         }
 
-        internal static bool TryParse(string stringVersion, out WrappedNuGetVersion version)
+        internal static bool TryParse(string stringVersion, [NotNullWhen(true)] out WrappedNuGetVersion? version)
         {
             if (NuGetVersion.TryParse(stringVersion, out NuGetVersion? internalVersion))
             {
                 version = new WrappedNuGetVersion(internalVersion);
                 return true;
             }
-            version = default!;
+            version = null;
             return false;
         }
 
-        public static bool operator ==(WrappedNuGetVersion left, WrappedNuGetVersion right)
+        public static bool operator ==(WrappedNuGetVersion? left, WrappedNuGetVersion? right)
         {
             if (left is null)
             {
                 return right is null;
             }
-            return left.Equals(right);
+            return right is not null && left.Equals(right);
         }
-        public static bool operator !=(WrappedNuGetVersion left, WrappedNuGetVersion right)
+        public static bool operator !=(WrappedNuGetVersion? left, WrappedNuGetVersion? right)
         {
             return !(left == right);
         }

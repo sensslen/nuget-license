@@ -9,9 +9,7 @@ using NuGetLicense.LicenseValidator;
 using NuGetLicense.Output;
 using NuGetUtility;
 using NuGetUtility.PackageInformationReader;
-using NuGetUtility.Serialization;
 using NuGetUtility.Wrapper.HttpClientWrapper;
-
 #if !NET
 using System.Net.Http;
 #endif
@@ -32,7 +30,8 @@ namespace NuGetLicense
 
             if (inputJsonFile is not null)
             {
-                return JsonSerializer.Deserialize<string[]>(fileSystem.File.ReadAllText(inputJsonFile))!;
+                string jsonContent = fileSystem.File.ReadAllText(inputJsonFile);
+                return JsonSerializer.Deserialize(jsonContent, CommandLineOptionsJsonContext.Default.StringArray)!;
             }
 
             // Defensive check: validation should already be done at command line parsing level,
@@ -62,7 +61,8 @@ namespace NuGetLicense
                 return UrlToLicenseMapping.Default;
             }
 
-            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(fileSystem.File.ReadAllText(licenseMapping))!;
+            string jsonContent = fileSystem.File.ReadAllText(licenseMapping);
+            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize(jsonContent, CommandLineOptionsJsonContext.Default.DictionaryUriString)!;
 
             return UrlToLicenseMapping.Default.SetItems(userDictionary);
         }
@@ -77,9 +77,7 @@ namespace NuGetLicense
             try
             {
                 string fileContent = fileSystem.File.ReadAllText(overridePackageInformation);
-                var serializerOptions = new JsonSerializerOptions();
-                serializerOptions.Converters.Add(new NuGetVersionJsonConverter());
-                CustomPackageInformation[]? result = JsonSerializer.Deserialize<CustomPackageInformation[]>(fileContent, serializerOptions);
+                CustomPackageInformation[]? result = JsonSerializer.Deserialize(fileContent, CommandLineOptionsJsonContext.Default.CustomPackageInformationArray);
                 return result ?? throw new ArgumentException($"File '{overridePackageInformation}' contains invalid JSON: expected an array of package information but got null.");
             }
             catch (JsonException ex)
@@ -97,7 +95,8 @@ namespace NuGetLicense
             }
 
             string containingDirectory = fileSystem.Path.GetDirectoryName(fileSystem.Path.GetFullPath(licenseFileMappings))!;
-            Dictionary<string, string> rawMappings = JsonSerializer.Deserialize<Dictionary<string, string>>(fileSystem.File.ReadAllText(licenseFileMappings))!;
+            string jsonContent = fileSystem.File.ReadAllText(licenseFileMappings);
+            Dictionary<string, string> rawMappings = JsonSerializer.Deserialize(jsonContent, CommandLineOptionsJsonContext.Default.DictionaryStringString)!;
             var fullPathMappings = rawMappings.ToDictionary(kvp => fileSystem.Path.GetFullPath(fileSystem.Path.Combine(containingDirectory, kvp.Key)), kvp => kvp.Value);
 
             return new FileLicenseMatcher.Combine.LicenseMatcher([
@@ -147,7 +146,7 @@ namespace NuGetLicense
                 try
                 {
                     string fileContent = fileSystem.File.ReadAllText(value);
-                    string[]? result = JsonSerializer.Deserialize<string[]>(fileContent);
+                    string[]? result = JsonSerializer.Deserialize(fileContent, CommandLineOptionsJsonContext.Default.StringArray);
                     return result ?? throw new ArgumentException($"File '{value}' contains invalid JSON: expected an array of strings but got null.");
                 }
                 catch (JsonException ex)
