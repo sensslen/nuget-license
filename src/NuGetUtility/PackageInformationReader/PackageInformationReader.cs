@@ -87,9 +87,9 @@ namespace NuGetUtility.PackageInformationReader
 
         private PackageSearchResult TryGetPackageInfoFromCustomInformation(PackageIdentity package)
         {
-            CustomPackageInformation resolvedCustomInformation = customPackageInformation.FirstOrDefault(info =>
+            CustomPackageInformation? resolvedCustomInformation = customPackageInformation.FirstOrDefault(info =>
                 info.Id.Equals(package.Id) && info.Version.Equals(package.Version));
-            if (resolvedCustomInformation == default)
+            if (resolvedCustomInformation is null)
             {
                 return new PackageSearchResult();
             }

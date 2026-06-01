@@ -11,18 +11,24 @@ namespace NuGetUtility.Serialization
     {
         public override INuGetVersion? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            string stringVersion = JsonSerializer.Deserialize<string>(ref reader, options)!;
+            if (reader.TokenType != JsonTokenType.String)
+            {
+                throw new JsonException("NuGet version needs to be serialized as a string.");
+            }
+
+            // we already know that the token is a string so we can safely call GetString() without checking for null
+            string stringVersion = reader.GetString()!;
             if (WrappedNuGetVersion.TryParse(stringVersion, out WrappedNuGetVersion? version))
             {
                 return version;
             }
 
-            return null;
+            throw new JsonException($"'{stringVersion}' is not a valid NuGet version.");
         }
 
         public override void Write(Utf8JsonWriter writer, INuGetVersion value, JsonSerializerOptions options)
         {
-            JsonSerializer.Serialize(writer, value.ToString(), options);
+            writer.WriteStringValue(value.ToString());
         }
 
         public override bool CanConvert(Type typeToConvert)

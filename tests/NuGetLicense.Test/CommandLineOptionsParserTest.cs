@@ -302,6 +302,222 @@ namespace NuGetLicense.Test
                 await Assert.That(result[0].Id).IsEqualTo("TestPackage");
                 await Assert.That(result[0].License).IsEqualTo("MIT");
             }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithMissingId_ThrowsArgumentException()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Version\":\"1.0.0\",\"License\":\"MIT\"}]"));
+
+                // Act & Assert
+                ArgumentException? ex = await Assert.That(() =>
+                    _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
+                await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
+            }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithMissingVersion_ThrowsArgumentException()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"License\":\"MIT\"}]"));
+
+                // Act & Assert
+                ArgumentException? ex = await Assert.That(() =>
+                    _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
+                await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
+            }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithMissingLicense_ThrowsArgumentException()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"Version\":\"1.0.0\"}]"));
+
+                // Act & Assert
+                ArgumentException? ex = await Assert.That(() =>
+                    _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
+                await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
+            }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithNullId_ThrowsArgumentException()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":null,\"Version\":\"1.0.0\",\"License\":\"MIT\"}]"));
+
+                // Act & Assert
+                ArgumentException? ex = await Assert.That(() =>
+                    _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
+                await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
+            }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithNullVersion_ThrowsArgumentException()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"Version\":null,\"License\":\"MIT\"}]"));
+
+                // Act & Assert
+                ArgumentException? ex = await Assert.That(() =>
+                    _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
+                await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
+            }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithNullLicense_ThrowsArgumentException()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"Version\":\"1.0.0\",\"License\":null}]"));
+
+                // Act & Assert
+                ArgumentException? ex = await Assert.That(() =>
+                    _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
+                await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
+            }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithInvalidVersion_ThrowsArgumentException()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"Version\":\"not-a-version\",\"License\":\"MIT\"}]"));
+
+                // Act & Assert
+                ArgumentException? ex = await Assert.That(() =>
+                    _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
+                await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
+            }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithValidOptionalFields_DeserializesSuccessfully()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                string jsonContent = "[{" +
+                    "\"Id\":\"TestPackage\"," +
+                    "\"Version\":\"1.0.0\"," +
+                    "\"License\":\"MIT\"," +
+                    "\"Copyright\":\"Copyright (c) 2023 Test\"," +
+                    "\"Authors\":\"Author1;Author2\"," +
+                    "\"Title\":\"Test Title\"," +
+                    "\"ProjectUrl\":\"https://example.com\"," +
+                    "\"Summary\":\"Test Summary\"," +
+                    "\"Description\":\"Test Description\"," +
+                    "\"LicenseUrl\":\"https://opensource.org/licenses/MIT\"" +
+                    "}]";
+                _fileSystem.AddFile(overrideFile, new MockFileData(jsonContent));
+
+                // Act
+                CustomPackageInformation[] result = _parser.GetOverridePackageInformation(overrideFile);
+
+                // Assert
+                await Assert.That(result).Count().IsEqualTo(1);
+                await Assert.That(result[0].Id).IsEqualTo("TestPackage");
+                await Assert.That(result[0].Version.ToString()).IsEqualTo("1.0.0");
+                await Assert.That(result[0].License).IsEqualTo("MIT");
+                await Assert.That(result[0].Copyright).IsEqualTo("Copyright (c) 2023 Test");
+                await Assert.That(result[0].Authors).IsEqualTo("Author1;Author2");
+                await Assert.That(result[0].Title).IsEqualTo("Test Title");
+                await Assert.That(result[0].ProjectUrl).IsEqualTo("https://example.com");
+                await Assert.That(result[0].Summary).IsEqualTo("Test Summary");
+                await Assert.That(result[0].Description).IsEqualTo("Test Description");
+                await Assert.That(result[0].LicenseUrl).IsEqualTo(new Uri("https://opensource.org/licenses/MIT"));
+            }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithOnlyRequiredFields_DeserializesSuccessfully()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"Version\":\"2.1.0\",\"License\":\"Apache-2.0\"}]"));
+
+                // Act
+                CustomPackageInformation[] result = _parser.GetOverridePackageInformation(overrideFile);
+
+                // Assert
+                await Assert.That(result).Count().IsEqualTo(1);
+                await Assert.That(result[0].Id).IsEqualTo("TestPackage");
+                await Assert.That(result[0].Version.ToString()).IsEqualTo("2.1.0");
+                await Assert.That(result[0].License).IsEqualTo("Apache-2.0");
+                await Assert.That(result[0].Copyright).IsNull();
+                await Assert.That(result[0].Authors).IsNull();
+                await Assert.That(result[0].Title).IsNull();
+                await Assert.That(result[0].ProjectUrl).IsNull();
+                await Assert.That(result[0].Summary).IsNull();
+                await Assert.That(result[0].Description).IsNull();
+                await Assert.That(result[0].LicenseUrl).IsNull();
+            }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithMultiplePackages_DeserializesAll()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                string jsonContent = "[" +
+                    "{\"Id\":\"Package1\",\"Version\":\"1.0.0\",\"License\":\"MIT\"}," +
+                    "{\"Id\":\"Package2\",\"Version\":\"2.0.0\",\"License\":\"Apache-2.0\"}," +
+                    "{\"Id\":\"Package3\",\"Version\":\"3.0.0\",\"License\":\"BSD-3-Clause\"}" +
+                    "]";
+                _fileSystem.AddFile(overrideFile, new MockFileData(jsonContent));
+
+                // Act
+                CustomPackageInformation[] result = _parser.GetOverridePackageInformation(overrideFile);
+
+                // Assert
+                await Assert.That(result).Count().IsEqualTo(3);
+                await Assert.That(result[0].Id).IsEqualTo("Package1");
+                await Assert.That(result[0].License).IsEqualTo("MIT");
+                await Assert.That(result[1].Id).IsEqualTo("Package2");
+                await Assert.That(result[1].License).IsEqualTo("Apache-2.0");
+                await Assert.That(result[2].Id).IsEqualTo("Package3");
+                await Assert.That(result[2].License).IsEqualTo("BSD-3-Clause");
+            }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithInvalidJson_ThrowsArgumentException()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                _fileSystem.AddFile(overrideFile, new MockFileData("not valid json"));
+
+                // Act & Assert
+                ArgumentException? ex = await Assert.That(() =>
+                    _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
+                await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
+            }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithNullContent_ThrowsArgumentException()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                _fileSystem.AddFile(overrideFile, new MockFileData("null"));
+
+                // Act & Assert
+                ArgumentException? ex = await Assert.That(() =>
+                    _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
+                await Assert.That(ex!.Message).Contains("expected an array of package information but got null");
+            }
+
+            [Test]
+            public async Task GetOverridePackageInformation_WithEmptyArray_ReturnsEmptyArray()
+            {
+                // Arrange
+                string overrideFile = "/test/override.json";
+                _fileSystem.AddFile(overrideFile, new MockFileData("[]"));
+
+                // Act
+                CustomPackageInformation[] result = _parser.GetOverridePackageInformation(overrideFile);
+
+                // Assert
+                await Assert.That(result).IsEmpty();
+            }
         }
 
         public class GetLicenseMatcherTests : CommandLineOptionsParserTest
