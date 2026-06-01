@@ -62,6 +62,7 @@ namespace NuGetLicense
                                                                                                   options.IncludeTransitive,
                                                                                                   options.TargetFramework,
                                                                                                   options.ExcludePublishFalse,
+                                                                                                  options.ExcludePrivateAssets,
                                                                                                   options.IncludeSharedProjects,
                                                                                                   out IReadOnlyCollection<Exception> projectReaderExceptions);
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
@@ -141,6 +142,7 @@ namespace NuGetLicense
                                                                                                 bool includeTransitive,
                                                                                                 string? targetFramework,
                                                                                                 bool excludePublishFalse,
+                                                                                                bool excludePrivateAssets,
                                                                                                 bool includeSharedProjects,
                                                                                                 out IReadOnlyCollection<Exception> exceptions)
         {
@@ -153,7 +155,7 @@ namespace NuGetLicense
             {
                 try
                 {
-                    IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, includeTransitive, targetFramework, excludePublishFalse);
+                    IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, includeTransitive, targetFramework, excludePublishFalse, excludePrivateAssets);
                     result.Add(new ProjectWithReferencedPackages(project, installedPackages));
                 }
                 catch (Exception e)

@@ -30,12 +30,16 @@ namespace NuGetUtility.ReferencedPackagesReader
         /// True to exclude packages with Publish="false" metadata. When transitive dependencies are included,
         /// packages reachable only through those excluded roots are also excluded.
         /// </param>
+        /// <param name="excludePrivateAssets">
+        /// True to exclude packages with PrivateAssets="all" metadata (development-only packages). When transitive dependencies are included,
+        /// packages reachable only through those excluded roots are also excluded.
+        /// </param>
         /// <returns>Resolved package identities from project assets or packages.config.</returns>
-        public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive, string? targetFramework = null, bool excludePublishFalse = false)
+        public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive, string? targetFramework = null, bool excludePublishFalse = false, bool excludePrivateAssets = false)
         {
             IProject project = msBuild.GetProject(projectPath);
 
-            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, targetFramework, excludePublishFalse, out IEnumerable<PackageIdentity>? dependencies))
+            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, targetFramework, excludePublishFalse, excludePrivateAssets, out IEnumerable<PackageIdentity>? dependencies))
             {
                 return dependencies;
             }
@@ -52,6 +56,7 @@ namespace NuGetUtility.ReferencedPackagesReader
                                                            IProject project,
                                                            string? targetFramework,
                                                            bool excludePublishFalse,
+                                                           bool excludePrivateAssets,
                                                            [NotNullWhen(true)] out IEnumerable<PackageIdentity>? installedPackages)
         {
             installedPackages = null;
@@ -70,12 +75,14 @@ namespace NuGetUtility.ReferencedPackagesReader
             {
                 HashSet<ILockFileLibrary> targetReferencedLibraries = [.. GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target)];
 
-                if (excludePublishFalse)
+                if (excludePublishFalse || excludePrivateAssets)
                 {
                     HashSet<string> excludedPackages = GetExcludedPackagesForTarget(project,
                                                                                     assetsFile,
                                                                                     target,
                                                                                     includeTransitive,
+                                                                                    excludePublishFalse,
+                                                                                    excludePrivateAssets,
                                                                                     publishExclusionContext);
 
                     targetReferencedLibraries.RemoveWhere(library => excludedPackages.Contains(library.Name));
@@ -112,19 +119,29 @@ namespace NuGetUtility.ReferencedPackagesReader
                                                              ILockFile assetsFile,
                                                              ILockFileTarget target,
                                                              bool includeTransitive,
+                                                             bool excludePublishFalse,
+                                                             bool excludePrivateAssets,
                                                              PublishExclusionContext context)
         {
             string targetFrameworkForPublishMetadata = context.NormalizedRequestedTargetFramework ?? nuGetFrameworkUtility.Normalize(target.TargetFramework);
             string targetFrameworkCacheKey = targetFrameworkForPublishMetadata ?? string.Empty;
 
-            // Remove packages with Publish=false metadata from the evaluated PackageReferences for this target only.
-            if (!context.PublishFalsePackagesByFramework.TryGetValue(targetFrameworkCacheKey, out HashSet<string>? cachedPublishFalsePackages))
+            // Remove packages with Publish=false and PrivateAssets=all metadata from the evaluated PackageReferences for this target only.
+            if (!context.PublishFalsePackagesByFramework.TryGetValue(targetFrameworkCacheKey, out HashSet<string>? cachedExcludedPackages))
             {
-                cachedPublishFalsePackages = GetPackagesExcludedFromPublish(project, targetFrameworkForPublishMetadata);
-                context.PublishFalsePackagesByFramework[targetFrameworkCacheKey] = cachedPublishFalsePackages;
+                cachedExcludedPackages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                if (excludePublishFalse)
+                {
+                    cachedExcludedPackages.UnionWith(GetPackagesExcludedFromPublish(project, targetFrameworkForPublishMetadata));
+                }
+                if (excludePrivateAssets)
+                {
+                    cachedExcludedPackages.UnionWith(GetPackagesExcludedByPrivateAssets(project, targetFrameworkForPublishMetadata));
+                }
+                context.PublishFalsePackagesByFramework[targetFrameworkCacheKey] = cachedExcludedPackages;
             }
 
-            HashSet<string> excludedPackages = new(cachedPublishFalsePackages, StringComparer.OrdinalIgnoreCase);
+            HashSet<string> excludedPackages = new(cachedExcludedPackages, StringComparer.OrdinalIgnoreCase);
             if (!includeTransitive || !excludedPackages.Any())
             {
                 return excludedPackages;
@@ -328,6 +345,26 @@ namespace NuGetUtility.ReferencedPackagesReader
             {
                 if (packageReference.Metadata.TryGetValue("Publish", out string? value) &&
                     string.Equals(value, "false", StringComparison.OrdinalIgnoreCase))
+                {
+                    excludedPackages.Add(packageReference.PackageName);
+                }
+            }
+
+            return excludedPackages;
+        }
+
+        private static HashSet<string> GetPackagesExcludedByPrivateAssets(IProject project, string? targetFramework)
+        {
+            // PrivateAssets metadata is not available in project.assets.json, so resolve it via MSBuild items.
+            IEnumerable<PackageReferenceMetadata> packageReferences = targetFramework is null
+                ? project.GetPackageReferences()
+                : project.GetPackageReferencesForTarget(targetFramework);
+
+            HashSet<string> excludedPackages = new(StringComparer.OrdinalIgnoreCase);
+            foreach (PackageReferenceMetadata packageReference in packageReferences ?? [])
+            {
+                if (packageReference.Metadata.TryGetValue("PrivateAssets", out string? value) &&
+                    value != null && value.IndexOf("all", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     excludedPackages.Add(packageReference.PackageName);
                 }

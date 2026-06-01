@@ -10,6 +10,7 @@
 - Supports transitive dependencies, custom mappings, and overrides
 - Flexible output: table or JSON (pretty/minified)
 - Exclude or ignore specific packages or projects
+- Exclude development-only packages (marked with `<PrivateAssets>all</PrivateAssets>` or `<Publish>false</Publish>`)
 - Works with .NET Core, .NET Framework, and native C++ projects
 
 ## Project Structure
@@ -69,6 +70,7 @@ nuget-license [options]
 | `-include-ignored`, `--include-ignored-packages` | When set, ignored packages are included in the output. |
 | `-exclude-projects`, `--exclude-projects-matching <FILE\|LIST>` | Specifies projects to exclude from analysis. You can provide either a JSON file (see [docs/exclude-projects-json.md](docs/exclude-projects-json.md)), or a semicolon-separated list (e.g., `"*Test*;Legacy*"`). Wildcards (`*`) are supported. |
 | `--exclude-publish-false` | Excludes packages marked with `<Publish>false</Publish>` metadata in the project file. This also recursively excludes transitive dependencies. A package is only excluded if all paths leading to it originate from a `Publish="false"` reference (consistent with `dotnet publish` behavior). |
+| `--exclude-private-assets` | Excludes packages marked with `<PrivateAssets>all</PrivateAssets>` metadata in the project file (development-only packages). This also recursively excludes transitive dependencies. See [docs/exclude-private-assets.md](docs/exclude-private-assets.md) for more details. |
 | `-isp`, `--include-shared-projects` | Include shared projects (`.shproj`). |
 | `-f`, `--target-framework <TFM>` | Analyze for a specific Target Framework Moniker. |
 | `-fo`, `--file-output <FILE>` | Write output to a file instead of console. |
@@ -163,6 +165,23 @@ See [docs/output-json.md](docs/output-json.md) for detailed information about th
 
 ```ps
 nuget-license -i MyProject.csproj -d licenses/
+```
+
+### Exclude development-only packages
+
+Exclude packages marked with `<Publish>false</Publish>`:
+```ps
+nuget-license -i MyProject.csproj --exclude-publish-false
+```
+
+Exclude packages marked with `<PrivateAssets>all</PrivateAssets>`:
+```ps
+nuget-license -i MyProject.csproj --exclude-private-assets
+```
+
+Exclude both types of development-only packages:
+```ps
+nuget-license -i MyProject.csproj --exclude-publish-false --exclude-private-assets -o JsonPretty
 ```
 
 ### Map license files to license types

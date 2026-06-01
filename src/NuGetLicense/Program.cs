@@ -68,6 +68,9 @@ namespace NuGetLicense
         [Option("--exclude-publish-false", Description = "If set, packages with <Publish>false</Publish> metadata are excluded from analysis.")]
         public bool ExcludePublishFalse { get; set; }
 
+        [Option("--exclude-private-assets", Description = "If set, packages with <PrivateAssets>all</PrivateAssets> metadata (development-only packages) are excluded from analysis.")]
+        public bool ExcludePrivateAssets { get; set; }
+
         public async Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken cancellationToken)
         {
             // Check if mandatory parameters are provided
