@@ -62,6 +62,24 @@ foreach ($match in $matches) {
     $processedReadme = $processedReadme.Replace($fullMatch, $replacement)
 }
 
+# Replace LICENSE link with full GitHub URL
+# Pattern matches: [text](LICENSE) - a relative link to the root LICENSE file
+$licensePattern = '\[([^\]]+)\]\(LICENSE\)'
+$licenseMatches = [regex]::Matches($processedReadme, $licensePattern)
+
+Write-Host "Found $($licenseMatches.Count) LICENSE links"
+
+foreach ($licenseMatch in $licenseMatches) {
+    $fullMatch = $licenseMatch.Value
+    $linkText = $licenseMatch.Groups[1].Value
+    
+    Write-Host "Processing LICENSE link: $linkText"
+    
+    $gitHubUrl = "$baseGitHubUrl/LICENSE"
+    $replacement = "[$linkText]($gitHubUrl)"
+    $processedReadme = $processedReadme.Replace($fullMatch, $replacement)
+}
+
 # Add a note at the end about documentation
 if ($matches.Count -gt 0) {
     $processedReadme += "`n`n---`n`n"
