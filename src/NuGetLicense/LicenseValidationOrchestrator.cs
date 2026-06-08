@@ -57,12 +57,17 @@ namespace NuGetLicense
 
             string[] excludedProjectsArray = optionsParser.GetExcludedProjects(options.ExcludedProjects);
             IEnumerable<string> projects = (await inputFiles.SelectManyAsync(projectCollector.GetProjectsAsync)).Where(p => !Array.Exists(excludedProjectsArray, p.PathLike));
+            var packageReaderOptions = new PackageReaderOptions
+            {
+                IncludeTransitive = options.IncludeTransitive,
+                TargetFramework = options.TargetFramework,
+                ExcludePublishFalse = options.ExcludePublishFalse,
+                ExcludePrivateAssets = options.ExcludePrivateAssets,
+                IncludeSharedProjects = options.IncludeSharedProjects
+            };
             IEnumerable<ProjectWithReferencedPackages> packagesForProject = GetPackagesPerProject(projects,
                                                                                                   projectReader,
-                                                                                                  options.IncludeTransitive,
-                                                                                                  options.TargetFramework,
-                                                                                                  options.ExcludePublishFalse,
-                                                                                                  options.IncludeSharedProjects,
+                                                                                                  packageReaderOptions,
                                                                                                   out IReadOnlyCollection<Exception> projectReaderExceptions);
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
                 packagesForProject.SelectMany(p => GetPackageInformation(p, overridePackageInformationArray, cancellationToken));
@@ -138,10 +143,7 @@ namespace NuGetLicense
 
         private static IReadOnlyCollection<ProjectWithReferencedPackages> GetPackagesPerProject(IEnumerable<string> projects,
                                                                                                 ReferencedPackageReader reader,
-                                                                                                bool includeTransitive,
-                                                                                                string? targetFramework,
-                                                                                                bool excludePublishFalse,
-                                                                                                bool includeSharedProjects,
+                                                                                                PackageReaderOptions options,
                                                                                                 out IReadOnlyCollection<Exception> exceptions)
         {
             var encounteredExceptions = new List<Exception>();
@@ -149,11 +151,11 @@ namespace NuGetLicense
             exceptions = encounteredExceptions;
 
             ProjectFilter filter = new();
-            foreach (string project in filter.FilterProjects(projects, includeSharedProjects))
+            foreach (string project in filter.FilterProjects(projects, options.IncludeSharedProjects))
             {
                 try
                 {
-                    IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, includeTransitive, targetFramework, excludePublishFalse);
+                    IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, options.IncludeTransitive, options.TargetFramework, options.ExcludePublishFalse, options.ExcludePrivateAssets);
                     result.Add(new ProjectWithReferencedPackages(project, installedPackages));
                 }
                 catch (Exception e)
