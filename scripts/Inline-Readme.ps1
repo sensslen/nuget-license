@@ -72,9 +72,9 @@ Write-Host "Found $($licenseMatches.Count) LICENSE links"
 foreach ($licenseMatch in $licenseMatches) {
     $fullMatch = $licenseMatch.Value
     $linkText = $licenseMatch.Groups[1].Value
-    
+
     Write-Host "Processing LICENSE link: $linkText"
-    
+
     $gitHubUrl = "$baseGitHubUrl/LICENSE"
     $replacement = "[$linkText]($gitHubUrl)"
     $processedReadme = $processedReadme.Replace($fullMatch, $replacement)
