@@ -64,7 +64,7 @@ foreach ($match in $matches) {
 
 # Replace LICENSE link with full GitHub URL
 # Pattern matches: [text](LICENSE) - a relative link to the root LICENSE file
-$licensePattern = '\[([^\]]+)\]\(LICENSE\)'
+$licensePattern = '\[([^\]]+)\]\(([^)]*LICENSE)\)'
 $licenseMatches = [regex]::Matches($processedReadme, $licensePattern)
 
 Write-Host "Found $($licenseMatches.Count) LICENSE links"
