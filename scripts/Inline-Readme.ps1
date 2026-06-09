@@ -34,18 +34,21 @@ $baseGitHubUrl = "https://github.com/sensslen/nuget-license/blob/$gitRef"
 
 Write-Host "Base GitHub URL: $baseGitHubUrl"
 
+# Derive the relative docs folder name from the provided path
+$docsFolderName = Split-Path -Leaf $DocsFolder
+
 # Find all links to docs/*.md files
 # Pattern matches: [text](docs/filename.md)
-$pattern = '\[([^\]]+)\]\(docs/([^)]+\.md)\)'
+$pattern = "\[([^\]]+)\]\($([regex]::Escape($docsFolderName))/([^)]+\.md)\)"
 
-$matches = [regex]::Matches($readmeContent, $pattern)
+$docMatches = [regex]::Matches($readmeContent, $pattern)
 
-Write-Host "Found $($matches.Count) documentation links"
+Write-Host "Found $($docMatches.Count) documentation links"
 
 # Replace all documentation links with GitHub URLs
 $processedReadme = $readmeContent
 
-foreach ($match in $matches) {
+foreach ($match in $docMatches) {
     $fullMatch = $match.Value
     $linkText = $match.Groups[1].Value
     $docFileName = $match.Groups[2].Value
@@ -53,7 +56,7 @@ foreach ($match in $matches) {
     Write-Host "Processing: $docFileName -> $linkText"
     
     # Create GitHub URL for the documentation file
-    $gitHubUrl = "$baseGitHubUrl/docs/$docFileName"
+    $gitHubUrl = "$baseGitHubUrl/$docsFolderName/$docFileName"
     
     # Create replacement link
     $replacement = "[$linkText]($gitHubUrl)"
@@ -81,13 +84,12 @@ foreach ($licenseMatch in $licenseMatches) {
 }
 
 # Add a note at the end about documentation
-if ($matches.Count -gt 0) {
+if ($docMatches.Count -gt 0) {
     $processedReadme += "`n`n---`n`n"
     $processedReadme += "## Documentation`n`n"
     $processedReadme += "For detailed documentation on configuration files and advanced usage, please refer to the documentation files linked above in the GitHub repository."
     if ($GitCommitHash) {
-        $trimmedHash = $GitCommitHash.Trim()
-        $processedReadme += " The links point to the documentation that was available at the time this package version was created (commit: ``$trimmedHash``)."
+        $processedReadme += " The links point to the documentation that was available at the time this package version was created (commit: ``$gitRef``)."
     }
     $processedReadme += "`n"
 }
@@ -101,4 +103,4 @@ if (-not (Test-Path $outputDir)) {
 $processedReadme | Set-Content -Path $OutputPath -NoNewline
 
 Write-Host "Successfully created README with GitHub documentation links at: $OutputPath"
-Write-Host "Replaced $($matches.Count) documentation links"
+Write-Host "Replaced $($docMatches.Count) documentation links"
