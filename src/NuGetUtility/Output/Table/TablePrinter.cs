@@ -28,7 +28,7 @@ namespace NuGetUtility.Output.Table
         {
             if (row.Length != _titles.Length)
             {
-                throw new Exception(
+                throw new ArgumentException(
                     $"Added row length [{row.Length}] is not equal to title row length [{_titles.Length}]");
             }
 

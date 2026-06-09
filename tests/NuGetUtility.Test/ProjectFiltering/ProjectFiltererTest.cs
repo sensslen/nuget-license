@@ -7,7 +7,6 @@ namespace NuGetUtility.Test.ProjectFiltering
 {
     class ProjectFiltererTest
     {
-        private readonly ProjectFilter _filterer = new();
 
         [Test]
         [Arguments("one.csproj", false, false)]
@@ -20,7 +19,7 @@ namespace NuGetUtility.Test.ProjectFiltering
         [Arguments("four.SHPROJ", false, true)]
         public async Task FilterProjects_ExcludesSharedProjects_WhenIncludeSharedProjectsIsFalse(string project, bool isFiltered, bool includeSharedProjects)
         {
-            string[] result = _filterer.FilterProjects([project], includeSharedProjects).ToArray();
+            string[] result = ProjectFilter.FilterProjects([project], includeSharedProjects).ToArray();
 
             await Assert.That(result).Count().IsEqualTo(isFiltered ? 0 : 1);
             if (!isFiltered)

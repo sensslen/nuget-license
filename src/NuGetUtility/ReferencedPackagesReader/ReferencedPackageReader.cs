@@ -229,13 +229,7 @@ namespace NuGetUtility.ReferencedPackagesReader
 
             HashSet<string> reachableFromPublishableRoots = GetReachablePackages(packageDependencies, publishableRoots);
 
-            foreach (string packageName in packageDependencies.Keys)
-            {
-                if (!reachableFromPublishableRoots.Contains(packageName))
-                {
-                    excludedPackages.Add(packageName);
-                }
-            }
+            excludedPackages.UnionWith(packageDependencies.Keys.Where(packageName => !reachableFromPublishableRoots.Contains(packageName)));
 
             return excludedPackages;
         }
