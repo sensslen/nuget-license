@@ -3,7 +3,7 @@
 
 namespace NuGetUtility.ProjectFiltering
 {
-    public class ProjectFilter
+    public static class ProjectFilter
     {
 
         /// <summary>
