@@ -12,7 +12,7 @@ namespace NuGetUtility.ProjectFiltering
         /// <param name="projects">Collection of project paths to filter</param>
         /// <param name="includeSharedProjects">Whether to include .shproj files</param>
         /// <returns>Filtered collection of project paths</returns>
-        public IEnumerable<string> FilterProjects(IEnumerable<string> projects, bool includeSharedProjects)
+        public static IEnumerable<string> FilterProjects(IEnumerable<string> projects, bool includeSharedProjects)
         {
             return includeSharedProjects ? projects : projects.Where(p => !IsSharedProject(p));
         }

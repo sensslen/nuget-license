@@ -148,8 +148,7 @@ namespace NuGetLicense
             var result = new List<ProjectWithReferencedPackages>();
             exceptions = encounteredExceptions;
 
-            ProjectFilter filter = new();
-            foreach (string project in filter.FilterProjects(projects, includeSharedProjects))
+            foreach (string project in ProjectFilter.FilterProjects(projects, includeSharedProjects))
             {
                 try
                 {

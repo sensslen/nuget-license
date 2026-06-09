@@ -1,8 +1,0 @@
-<Project>
-  <ItemGroup>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.16.0.128591">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-</Project>
