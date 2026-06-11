@@ -44,7 +44,7 @@
     <PackageReference Include="System.IO.Hashing" Version="10.0.8" />
     <PackageReference Include="System.Collections.Immutable" Version="10.0.8" />
     <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="18.*" />
-    <PackageReference Include="PolySharp" Version="1.15.*">
+    <PackageReference Include="PolySharp" Version="1.16.*">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
