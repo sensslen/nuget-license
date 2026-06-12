@@ -33,7 +33,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
         {
             if (!MSBuildLocator.IsRegistered)
             {
-                MSBuildLocator.RegisterDefaults();
+                MSBuildLocator.RegisterInstance(MSBuildLocator.QueryVisualStudioInstances().OrderByDescending(instance => instance.Version).First());
             }
         }
 
