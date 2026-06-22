@@ -33,7 +33,20 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
         {
             if (!MSBuildLocator.IsRegistered)
             {
-                MSBuildLocator.RegisterInstance(MSBuildLocator.QueryVisualStudioInstances().OrderByDescending(instance => instance.Version).First());
+#if NETFRAMEWORK
+                VisualStudioInstance? instance = MSBuildLocator.QueryVisualStudioInstances().OrderByDescending(i => i.Version).FirstOrDefault();
+                if (instance is null)
+                {
+                    throw new MsBuildAbstractionException(
+                        "No MSBuild instance could be detected. The .NET Framework variant of this tool requires Visual Studio or the Visual Studio Build Tools to be installed in order to locate MSBuild. " +
+                        "Please install the \"Visual Studio Build Tools\" (https://visualstudio.microsoft.com/downloads/?q=build+tools) or use the .NET Core (dotnet tool) variant instead. " +
+                        "See https://learn.microsoft.com/visualstudio/msbuild/updating-an-existing-application for more information on how MSBuild is detected.");
+                }
+
+                MSBuildLocator.RegisterInstance(instance);
+#else
+                MSBuildLocator.RegisterInstance(MSBuildLocator.QueryVisualStudioInstances().OrderByDescending(i => i.Version).First());
+#endif
             }
         }
 

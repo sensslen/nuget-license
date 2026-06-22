@@ -40,7 +40,13 @@ dotnet tool install --global nuget-license
 
 ### NuGetLicenseFramework.exe
 
-Download the latest release from [GitHub Releases](https://github.com/sensslen/nuget-license/releases) and run the executable directly.
+Download the latest release from [GitHub Releases](https://github.com/sensslen/nuget-license/releases) and run the executable directly. Before running it, make sure the [Prerequisites](#prerequisites) are installed.
+
+### Prerequisites
+
+The `NuGetLicenseFramework.exe` variant locates MSBuild through a Visual Studio installation. It therefore requires **Visual Studio** or the standalone **[Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/?q=build+tools)** to be installed. If neither is present, the tool exits with an error stating that no MSBuild instance could be detected.
+
+This is why switching from the `NuGetLicenseCore` dotnet tool to `NuGetLicenseFramework.exe` can produce a *"No instances of MSBuild could be detected"* error: the .NET Framework variant looks for MSBuild via Visual Studio rather than the .NET SDK. For background on how MSBuild is located, see Microsoft's documentation on [MSBuild and Visual Studio version detection](https://learn.microsoft.com/visualstudio/msbuild/updating-an-existing-application).
 
 ## Usage
 
