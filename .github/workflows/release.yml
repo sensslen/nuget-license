@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-2025-vs2026
     permissions:
       id-token: write
-      contents: read
+      contents: write
     steps:
       - uses: actions/checkout@v7
 
