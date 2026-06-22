@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: windows-2025-vs2026
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v7
 
@@ -73,16 +76,20 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             release.zip
+            
+      - name: NuGet Login (OIDC)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: sensslen
 
       - name: publish nuget package to nuget.org
         id: publish_nuget
         shell: pwsh
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_KEY }}
         run: |
           $files = Get-ChildItem -Path "${{ steps.artifacts_path.outputs.path }}" -Include *.nupkg -Recurse
           foreach ($f in $files) {
             $fullPath = $f.FullName
             Write-Host "sending package: $fullPath"
-            dotnet nuget push --source 'https://api.nuget.org/v3/index.json' --api-key "$env:NUGET_API_KEY" --skip-duplicate "$fullPath"
+            dotnet nuget push --source 'https://api.nuget.org/v3/index.json' --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --skip-duplicate "$fullPath"
           }
