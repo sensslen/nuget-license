@@ -73,8 +73,8 @@ namespace NuGetLicense
             // Check if mandatory parameters are provided
             if (InputFile == null && InputJsonFile == null)
             {
-                Console.Error.WriteLine("Error: Please provide an input file using --input or --json-input");
-                Console.Error.WriteLine();
+                await Console.Error.WriteLineAsync("Error: Please provide an input file using --input or --json-input");
+                await Console.Error.WriteLineAsync();
                 app.ShowHelp();
                 return 1;
             }
