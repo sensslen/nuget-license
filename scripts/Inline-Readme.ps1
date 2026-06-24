@@ -5,13 +5,13 @@
 param(
     [Parameter(Mandatory=$true)]
     [string]$ReadmePath,
-    
+
     [Parameter(Mandatory=$true)]
     [string]$OutputPath,
-    
+
     [Parameter(Mandatory=$true)]
     [string]$DocsFolder,
-    
+
     [Parameter(Mandatory=$false)]
     [string]$GitCommitHash
 )
@@ -52,15 +52,15 @@ foreach ($match in $docMatches) {
     $fullMatch = $match.Value
     $linkText = $match.Groups[1].Value
     $docFileName = $match.Groups[2].Value
-    
+
     Write-Host "Processing: $docFileName -> $linkText"
-    
+
     # Create GitHub URL for the documentation file
     $gitHubUrl = "$baseGitHubUrl/$docsFolderName/$docFileName"
-    
+
     # Create replacement link
     $replacement = "[$linkText]($gitHubUrl)"
-    
+
     # Use literal string replacement to avoid issues with special characters
     $processedReadme = $processedReadme.Replace($fullMatch, $replacement)
 }
