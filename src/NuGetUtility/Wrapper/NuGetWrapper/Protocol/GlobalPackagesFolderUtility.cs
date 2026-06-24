@@ -13,13 +13,45 @@ using PackageIdentity = NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core.Package
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 {
-    public class GlobalPackagesFolderUtility(ISettings settings) : IGlobalPackagesFolderUtility
+    public class GlobalPackagesFolderUtility : IGlobalPackagesFolderUtility
     {
-        private readonly string _globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(settings);
+        private readonly string[] _packageFolders;
+
+        public GlobalPackagesFolderUtility(ISettings settings, IEnumerable<string> additionalPackageFolders)
+        {
+            // The global packages folder is the primary location, but packages can also be
+            // extracted into fallback folders (e.g. the SDK's NuGetFallbackFolder) that are
+            // recorded per-project in the assets file. Consult all of them before falling back
+            // to a (slow) remote source lookup.
+            var folders = new List<string> { SettingsUtility.GetGlobalPackagesFolder(settings) };
+            foreach (string folder in additionalPackageFolders)
+            {
+                if (!string.IsNullOrEmpty(folder) && !folders.Contains(folder, StringComparer.OrdinalIgnoreCase))
+                {
+                    folders.Add(folder);
+                }
+            }
+
+            _packageFolders = [.. folders];
+        }
 
         public IWrappedPackageMetadata? GetPackage(PackageIdentity identity)
         {
-            DownloadResourceResult cachedPackage = OriginalGlobalPackagesFolderUtility.GetPackage(new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString()!)), _globalPackagesFolder);
+            foreach (string packageFolder in _packageFolders)
+            {
+                IWrappedPackageMetadata? metadata = TryGetPackageFromFolder(identity, packageFolder);
+                if (metadata is not null)
+                {
+                    return metadata;
+                }
+            }
+
+            return null;
+        }
+
+        private static IWrappedPackageMetadata? TryGetPackageFromFolder(PackageIdentity identity, string packageFolder)
+        {
+            DownloadResourceResult cachedPackage = OriginalGlobalPackagesFolderUtility.GetPackage(new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString()!)), packageFolder);
             if (cachedPackage == null)
             {
                 return null;

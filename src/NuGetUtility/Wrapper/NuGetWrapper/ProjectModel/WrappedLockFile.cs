@@ -10,6 +10,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
         public IPackageSpec PackageSpec => new WrappedPackageSpec(file.PackageSpec);
         public IEnumerable<ILockFileTarget> Targets => file.Targets.Select(t => new WrappedLockFileTarget(t));
         public string Path => file.Path;
+        public IEnumerable<string> PackageFolders => file.PackageFolders.Select(f => f.Path);
 
         public bool TryGetErrors(out string[] errors)
         {

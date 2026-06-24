@@ -152,8 +152,7 @@ namespace NuGetLicense
             {
                 try
                 {
-                    IEnumerable<PackageIdentity> installedPackages = reader.GetInstalledPackages(project, includeTransitive, targetFramework, excludePublishFalse);
-                    result.Add(new ProjectWithReferencedPackages(project, installedPackages));
+                    result.Add(reader.GetInstalledPackages(project, includeTransitive, targetFramework, excludePublishFalse));
                 }
                 catch (Exception e)
                 {
@@ -172,12 +171,10 @@ namespace NuGetLicense
             var sourceProvider = new PackageSourceProvider(settings);
 
             using var sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
-            var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
+            var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings, projectWithReferences.PackageFolders);
             var informationReader = new PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
 
-            await foreach (ReferencedPackageWithContext package in informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project,
-                                                                                                                                      projectWithReferences.ReferencedPackages),
-                                                                                                    cancellation))
+            await foreach (ReferencedPackageWithContext package in informationReader.GetPackageInfo(projectWithReferences, cancellation))
             {
                 yield return package;
             }

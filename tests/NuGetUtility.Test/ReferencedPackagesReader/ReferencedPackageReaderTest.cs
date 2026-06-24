@@ -58,6 +58,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _lockFileMock.PackageSpec.Returns(_packageSpecMock);
             _packageSpecMock.IsValid().Returns(true);
             _lockFileMock.Targets.Returns(_lockFileTargets);
+            _lockFileMock.PackageFolders.Returns([]);
             _packageSpecMock.TargetFrameworks.Returns(_packageSpecTargetFrameworks);
 
             var rnd = new Random(75643);
@@ -223,7 +224,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public async Task GetInstalledPackages_Should_ReturnCorrectValues_If_TargetFrameworks_Returns_Empty_And_Requested_Transitive_Packages()
         {
             _packageSpecMock.TargetFrameworks.Returns([]);
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true).ReferencedPackages;
             await Assert.That(result).IsEquivalentTo(_referencedPackagesForFramework.SelectMany(kvp => kvp.Value).Distinct());
         }
 
@@ -253,7 +254,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Test]
         public async Task GetInstalledPackages_Should_ReturnCorrectValues_If_IncludingTransitive()
         {
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true).ReferencedPackages;
             await Assert.That(result).IsEquivalentTo(_referencedPackagesForFramework.SelectMany(kvp => kvp.Value).Distinct());
         }
 
@@ -279,7 +280,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             _lockFileMock.Targets.Returns([targetNet80, targetNet90]);
 
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, requestedTargetFramework);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, requestedTargetFramework).ReferencedPackages;
 
             await Assert.That(result.Select(package => package.Id)).IsEquivalentTo(["PackageNet80"]);
             await Assert.That(result.Select(package => package.Id)).DoesNotContain("PackageNet90");
@@ -307,7 +308,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             _lockFileMock.Targets.Returns([targetEquivalent, targetOther]);
 
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, requestedTargetFramework);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, requestedTargetFramework).ReferencedPackages;
 
             await Assert.That(result.Select(package => package.Id)).IsEquivalentTo(["PackageEquivalent"]);
             await Assert.That(result.Select(package => package.Id)).DoesNotContain("PackageOther");
@@ -337,7 +338,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             _lockFileMock.Targets.Returns([targetVariant, targetOther]);
 
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, requestedTargetFramework);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, requestedTargetFramework).ReferencedPackages;
 
             await Assert.That(result.Select(package => package.Id)).IsEquivalentTo(["PackageVariant"]);
             await Assert.That(result.Select(package => package.Id)).DoesNotContain("PackageOther");
@@ -346,7 +347,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Test]
         public async Task GetInstalledPackages_Should_ReturnCorrectValues_If_NotIncludingTransitive()
         {
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, false);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, false).ReferencedPackages;
 
             PackageIdentity[] expectedReferences = _directlyReferencedPackagesForFramework.SelectMany(p => p.Value)
                 .Distinct()
@@ -363,7 +364,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _projectMock.TryGetAssetsPath(out Arg.Any<string>()).Returns(false);
             _projectMock.GetEvaluatedIncludes().Returns([]);
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, false);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, false).ReferencedPackages;
 
             await Assert.That(result).Count().IsEqualTo(0);
         }
@@ -395,7 +396,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             PackageIdentity[] expectedPackages = _referencedPackagesForFramework.First().Value;
             _packagesConfigReader.GetPackages(Arg.Any<IProject>()).Returns(expectedPackages);
 
-            IEnumerable<PackageIdentity> packages = _uut.GetInstalledPackages(_projectPath, includeTransitive);
+            IEnumerable<PackageIdentity> packages = _uut.GetInstalledPackages(_projectPath, includeTransitive).ReferencedPackages;
 
             await Assert.That(packages).IsEquivalentTo(expectedPackages);
         }
@@ -445,7 +446,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             targetFrameworkInformation.Dependencies.Returns([excludedDependency, includedDependency]);
             _packageSpecMock.TargetFrameworks.Returns([targetFrameworkInformation]);
 
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true).ReferencedPackages;
 
             await Assert.That(result.Select(p => p.Id)).DoesNotContain(excludedPackage);
             await Assert.That(result.Select(p => p.Id)).Contains(includedPackage);
@@ -504,7 +505,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             _projectMock.GetPackageReferencesForTarget("net9.0").Returns([]);
 
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true).ReferencedPackages;
 
             await Assert.That(result.Select(p => p.Id).Contains(packageName)).IsTrue();
             _projectMock.Received(1).GetPackageReferencesForTarget("net8.0");
@@ -556,7 +557,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                     })
             ]);
 
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true).ReferencedPackages;
 
             await Assert.That(result.Select(p => p.Id)).Contains("PackageA");
             await Assert.That(result.Select(p => p.Id)).DoesNotContain("PackageB");
@@ -607,11 +608,50 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                     })
             ]);
 
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, null, true).ReferencedPackages;
 
             await Assert.That(result.Select(p => p.Id)).Contains("PackageA");
             await Assert.That(result.Select(p => p.Id)).DoesNotContain("PackageB");
             await Assert.That(result.Select(p => p.Id)).DoesNotContain("PackageC");
+        }
+
+        [Test]
+        public async Task GetInstalledPackages_Should_ReturnPackageFolders_FromAssetsFile()
+        {
+            string[] packageFolders =
+            [
+                _fixture.Create<string>(),
+                _fixture.Create<string>()
+            ];
+            _lockFileMock.PackageFolders.Returns(packageFolders);
+
+            IReadOnlyList<string> result = _uut.GetInstalledPackages(_projectPath, true).PackageFolders;
+
+            await Assert.That(result).IsEquivalentTo(packageFolders);
+        }
+
+        [Test]
+        public async Task GetInstalledPackages_Should_ReturnEmptyPackageFolders_If_ProjectIsPackageConfigProject()
+        {
+            _projectMock.TryGetAssetsPath(out Arg.Any<string>()).Returns(false);
+            _projectMock.FullPath.Returns(_projectPath);
+            _projectMock.GetEvaluatedIncludes().Returns(new List<string> { "packages.config" });
+            _packagesConfigReader.GetPackages(Arg.Any<IProject>()).Returns(_referencedPackagesForFramework.First().Value);
+
+            IReadOnlyList<string> result = _uut.GetInstalledPackages(_projectPath, false).PackageFolders;
+
+            await Assert.That(result).Count().IsEqualTo(0);
+        }
+
+        [Test]
+        public async Task GetInstalledPackages_Should_ReturnEmptyPackageFolders_If_NoAssetsFile_And_NoPackagesConfig()
+        {
+            _projectMock.TryGetAssetsPath(out Arg.Any<string>()).Returns(false);
+            _projectMock.GetEvaluatedIncludes().Returns([]);
+
+            IReadOnlyList<string> result = _uut.GetInstalledPackages(_projectPath, false).PackageFolders;
+
+            await Assert.That(result).Count().IsEqualTo(0);
         }
 
         private static ILibraryDependency CreateDependency(string packageName)
