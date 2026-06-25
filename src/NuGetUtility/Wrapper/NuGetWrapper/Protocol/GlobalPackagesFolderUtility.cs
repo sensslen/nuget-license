@@ -19,20 +19,10 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 
         public GlobalPackagesFolderUtility(ISettings settings, IEnumerable<string> additionalPackageFolders)
         {
-            // The global packages folder is the primary location, but packages can also be
-            // extracted into fallback folders (e.g. the SDK's NuGetFallbackFolder) that are
-            // recorded per-project in the assets file. Consult all of them before falling back
-            // to a (slow) remote source lookup.
-            var folders = new List<string> { SettingsUtility.GetGlobalPackagesFolder(settings) };
-            foreach (string folder in additionalPackageFolders)
-            {
-                if (!string.IsNullOrEmpty(folder) && !folders.Contains(folder, StringComparer.OrdinalIgnoreCase))
-                {
-                    folders.Add(folder);
-                }
-            }
-
-            _packageFolders = [.. folders];
+            _packageFolders = additionalPackageFolders.Prepend(SettingsUtility.GetGlobalPackagesFolder(settings))
+                                                      .Where(f => !string.IsNullOrEmpty(f))
+                                                      .Distinct()
+                                                      .ToArray();
         }
 
         public IWrappedPackageMetadata? GetPackage(PackageIdentity identity)
