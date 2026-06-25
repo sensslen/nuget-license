@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using NuGetUtility.Extensions;
+using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
@@ -30,35 +31,44 @@ namespace NuGetUtility.ReferencedPackagesReader
         /// True to exclude packages with Publish="false" metadata. When transitive dependencies are included,
         /// packages reachable only through those excluded roots are also excluded.
         /// </param>
-        /// <returns>Resolved package identities from project assets or packages.config.</returns>
-        public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive, string? targetFramework = null, bool excludePublishFalse = false)
+        /// <returns>
+        /// The project together with its resolved package identities (from project assets or
+        /// packages.config) and the package folders recorded in the assets file (global packages folder
+        /// plus any fallback folders, e.g. the SDK's NuGetFallbackFolder; empty when no assets file is
+        /// available, such as packages.config projects).
+        /// </returns>
+        public ProjectWithReferencedPackages GetInstalledPackages(string projectPath, bool includeTransitive, string? targetFramework = null, bool excludePublishFalse = false)
         {
             IProject project = msBuild.GetProject(projectPath);
 
-            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, targetFramework, excludePublishFalse, out IEnumerable<PackageIdentity>? dependencies))
+            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, targetFramework, excludePublishFalse, out IEnumerable<PackageIdentity>? dependencies, out IReadOnlyList<string> packageFolders))
             {
-                return dependencies;
+                return new ProjectWithReferencedPackages(projectPath, dependencies, packageFolders);
             }
 
             if (project.HasPackagesConfigFile())
             {
-                return packagesConfigReader.GetPackages(project);
+                return new ProjectWithReferencedPackages(projectPath, packagesConfigReader.GetPackages(project), []);
             }
 
-            return [];
+            return new ProjectWithReferencedPackages(projectPath, [], []);
         }
 
         private bool TryGetInstalledPackagesFromAssetsFile(bool includeTransitive,
                                                            IProject project,
                                                            string? targetFramework,
                                                            bool excludePublishFalse,
-                                                           [NotNullWhen(true)] out IEnumerable<PackageIdentity>? installedPackages)
+                                                           [NotNullWhen(true)] out IEnumerable<PackageIdentity>? installedPackages,
+                                                           out IReadOnlyList<string> packageFolders)
         {
             installedPackages = null;
+            packageFolders = [];
             if (!TryLoadAssetsFile(project, out ILockFile? assetsFile))
             {
                 return false;
             }
+
+            packageFolders = assetsFile.PackageFolders.ToList();
 
             string? normalizedRequestedTargetFramework = NormalizeTargetFrameworkOrNull(targetFramework);
             List<ILockFileTarget> selectedTargets = GetSelectedTargets(assetsFile, normalizedRequestedTargetFramework, targetFramework);

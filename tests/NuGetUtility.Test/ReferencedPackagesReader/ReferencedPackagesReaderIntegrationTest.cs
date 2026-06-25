@@ -51,7 +51,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             string path = Path.GetFullPath("../../../../targets/PackageReferenceProject/PackageReferenceProject.csproj");
 
-            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false);
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false).ReferencedPackages;
 
             await Assert.That(result.Count()).IsEqualTo(1);
         }
@@ -67,7 +67,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             string path = Path.GetFullPath(
                 "../../../../targets/ProjectWithTransitiveReferences/ProjectWithTransitiveReferences.csproj");
 
-            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, true);
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, true).ReferencedPackages;
 
             await Assert.That(result.Count()).IsEqualTo(2);
         }
@@ -83,7 +83,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             string path = Path.GetFullPath(
                 "../../../../targets/ProjectWithTransitiveNuget/ProjectWithTransitiveNuget.csproj");
 
-            PackageIdentity[] result = _uut!.GetInstalledPackages(path, true).ToArray();
+            PackageIdentity[] result = _uut!.GetInstalledPackages(path, true).ReferencedPackages.ToArray();
 
             await Assert.That(result.Length).IsEqualTo(3);
             string[] titles = result.Select(metadata => metadata.Id).ToArray();
@@ -103,7 +103,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             string path = Path.GetFullPath(
                 "../../../../targets/ProjectWithoutNugetReferences/ProjectWithoutNugetReferences.csproj");
 
-            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false);
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false).ReferencedPackages;
 
             await Assert.That(result.Count()).IsEqualTo(0);
         }
@@ -121,7 +121,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             string path = Path.GetFullPath(
                 "../../../../targets/VersionRangesProject/VersionRangesProject.csproj");
 
-            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive);
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive).ReferencedPackages;
 
             await Assert.That(result.Count()).IsEqualTo(includeTransitive ? 3 : 1);
         }
@@ -136,7 +136,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             string path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
 
-            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false);
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false).ReferencedPackages;
 
             await Assert.That(result.Count()).IsEqualTo(1);
         }
@@ -169,7 +169,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             string path = Path.GetFullPath("../../../../targets/SimpleCppProject/SimpleCppProject.vcxproj");
 
-            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive);
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive).ReferencedPackages;
 
             await Assert.That(result.Count()).IsEqualTo(2);
         }
@@ -205,7 +205,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             string path = Path.GetFullPath("../../../../targets/EmptyCppProject/EmptyCppProject.vcxproj");
 
-            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive);
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive).ReferencedPackages;
 
             await Assert.That(result.Count()).IsEqualTo(0);
         }
@@ -244,7 +244,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             string path = Path.GetFullPath("../../../../targets/MultiTargetProjectWithDifferentDependencies/MultiTargetProjectWithDifferentDependencies.csproj");
 
-            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive, framework);
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive, framework).ReferencedPackages;
 
             await Assert.That(result.Select(p => p.Id)).IsEquivalentTo(packages);
         }

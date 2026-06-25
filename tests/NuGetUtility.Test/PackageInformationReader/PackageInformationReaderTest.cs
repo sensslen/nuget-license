@@ -64,7 +64,7 @@ namespace NuGetUtility.Test.PackageInformationReader
 
             IEnumerable<PackageIdentity> searchedPackages = customPackageInformation.Select(p => new PackageIdentity(p.Id, p.Version));
             string project = _fixture.Create<string>();
-            var packageSearchRequest = new ProjectWithReferencedPackages(project, searchedPackages);
+            var packageSearchRequest = new ProjectWithReferencedPackages(project, searchedPackages, []);
             ReferencedPackageWithContext[] result = (await localUut.GetPackageInfo(packageSearchRequest, CancellationToken.None).Synchronize())
                 .ToArray();
 
@@ -261,7 +261,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             PackageIdentity packageIdentity)
         {
             string project = _fixture.Create<string>();
-            var packageSearchRequest = new ProjectWithReferencedPackages(project, [packageIdentity]);
+            var packageSearchRequest = new ProjectWithReferencedPackages(project, [packageIdentity], []);
             ReferencedPackageWithContext[] result = (await packageInformationReader.GetPackageInfo(packageSearchRequest, CancellationToken.None).Synchronize())
                 .ToArray();
 
@@ -332,7 +332,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             IEnumerable<PackageIdentity> searchedPackages)
         {
             string project = _fixture.Create<string>();
-            var packageSearchRequest = new ProjectWithReferencedPackages(project, searchedPackages);
+            var packageSearchRequest = new ProjectWithReferencedPackages(project, searchedPackages, []);
             ReferencedPackageWithContext[] result = (await _uut!.GetPackageInfo(packageSearchRequest, CancellationToken.None).Synchronize())
                 .ToArray();
             return (project, result);
