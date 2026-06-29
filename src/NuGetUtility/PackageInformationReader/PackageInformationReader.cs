@@ -1,6 +1,7 @@
 // Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
@@ -11,7 +12,8 @@ namespace NuGetUtility.PackageInformationReader
 {
     public class PackageInformationReader(IWrappedSourceRepositoryProvider sourceRepositoryProvider,
                                           IGlobalPackagesFolderUtility globalPackagesFolderUtility,
-                                          IEnumerable<CustomPackageInformation> customPackageInformation)
+                                          IEnumerable<CustomPackageInformation> customPackageInformation,
+                                          ConcurrentDictionary<PackageIdentity, IPackageMetadata> resolvedMetadataCache)
     {
         private readonly ISourceRepository[] _repositories = sourceRepositoryProvider.GetRepositories();
 
@@ -21,16 +23,28 @@ namespace NuGetUtility.PackageInformationReader
             foreach (PackageIdentity package in projectWithReferencedPackages.ReferencedPackages)
             {
                 CustomPackageInformation? customInformation = TryGetPackageInfoFromCustomInformation(package);
-                PackageSearchResult result = TryGetPackageInformationFromGlobalPackageFolder(package);
-                if (result.Success)
+
+                // Within a single restore, a package id+version resolves to one immutable package that is
+                // shared by every referencing project, so its metadata (license / nuspec) is identical
+                // everywhere and only needs to be resolved once. This avoids re-opening and re-parsing the
+                // same nuspec for each referencing project. Override information is applied per result
+                // below, so it is never baked into the shared cache entry.
+                if (resolvedMetadataCache.TryGetValue(package, out IPackageMetadata? cachedMetadata))
                 {
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
-                                                                  ApplyCustomInformation(result.Metadata!, customInformation));
+                                                                  ApplyCustomInformation(cachedMetadata, customInformation));
                     continue;
                 }
-                result = await TryGetPackageInformationFromRepositories(_repositories, package, cancellation);
+
+                PackageSearchResult result = TryGetPackageInformationFromGlobalPackageFolder(package);
+                if (!result.Success)
+                {
+                    result = await TryGetPackageInformationFromRepositories(_repositories, package, cancellation);
+                }
+
                 if (result.Success)
                 {
+                    resolvedMetadataCache.TryAdd(package, result.Metadata!);
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
                                                                   ApplyCustomInformation(result.Metadata!, customInformation));
                     continue;

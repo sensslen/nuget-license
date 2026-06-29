@@ -1,6 +1,7 @@
 // Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.Collections.Concurrent;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using NSubstitute;
@@ -46,7 +47,7 @@ namespace NuGetUtility.Test.PackageInformationReader
 
         private NuGetUtility.PackageInformationReader.PackageInformationReader SetupUut()
         {
-            return new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation);
+            return new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation, _metadataCache);
         }
 
         private readonly NuGetUtility.PackageInformationReader.PackageInformationReader _uut;
@@ -55,12 +56,13 @@ namespace NuGetUtility.Test.PackageInformationReader
         private readonly IFixture _fixture;
         private ISourceRepository[] _repositories;
         private readonly IGlobalPackagesFolderUtility _globalPackagesFolderUtility;
+        private readonly ConcurrentDictionary<PackageIdentity, IPackageMetadata> _metadataCache = new();
 
         [Test]
         public async Task GetPackageInfo_Should_ReturnCustomInformation_IfPackageMetadataIsNotFound()
         {
             List<CustomPackageInformation> customPackageInformation = _fixture.CreateMany<CustomPackageInformation>().ToList();
-            var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, customPackageInformation);
+            var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, customPackageInformation, _metadataCache);
 
             IEnumerable<PackageIdentity> searchedPackages = customPackageInformation.Select(p => new PackageIdentity(p.Id, p.Version));
             string project = _fixture.Create<string>();
@@ -79,7 +81,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             CustomPackageInformation customPackageInformation = new(packageMetadata.Id, packageMetadata.Version, _fixture.Create<string>());
             var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
                                                                                               _globalPackagesFolderUtility,
-                                                                                              [customPackageInformation]);
+                                                                                              [customPackageInformation], _metadataCache);
             IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata, LicenseType.Expression);
             _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
 
@@ -90,6 +92,47 @@ namespace NuGetUtility.Test.PackageInformationReader
         }
 
         [Test]
+        public async Task GetPackageInfo_Should_ResolvePackageMetadataOncePerIdentity_WhenCacheIsShared()
+        {
+            CustomPackageInformation packageMetadata = _fixture.Create<CustomPackageInformation>();
+            var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
+            IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata, LicenseType.Expression);
+            _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
+
+            var sharedCache = new ConcurrentDictionary<PackageIdentity, IPackageMetadata>();
+            var firstProjectReader = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation, sharedCache);
+            var secondProjectReader = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation, sharedCache);
+
+            _ = await firstProjectReader.GetPackageInfo(new ProjectWithReferencedPackages("projectA", [identity], []), CancellationToken.None).Synchronize();
+            ReferencedPackageWithContext[] secondResult = (await secondProjectReader.GetPackageInfo(new ProjectWithReferencedPackages("projectB", [identity], []), CancellationToken.None).Synchronize()).ToArray();
+
+            // The package is read from the global packages folder only once, even though two projects reference it.
+            _globalPackagesFolderUtility.Received(1).GetPackage(identity);
+            // The second project still gets the package - served from the shared cache.
+            await Assert.That(secondResult.Length).IsEqualTo(1);
+            await Assert.That(secondResult[0].PackageInfo.Identity).IsEqualTo(identity);
+        }
+
+        [Test]
+        public async Task GetPackageInfo_Should_NotCacheUnresolvedPackages()
+        {
+            CustomPackageInformation packageMetadata = _fixture.Create<CustomPackageInformation>();
+            var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
+            // GetPackage returns null by default and the repositories yield nothing, so the package is
+            // never resolved - and therefore must never be cached.
+
+            var sharedCache = new ConcurrentDictionary<PackageIdentity, IPackageMetadata>();
+            var firstProjectReader = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation, sharedCache);
+            var secondProjectReader = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation, sharedCache);
+
+            _ = await firstProjectReader.GetPackageInfo(new ProjectWithReferencedPackages("projectA", [identity], []), CancellationToken.None).Synchronize();
+            _ = await secondProjectReader.GetPackageInfo(new ProjectWithReferencedPackages("projectB", [identity], []), CancellationToken.None).Synchronize();
+
+            // An unresolved package must not be cached, so the second project still attempts to resolve it.
+            _globalPackagesFolderUtility.Received(2).GetPackage(identity);
+        }
+
+        [Test]
         public async Task GetPackageInfo_Should_MatchCustomInformationPackageIdIgnoringCase()
         {
             CustomPackageInformation packageMetadata = CreatePackageInformationWithOptionalFields();
@@ -97,7 +140,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             CustomPackageInformation customPackageInformation = new(packageMetadata.Id.ToLowerInvariant(), packageMetadata.Version, _fixture.Create<string>());
             var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
                                                                                               _globalPackagesFolderUtility,
-                                                                                              [customPackageInformation]);
+                                                                                              [customPackageInformation], _metadataCache);
             IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata with { Id = identity.Id }, LicenseType.Expression);
             _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
 
@@ -116,7 +159,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             CustomPackageInformation customPackageInformation = new(packageMetadata.Id, packageMetadata.Version, _fixture.Create<string>());
             var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
                                                                                               _globalPackagesFolderUtility,
-                                                                                              [customPackageInformation]);
+                                                                                              [customPackageInformation], _metadataCache);
             IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata, LicenseType.Expression);
             _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
 
@@ -134,7 +177,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             CustomPackageInformation customPackageInformation = new(packageMetadata.Id, packageMetadata.Version, _fixture.Create<string>());
             var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
                                                                                               _globalPackagesFolderUtility,
-                                                                                              [customPackageInformation]);
+                                                                                              [customPackageInformation], _metadataCache);
             IPackageMetadataResource metadataResource = Substitute.For<IPackageMetadataResource>();
             _repositories[0].GetPackageMetadataResourceAsync(default).Returns(_ => Task.FromResult<IPackageMetadataResource?>(metadataResource));
             metadataResource.TryGetMetadataAsync(identity, Arg.Any<CancellationToken>())
@@ -154,7 +197,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
             var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
                                                                                               _globalPackagesFolderUtility,
-                                                                                              [customPackageInformation]);
+                                                                                              [customPackageInformation], _metadataCache);
             IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata, LicenseType.Expression);
             _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
 
@@ -180,7 +223,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
             var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
                                                                                               _globalPackagesFolderUtility,
-                                                                                              [customPackageInformation]);
+                                                                                              [customPackageInformation], _metadataCache);
             IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata, LicenseType.Expression);
             _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
 
@@ -213,7 +256,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
             var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
                                                                                               _globalPackagesFolderUtility,
-                                                                                              [customPackageInformation]);
+                                                                                              [customPackageInformation], _metadataCache);
             IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata, LicenseType.Expression);
             _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
 
@@ -238,7 +281,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             CustomPackageInformation customPackageInformation = new(packageMetadata.Id, packageMetadata.Version, _fixture.Create<string>());
             var localUut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider,
                                                                                               _globalPackagesFolderUtility,
-                                                                                              [customPackageInformation]);
+                                                                                              [customPackageInformation], _metadataCache);
             IPackageMetadataResource metadataResource = Substitute.For<IPackageMetadataResource>();
             IFindPackageByIdResource archiveReader = Substitute.For<IFindPackageByIdResource>();
             IPackageDownloader packageDownloader = Substitute.For<IPackageDownloader>();

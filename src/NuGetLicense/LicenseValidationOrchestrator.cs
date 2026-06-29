@@ -1,6 +1,7 @@
 // Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.IO.Abstractions;
 using NuGet.Configuration;
@@ -13,6 +14,7 @@ using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
@@ -64,8 +66,9 @@ namespace NuGetLicense
                                                                                                   options.ExcludePublishFalse,
                                                                                                   options.IncludeSharedProjects,
                                                                                                   out IReadOnlyCollection<Exception> projectReaderExceptions);
+            var packageMetadataCache = new ConcurrentDictionary<PackageIdentity, IPackageMetadata>();
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
-                packagesForProject.SelectMany(p => GetPackageInformation(p, overridePackageInformationArray, cancellationToken));
+                packagesForProject.SelectMany(p => GetPackageInformation(p, overridePackageInformationArray, packageMetadataCache, cancellationToken));
             var results = (await validator.Validate(downloadedLicenseInformation, cancellationToken)).ToList();
 
             if (projectReaderExceptions.Count > 0)
@@ -165,6 +168,7 @@ namespace NuGetLicense
 
         private static async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformation(ProjectWithReferencedPackages projectWithReferences,
                                                                                                   IEnumerable<CustomPackageInformation> overridePackageInformation,
+                                                                                                  ConcurrentDictionary<PackageIdentity, IPackageMetadata> packageMetadataCache,
                                                                                                   [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellation)
         {
             ISettings settings = Settings.LoadDefaultSettings(projectWithReferences.Project);
@@ -172,7 +176,7 @@ namespace NuGetLicense
 
             using var sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
             var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings, projectWithReferences.PackageFolders);
-            var informationReader = new PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
+            var informationReader = new PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation, packageMetadataCache);
 
             await foreach (ReferencedPackageWithContext package in informationReader.GetPackageInfo(projectWithReferences, cancellation))
             {
