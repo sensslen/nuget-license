@@ -103,12 +103,21 @@ namespace NuGetUtility.Test.PackageInformationReader
             var firstProjectReader = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation, sharedCache);
             var secondProjectReader = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation, sharedCache);
 
-            _ = await firstProjectReader.GetPackageInfo(new ProjectWithReferencedPackages("projectA", [identity], []), CancellationToken.None).Synchronize();
-            ReferencedPackageWithContext[] secondResult = (await secondProjectReader.GetPackageInfo(new ProjectWithReferencedPackages("projectB", [identity], []), CancellationToken.None).Synchronize()).ToArray();
+            var projectA = new ProjectWithReferencedPackages("projectA", [identity], [])
+            {
+                PackageContentHashes = new Dictionary<PackageIdentity, string> { [identity] = "shared-content-hash" }
+            };
+            var projectB = new ProjectWithReferencedPackages("projectB", [identity], [])
+            {
+                PackageContentHashes = new Dictionary<PackageIdentity, string> { [identity] = "shared-content-hash" }
+            };
 
-            // The package is read from the global packages folder only once, even though two projects reference it.
+            _ = await firstProjectReader.GetPackageInfo(projectA, CancellationToken.None).Synchronize();
+            ReferencedPackageWithContext[] secondResult = (await secondProjectReader.GetPackageInfo(projectB, CancellationToken.None).Synchronize()).ToArray();
+
+            // Both projects record the same content hash, so the package is read from the global packages
+            // folder only once and the second project is served from the shared cache.
             _globalPackagesFolderUtility.Received(1).GetPackage(identity);
-            // The second project still gets the package - served from the shared cache.
             await Assert.That(secondResult.Length).IsEqualTo(1);
             await Assert.That(secondResult[0].PackageInfo.Identity).IsEqualTo(identity);
         }
@@ -119,14 +128,23 @@ namespace NuGetUtility.Test.PackageInformationReader
             CustomPackageInformation packageMetadata = _fixture.Create<CustomPackageInformation>();
             var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
             // GetPackage returns null by default and the repositories yield nothing, so the package is
-            // never resolved - and therefore must never be cached.
+            // never resolved - and therefore must never be cached even though a content hash is present.
 
             var sharedCache = new ConcurrentDictionary<PackageMetadataCacheKey, IPackageMetadata>();
             var firstProjectReader = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation, sharedCache);
             var secondProjectReader = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation, sharedCache);
 
-            _ = await firstProjectReader.GetPackageInfo(new ProjectWithReferencedPackages("projectA", [identity], []), CancellationToken.None).Synchronize();
-            _ = await secondProjectReader.GetPackageInfo(new ProjectWithReferencedPackages("projectB", [identity], []), CancellationToken.None).Synchronize();
+            var projectA = new ProjectWithReferencedPackages("projectA", [identity], [])
+            {
+                PackageContentHashes = new Dictionary<PackageIdentity, string> { [identity] = "content-hash" }
+            };
+            var projectB = new ProjectWithReferencedPackages("projectB", [identity], [])
+            {
+                PackageContentHashes = new Dictionary<PackageIdentity, string> { [identity] = "content-hash" }
+            };
+
+            _ = await firstProjectReader.GetPackageInfo(projectA, CancellationToken.None).Synchronize();
+            _ = await secondProjectReader.GetPackageInfo(projectB, CancellationToken.None).Synchronize();
 
             // An unresolved package must not be cached, so the second project still attempts to resolve it.
             _globalPackagesFolderUtility.Received(2).GetPackage(identity);
@@ -158,6 +176,26 @@ namespace NuGetUtility.Test.PackageInformationReader
 
             // Same id+version but different resolved content (e.g. different feeds) must not share a cache
             // entry, so the second project resolves independently.
+            _globalPackagesFolderUtility.Received(2).GetPackage(identity);
+        }
+
+        [Test]
+        public async Task GetPackageInfo_Should_NotCacheMetadata_WhenContentHashIsMissing()
+        {
+            CustomPackageInformation packageMetadata = _fixture.Create<CustomPackageInformation>();
+            var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
+            IPackageMetadata localMetadata = CreatePackageMetadata(packageMetadata, LicenseType.Expression);
+            _globalPackagesFolderUtility.GetPackage(identity).Returns(localMetadata);
+
+            var sharedCache = new ConcurrentDictionary<PackageMetadataCacheKey, IPackageMetadata>();
+            var firstProjectReader = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation, sharedCache);
+            var secondProjectReader = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider, _globalPackagesFolderUtility, _customPackageInformation, sharedCache);
+
+            // No content hash recorded for either project (e.g. packages.config projects, or a missing hash).
+            _ = await firstProjectReader.GetPackageInfo(new ProjectWithReferencedPackages("projectA", [identity], []), CancellationToken.None).Synchronize();
+            _ = await secondProjectReader.GetPackageInfo(new ProjectWithReferencedPackages("projectB", [identity], []), CancellationToken.None).Synchronize();
+
+            // Without a content hash we cannot prove the resolved content is identical, so it is never shared.
             _globalPackagesFolderUtility.Received(2).GetPackage(identity);
         }
 

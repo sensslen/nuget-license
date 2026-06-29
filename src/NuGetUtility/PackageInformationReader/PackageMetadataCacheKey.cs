@@ -9,7 +9,8 @@ namespace NuGetUtility.PackageInformationReader
     /// Key for the shared resolved-metadata cache. The content hash (the SHA-512 of the .nupkg recorded
     /// in the project's assets file) is part of the key alongside the identity: a published id+version is
     /// only unique per feed, so the same id+version resolved to different content (different feeds or
-    /// package folders) produces a different hash and is never served from a shared cache entry.
+    /// package folders) produces a different hash and is never served from a shared cache entry. Metadata
+    /// is only cached when a content hash is available.
     /// </summary>
-    public sealed record PackageMetadataCacheKey(PackageIdentity Identity, string? ContentHash);
+    public sealed record PackageMetadataCacheKey(PackageIdentity Identity, string ContentHash);
 }

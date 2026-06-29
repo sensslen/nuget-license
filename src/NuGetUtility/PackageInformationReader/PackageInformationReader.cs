@@ -27,13 +27,18 @@ namespace NuGetUtility.PackageInformationReader
                 // A package's metadata (license / nuspec) is intrinsic to the resolved package content, so
                 // resolve it at most once per (id+version, content hash) even when many projects reference
                 // the same package - avoiding a re-open and re-parse of the same nuspec per project. The
-                // content hash (from the assets file) is part of the key so that the same id+version
+                // content hash (recorded in the assets file) is part of the key so that the same id+version
                 // resolved to different content (different feeds/folders) is never served a stale entry.
-                // Override information is applied per result below, so it is never baked into the entry.
-                projectWithReferencedPackages.PackageContentHashes.TryGetValue(package, out string? contentHash);
-                var cacheKey = new PackageMetadataCacheKey(package, contentHash);
+                // Without a content hash we cannot prove two references resolved to the same content, so
+                // such packages are not cached. Override information is applied per result below, so it is
+                // never baked into the entry.
+                PackageMetadataCacheKey? cacheKey = null;
+                if (projectWithReferencedPackages.PackageContentHashes.TryGetValue(package, out string? contentHash) && contentHash is { Length: > 0 })
+                {
+                    cacheKey = new PackageMetadataCacheKey(package, contentHash);
+                }
 
-                if (resolvedMetadataCache.TryGetValue(cacheKey, out IPackageMetadata? cachedMetadata))
+                if (cacheKey is not null && resolvedMetadataCache.TryGetValue(cacheKey, out IPackageMetadata? cachedMetadata))
                 {
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
                                                                   ApplyCustomInformation(cachedMetadata, customInformation));
@@ -48,7 +53,11 @@ namespace NuGetUtility.PackageInformationReader
 
                 if (result.Success)
                 {
-                    resolvedMetadataCache.TryAdd(cacheKey, result.Metadata!);
+                    if (cacheKey is not null)
+                    {
+                        resolvedMetadataCache.TryAdd(cacheKey, result.Metadata!);
+                    }
+
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
                                                                   ApplyCustomInformation(result.Metadata!, customInformation));
                     continue;
