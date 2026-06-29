@@ -81,7 +81,7 @@ jobs:
           dotnet-version: | 
             10.0.x
       
-      - uses: browser-actions/setup-chrome@v2.1.2
+      - uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2.1.2
       
       - name: restore
         run: dotnet restore NuGetUtility.slnx
@@ -106,7 +106,7 @@ jobs:
             10.0.x
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v3
+        uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3
 
       - name: build
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=TestWindows NuGetUtility.slnx
@@ -254,7 +254,7 @@ jobs:
             10.0.x
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v3
+        uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3
 
       - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.slnx
 
@@ -362,7 +362,7 @@ jobs:
       - name: restore
         run: dotnet restore NuGetUtility.slnx -p:TargetFramework=${{ matrix.framework }}
 
-      - uses: paulhatch/semantic-version@v6.0.2
+      - uses: paulhatch/semantic-version@9f72830310d5ed81233b641ee59253644cd8a8fc # v6.0.2
         id: version
         name: version
         with:
@@ -395,7 +395,7 @@ jobs:
             10.0.x
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v3
+        uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3
 
       - run: msbuild -t:restore -p:RestorePackagesConfig=true NuGetUtility.slnx
 
@@ -407,7 +407,7 @@ jobs:
           echo "publish to path: $path"
           echo "path=$path" >> $env:GITHUB_OUTPUT
 
-      - uses: paulhatch/semantic-version@v6.0.2
+      - uses: paulhatch/semantic-version@9f72830310d5ed81233b641ee59253644cd8a8fc # v6.0.2
         id: version
         name: version
         with:
