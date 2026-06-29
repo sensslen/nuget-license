@@ -41,9 +41,9 @@ namespace NuGetUtility.ReferencedPackagesReader
         {
             IProject project = msBuild.GetProject(projectPath);
 
-            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, targetFramework, excludePublishFalse, out IEnumerable<PackageIdentity>? dependencies, out IReadOnlyList<string> packageFolders))
+            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, targetFramework, excludePublishFalse, out IEnumerable<PackageIdentity>? dependencies, out IReadOnlyList<string> packageFolders, out IReadOnlyDictionary<PackageIdentity, string> packageContentHashes))
             {
-                return new ProjectWithReferencedPackages(projectPath, dependencies, packageFolders);
+                return new ProjectWithReferencedPackages(projectPath, dependencies, packageFolders) { PackageContentHashes = packageContentHashes };
             }
 
             if (project.HasPackagesConfigFile())
@@ -59,10 +59,12 @@ namespace NuGetUtility.ReferencedPackagesReader
                                                            string? targetFramework,
                                                            bool excludePublishFalse,
                                                            [NotNullWhen(true)] out IEnumerable<PackageIdentity>? installedPackages,
-                                                           out IReadOnlyList<string> packageFolders)
+                                                           out IReadOnlyList<string> packageFolders,
+                                                           out IReadOnlyDictionary<PackageIdentity, string> packageContentHashes)
         {
             installedPackages = null;
             packageFolders = [];
+            packageContentHashes = new Dictionary<PackageIdentity, string>();
             if (!TryLoadAssetsFile(project, out ILockFile? assetsFile))
             {
                 return false;
@@ -94,7 +96,22 @@ namespace NuGetUtility.ReferencedPackagesReader
                 referencedLibraries.AddRange(targetReferencedLibraries);
             }
 
-            installedPackages = referencedLibraries.Select(r => new PackageIdentity(r.Name, r.Version));
+            var identities = new List<PackageIdentity>(referencedLibraries.Count);
+            var contentHashes = new Dictionary<PackageIdentity, string>();
+            foreach (ILockFileLibrary library in referencedLibraries)
+            {
+                var identity = new PackageIdentity(library.Name, library.Version);
+                identities.Add(identity);
+
+                string? sha512 = assetsFile.GetPackageContentHash(library.Name, library.Version);
+                if (sha512 is { Length: > 0 })
+                {
+                    contentHashes[identity] = sha512;
+                }
+            }
+
+            installedPackages = identities;
+            packageContentHashes = contentHashes;
             return true;
         }
 

@@ -13,7 +13,7 @@ namespace NuGetUtility.PackageInformationReader
     public class PackageInformationReader(IWrappedSourceRepositoryProvider sourceRepositoryProvider,
                                           IGlobalPackagesFolderUtility globalPackagesFolderUtility,
                                           IEnumerable<CustomPackageInformation> customPackageInformation,
-                                          ConcurrentDictionary<PackageIdentity, IPackageMetadata> resolvedMetadataCache)
+                                          ConcurrentDictionary<PackageMetadataCacheKey, IPackageMetadata> resolvedMetadataCache)
     {
         private readonly ISourceRepository[] _repositories = sourceRepositoryProvider.GetRepositories();
 
@@ -24,12 +24,16 @@ namespace NuGetUtility.PackageInformationReader
             {
                 CustomPackageInformation? customInformation = TryGetPackageInfoFromCustomInformation(package);
 
-                // Within a single restore, a package id+version resolves to one immutable package that is
-                // shared by every referencing project, so its metadata (license / nuspec) is identical
-                // everywhere and only needs to be resolved once. This avoids re-opening and re-parsing the
-                // same nuspec for each referencing project. Override information is applied per result
-                // below, so it is never baked into the shared cache entry.
-                if (resolvedMetadataCache.TryGetValue(package, out IPackageMetadata? cachedMetadata))
+                // A package's metadata (license / nuspec) is intrinsic to the resolved package content, so
+                // resolve it at most once per (id+version, content hash) even when many projects reference
+                // the same package - avoiding a re-open and re-parse of the same nuspec per project. The
+                // content hash (from the assets file) is part of the key so that the same id+version
+                // resolved to different content (different feeds/folders) is never served a stale entry.
+                // Override information is applied per result below, so it is never baked into the entry.
+                projectWithReferencedPackages.PackageContentHashes.TryGetValue(package, out string? contentHash);
+                var cacheKey = new PackageMetadataCacheKey(package, contentHash);
+
+                if (resolvedMetadataCache.TryGetValue(cacheKey, out IPackageMetadata? cachedMetadata))
                 {
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
                                                                   ApplyCustomInformation(cachedMetadata, customInformation));
@@ -44,7 +48,7 @@ namespace NuGetUtility.PackageInformationReader
 
                 if (result.Success)
                 {
-                    resolvedMetadataCache.TryAdd(package, result.Metadata!);
+                    resolvedMetadataCache.TryAdd(cacheKey, result.Metadata!);
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
                                                                   ApplyCustomInformation(result.Metadata!, customInformation));
                     continue;

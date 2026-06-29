@@ -2,6 +2,7 @@
 // The license conditions are provided in the LICENSE file located in the project root
 
 using NuGet.ProjectModel;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
@@ -11,6 +12,15 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
         public IEnumerable<ILockFileTarget> Targets => file.Targets.Select(t => new WrappedLockFileTarget(t));
         public string Path => file.Path;
         public IEnumerable<string> PackageFolders => file.PackageFolders.Select(f => f.Path);
+
+        public string? GetPackageContentHash(string packageName, INuGetVersion version)
+        {
+            string versionString = version.ToString()!;
+            return file.Libraries
+                       .FirstOrDefault(library => string.Equals(library.Name, packageName, StringComparison.OrdinalIgnoreCase)
+                                                  && string.Equals(library.Version?.ToString(), versionString, StringComparison.Ordinal))
+                       ?.Sha512;
+        }
 
         public bool TryGetErrors(out string[] errors)
         {

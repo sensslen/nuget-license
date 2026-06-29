@@ -631,6 +631,18 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
+        public async Task GetInstalledPackages_Should_PopulatePackageContentHashes_FromAssetsFile()
+        {
+            const string contentHash = "sha512-content-hash";
+            _lockFileMock.GetPackageContentHash(Arg.Any<string>(), Arg.Any<INuGetVersion>()).Returns(contentHash);
+
+            IReadOnlyDictionary<PackageIdentity, string> hashes = _uut.GetInstalledPackages(_projectPath, true).PackageContentHashes;
+
+            await Assert.That(hashes.Count).IsGreaterThan(0);
+            await Assert.That(hashes.Values.All(value => value == contentHash)).IsTrue();
+        }
+
+        [Test]
         public async Task GetInstalledPackages_Should_ReturnEmptyPackageFolders_If_ProjectIsPackageConfigProject()
         {
             _projectMock.TryGetAssetsPath(out Arg.Any<string>()).Returns(false);

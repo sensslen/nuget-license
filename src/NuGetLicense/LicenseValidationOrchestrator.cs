@@ -66,7 +66,7 @@ namespace NuGetLicense
                                                                                                   options.ExcludePublishFalse,
                                                                                                   options.IncludeSharedProjects,
                                                                                                   out IReadOnlyCollection<Exception> projectReaderExceptions);
-            var packageMetadataCache = new ConcurrentDictionary<PackageIdentity, IPackageMetadata>();
+            var packageMetadataCache = new ConcurrentDictionary<PackageMetadataCacheKey, IPackageMetadata>();
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
                 packagesForProject.SelectMany(p => GetPackageInformation(p, overridePackageInformationArray, packageMetadataCache, cancellationToken));
             var results = (await validator.Validate(downloadedLicenseInformation, cancellationToken)).ToList();
@@ -168,7 +168,7 @@ namespace NuGetLicense
 
         private static async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformation(ProjectWithReferencedPackages projectWithReferences,
                                                                                                   IEnumerable<CustomPackageInformation> overridePackageInformation,
-                                                                                                  ConcurrentDictionary<PackageIdentity, IPackageMetadata> packageMetadataCache,
+                                                                                                  ConcurrentDictionary<PackageMetadataCacheKey, IPackageMetadata> packageMetadataCache,
                                                                                                   [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellation)
         {
             ISettings settings = Settings.LoadDefaultSettings(projectWithReferences.Project);

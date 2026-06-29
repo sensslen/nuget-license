@@ -12,5 +12,13 @@ namespace NuGetUtility.PackageInformationReader
     /// NuGetFallbackFolder) recorded in the project's assets file. Empty when no assets file is
     /// available (e.g. packages.config projects).
     /// </param>
-    public record ProjectWithReferencedPackages(string Project, IEnumerable<PackageIdentity> ReferencedPackages, IReadOnlyList<string> PackageFolders);
+    public record ProjectWithReferencedPackages(string Project, IEnumerable<PackageIdentity> ReferencedPackages, IReadOnlyList<string> PackageFolders)
+    {
+        /// <summary>
+        /// Maps each referenced package to the content hash (SHA-512) recorded for it in the project's
+        /// assets file. Used to key cached metadata so the same id+version resolved to different content
+        /// is not shared. Empty when no assets file is available (e.g. packages.config projects).
+        /// </summary>
+        public IReadOnlyDictionary<PackageIdentity, string> PackageContentHashes { get; init; } = new Dictionary<PackageIdentity, string>();
+    }
 }
