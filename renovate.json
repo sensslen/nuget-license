@@ -14,5 +14,6 @@
       "matchCurrentValue": "/^17/",
       "enabled": false
     }
-  ]
+  ],
+  "minimumReleaseAge": "48 hours"
 }
