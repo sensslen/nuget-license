@@ -1,0 +1,6 @@
+# Verify snapshot files must use LF line endings on all platforms.
+# Verify (>= 31.21) reads verified files directly and throws if they contain a
+# carriage return, so they must never be checked out as CRLF on Windows.
+# See https://github.com/verifytests/verify#text-file-settings
+*.verified.txt text eol=lf
+*.received.txt text eol=lf
