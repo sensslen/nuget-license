@@ -33,6 +33,6 @@ namespace NuGetUtility.PackageInformationReader
 
         public string? Authors => _customPackageInformation.Authors ?? _metadata.Authors;
 
-        public LicenseMetadata? LicenseMetadata => new(LicenseType.Overwrite, _customPackageInformation.License);
+        public LicenseMetadata? LicenseMetadata => new LicenseMetadata.Overwrite(_customPackageInformation.License);
     }
 }

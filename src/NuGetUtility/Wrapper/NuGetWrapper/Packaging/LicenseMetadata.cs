@@ -3,22 +3,25 @@
 
 using System.ComponentModel;
 using OriginalLicenseType = NuGet.Packaging.LicenseType;
-using WrappedLicenseType = NuGetUtility.Wrapper.NuGetWrapper.Packaging.LicenseType;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Packaging
 {
-    public record LicenseMetadata(WrappedLicenseType Type, string License)
+    public abstract record LicenseMetadata
     {
-        public static implicit operator LicenseMetadata?(NuGet.Packaging.LicenseMetadata? metadata) => metadata == null ? null : new LicenseMetadata(Convert(metadata.Type), metadata.License);
+        private LicenseMetadata() { }
 
-        private static WrappedLicenseType Convert(OriginalLicenseType type)
+        public sealed record Expression(string License) : LicenseMetadata;
+
+        public sealed record Overwrite(string License) : LicenseMetadata;
+
+        public sealed record File(string FileLocation, string? LicenseText = null) : LicenseMetadata;
+
+        public static implicit operator LicenseMetadata?(NuGet.Packaging.LicenseMetadata? metadata) => metadata switch
         {
-            return type switch
-            {
-                OriginalLicenseType.Expression => WrappedLicenseType.Expression,
-                OriginalLicenseType.File => WrappedLicenseType.File,
-                _ => throw new InvalidEnumArgumentException(nameof(type), (int)type, typeof(OriginalLicenseType)),
-            };
-        }
+            null => null,
+            { Type: OriginalLicenseType.Expression } => new Expression(metadata.License),
+            { Type: OriginalLicenseType.File } => new File(metadata.License),
+            _ => throw new InvalidEnumArgumentException(nameof(metadata), (int)metadata.Type, typeof(OriginalLicenseType)),
+        };
     }
 }

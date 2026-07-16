@@ -72,14 +72,21 @@ namespace NuGetLicense.Test.LicenseValidator
             return packageInfo;
         }
 
-        private IPackageMetadata SetupPackageWithLicenseInformationOfType(string packageId,
+        private IPackageMetadata SetupPackageWithLicense(string packageId,
             INuGetVersion packageVersion,
-            string license,
-            LicenseType type)
+            LicenseMetadata licenseMetadata)
         {
             IPackageMetadata packageInfo = SetupPackage(packageId, packageVersion);
-            packageInfo.LicenseMetadata.Returns(new LicenseMetadata(type, license));
+            packageInfo.LicenseMetadata.Returns(licenseMetadata);
             return packageInfo;
+        }
+
+        private IPackageMetadata SetupPackageWithFileLicenseInformation(string packageId,
+            INuGetVersion packageVersion,
+            string licenseText,
+            string fileLocation)
+        {
+            return SetupPackageWithLicense(packageId, packageVersion, new LicenseMetadata.File(fileLocation, licenseText));
         }
         private IPackageMetadata SetupPackageWithCopyright(string packageId,
             INuGetVersion packageVersion,
@@ -102,14 +109,14 @@ namespace NuGetLicense.Test.LicenseValidator
             INuGetVersion packageVersion,
             string license)
         {
-            return SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, LicenseType.Expression);
+            return SetupPackageWithLicense(packageId, packageVersion, new LicenseMetadata.Expression(license));
         }
 
         private IPackageMetadata SetupPackageWithOverwriteLicenseInformation(string packageId,
             INuGetVersion packageVersion,
             string license)
         {
-            return SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, LicenseType.Overwrite);
+            return SetupPackageWithLicense(packageId, packageVersion, new LicenseMetadata.Overwrite(license));
         }
 
         private static IAsyncEnumerable<ReferencedPackageWithContext> CreateInput(IPackageMetadata metadata,
@@ -548,7 +555,8 @@ namespace NuGetLicense.Test.LicenseValidator
         {
             string packageId = _fixture.Create<string>();
             INuGetVersion packageVersion = _fixture.Create<INuGetVersion>();
-            string license = _fixture.Create<string>();
+            string licenseText = _fixture.Create<string>();
+            string fileLocation = _fixture.Create<string>();
 
             var uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 [],
@@ -557,8 +565,8 @@ namespace NuGetLicense.Test.LicenseValidator
                 _ignoredLicenses);
 
             string licenseId = _fixture.Create<string>();
-            IPackageMetadata package = SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, LicenseType.File);
-            _licenseMatcher.Match(license).Returns(licenseId);
+            IPackageMetadata package = SetupPackageWithFileLicenseInformation(packageId, packageVersion, licenseText, fileLocation);
+            _licenseMatcher.Match(licenseText).Returns(licenseId);
 
             IEnumerable<LicenseValidationResult> result = await uut.Validate(CreateInput(package, _context), _token.Token);
 
@@ -576,14 +584,16 @@ namespace NuGetLicense.Test.LicenseValidator
                             LicenseInformationOrigin.File,
                             [])
                     ]).Using(new LicenseValidationResultValueEqualityComparer());
+            await _fileDownloader.Received(1).StoreFileAsync(licenseText, $"{packageId}__{packageVersion}", Arg.Any<CancellationToken>());
         }
 
         [Test]
-        public async Task ValidatingLicensesWithFileLicenseMetadata_Should_GiveCorrectResult_When_Not_Matched()
+        public async Task ValidatingLicensesWithFileLicenseMetadata_Should_GiveCorrectResult_When_Not_Matched_And_NoAllowedLicensesConfigured()
         {
             string packageId = _fixture.Create<string>();
             INuGetVersion packageVersion = _fixture.Create<INuGetVersion>();
-            string license = _fixture.Create<string>();
+            string licenseText = _fixture.Create<string>();
+            string fileLocation = _fixture.Create<string>();
 
             var uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
                 [],
@@ -591,8 +601,8 @@ namespace NuGetLicense.Test.LicenseValidator
                 _licenseMatcher,
                 _ignoredLicenses);
 
-            IPackageMetadata package = SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, LicenseType.File);
-            _licenseMatcher.Match(license).Returns(string.Empty);
+            IPackageMetadata package = SetupPackageWithFileLicenseInformation(packageId, packageVersion, licenseText, fileLocation);
+            _licenseMatcher.Match(licenseText).Returns(string.Empty);
 
             IEnumerable<LicenseValidationResult> result = await uut.Validate(CreateInput(package, _context), _token.Token);
 
@@ -601,7 +611,37 @@ namespace NuGetLicense.Test.LicenseValidator
                         new LicenseValidationResult(packageId,
                             packageVersion,
                             _projectUrl.ToString(),
-                            license,
+                            fileLocation,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            LicenseInformationOrigin.File,
+                            [])
+                    ]).Using(new LicenseValidationResultValueEqualityComparer());
+            await _fileDownloader.DidNotReceive().StoreFileAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public async Task ValidatingLicensesWithFileLicenseMetadata_Should_GiveCorrectResult_When_Not_Matched_And_AllowedLicensesConfigured()
+        {
+            string packageId = _fixture.Create<string>();
+            INuGetVersion packageVersion = _fixture.Create<INuGetVersion>();
+            string licenseText = _fixture.Create<string>();
+            string fileLocation = _fixture.Create<string>();
+
+            IPackageMetadata package = SetupPackageWithFileLicenseInformation(packageId, packageVersion, licenseText, fileLocation);
+            _licenseMatcher.Match(licenseText).Returns(string.Empty);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+
+            await Assert.That(result).IsEquivalentTo(
+                    [
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            fileLocation,
                             null,
                             null,
                             null,
@@ -612,6 +652,7 @@ namespace NuGetLicense.Test.LicenseValidator
                                 new ValidationError("Unable to determine license from the given license file", _context)
                             ])
                     ]).Using(new LicenseValidationResultValueEqualityComparer());
+            await _fileDownloader.DidNotReceive().StoreFileAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
         }
 
         [Test]

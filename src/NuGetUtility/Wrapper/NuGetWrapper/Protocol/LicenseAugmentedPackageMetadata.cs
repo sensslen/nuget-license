@@ -10,16 +10,18 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
     {
         private readonly IWrappedPackageMetadata _metadata;
         private readonly string _licenseText;
+        private readonly string _licenseFileLocation;
 
         public LicenseAugmentedPackageMetadata(IWrappedPackageMetadata metadata, string licenseText)
         {
-            if (metadata.LicenseMetadata?.Type != Packaging.LicenseType.File)
+            if (metadata.LicenseMetadata is not Packaging.LicenseMetadata.File file)
             {
-                throw new ArgumentException("For LicenseType.File use the constructor with LicenseText parameter");
+                throw new ArgumentException("License augmentation is only applicable to file licenses");
             }
 
             _metadata = metadata;
             _licenseText = licenseText;
+            _licenseFileLocation = file.FileLocation;
         }
 
         public PackageIdentity Identity => _metadata.Identity;
@@ -30,6 +32,6 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
         public string? Summary => _metadata.Summary;
         public string? Copyright => _metadata.Copyright;
         public string? Authors => _metadata.Authors;
-        public Packaging.LicenseMetadata? LicenseMetadata => new(Packaging.LicenseType.File, _licenseText);
+        public Packaging.LicenseMetadata? LicenseMetadata => new Packaging.LicenseMetadata.File(_licenseFileLocation, _licenseText);
     }
 }

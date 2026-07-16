@@ -57,9 +57,9 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
             }
 
             var result = new WrappedPackageMetadata(manifest.Metadata);
-            if (result.LicenseMetadata?.Type == Packaging.LicenseType.File)
+            if (result.LicenseMetadata is Packaging.LicenseMetadata.File file)
             {
-                string normalizedPath = NuGet.Common.PathUtility.GetPathWithDirectorySeparator(result.LicenseMetadata.License);
+                string normalizedPath = NuGet.Common.PathUtility.GetPathWithDirectorySeparator(file.FileLocation);
                 using Stream licenseStream = pkgStream.GetStream(normalizedPath);
                 using var reader = new StreamReader(licenseStream);
                 return new LicenseAugmentedPackageMetadata(result, reader.ReadToEnd());
