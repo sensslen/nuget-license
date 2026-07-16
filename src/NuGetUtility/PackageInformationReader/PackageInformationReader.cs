@@ -65,7 +65,7 @@ namespace NuGetUtility.PackageInformationReader
                 if (customInformation is not null)
                 {
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
-                                                                  new PackageMetadata(package, LicenseType.Overwrite, customInformation));
+                                                                  new PackageMetadata(package, customInformation));
                     continue;
                 }
                 // simply return input - validation will fail later, as the required fields are missing
@@ -97,13 +97,13 @@ namespace NuGetUtility.PackageInformationReader
                 IPackageMetadata? updatedPackageMetadata = await resource.TryGetMetadataAsync(package, cancellation);
                 if (updatedPackageMetadata is not null)
                 {
-                    if (updatedPackageMetadata.LicenseMetadata?.Type == LicenseType.File)
+                    if (updatedPackageMetadata.LicenseMetadata is LicenseMetadata.File file)
                     {
                         IPackageDownloader? downloader = await TryGetPackageDownloaderAsync(repository, package, cancellation);
                         if (downloader is not null)
                         {
                             return new PackageSearchResult(new LicenseAugmentedPackageMetadata(updatedPackageMetadata,
-                                                                                               await downloader.ReadAsync(updatedPackageMetadata.LicenseMetadata.License, cancellation)));
+                                                                                               await downloader.ReadAsync(file.FileLocation, cancellation)));
                         }
                         return new PackageSearchResult();
                     }

@@ -13,10 +13,10 @@ namespace NuGetUtility.PackageInformationReader
             Identity = identity;
         }
 
-        public PackageMetadata(PackageIdentity identity, LicenseType licenseType, CustomPackageInformation customPackageInformation)
+        public PackageMetadata(PackageIdentity identity, CustomPackageInformation customPackageInformation)
         {
             Identity = identity;
-            LicenseMetadata = new LicenseMetadata(licenseType, customPackageInformation.License);
+            LicenseMetadata = new LicenseMetadata.Overwrite(customPackageInformation.License);
             CustomPackageInformation = customPackageInformation;
         }
 

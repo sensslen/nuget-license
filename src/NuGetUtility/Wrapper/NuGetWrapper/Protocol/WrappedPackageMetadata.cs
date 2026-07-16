@@ -28,6 +28,6 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 
         public string? Authors => string.Join(",", metadata.Authors); // https://learn.microsoft.com/en-us/nuget/reference/nuspec#authors
 
-        public Packaging.LicenseMetadata? LicenseMetadata { get; } = metadata.LicenseMetadata;
+        public Packaging.LicenseMetadata? LicenseMetadata { get; } = Packaging.LicenseMetadata.FromNuGetMetadata(metadata.LicenseMetadata);
     }
 }
