@@ -101,12 +101,15 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                         .Take(2).ToArray();
 
                     _directlyReferencedPackagesForFramework[targetFrameworksIterator.Current] = directDependencies;
-                    packageSpecTargetFramework.Dependencies.Returns(directDependencies.Select(l =>
+
+                    var dependencies = directDependencies.Select(l =>
                     {
                         ILibraryDependency sub = Substitute.For<ILibraryDependency>();
                         sub.Name.Returns(l.Id);
                         return sub;
-                    }));
+                    });
+
+                    packageSpecTargetFramework.Dependencies.Returns(dependencies);
                 }
             }
 
