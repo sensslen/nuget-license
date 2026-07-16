@@ -107,7 +107,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                         ILibraryDependency sub = Substitute.For<ILibraryDependency>();
                         sub.Name.Returns(l.Id);
                         return sub;
-                    });
+                    }).ToArray();
 
                     packageSpecTargetFramework.Dependencies.Returns(dependencies);
                 }
