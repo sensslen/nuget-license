@@ -48,7 +48,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 
             public string? Authors => searchMetadata.Authors;
 
-            public LicenseMetadata? LicenseMetadata { get; } = searchMetadata.LicenseMetadata;
+            public LicenseMetadata? LicenseMetadata { get; } = LicenseMetadata.FromNuGetMetadata(searchMetadata.LicenseMetadata);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Packaging
 
         public sealed record File(string FileLocation, string? LicenseText = null) : LicenseMetadata;
 
-        public static implicit operator LicenseMetadata?(NuGet.Packaging.LicenseMetadata? metadata) => metadata switch
+        public static LicenseMetadata? FromNuGetMetadata(NuGet.Packaging.LicenseMetadata? metadata) => metadata switch
         {
             null => null,
             { Type: OriginalLicenseType.Expression } => new Expression(metadata.License),
