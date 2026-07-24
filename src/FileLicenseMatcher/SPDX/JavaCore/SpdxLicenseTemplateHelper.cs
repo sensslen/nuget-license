@@ -42,7 +42,7 @@ public static class SpdxLicenseTemplateHelper
         while (ruleMatcher.MoveNext())
         {
             // copy everything up to the start of the find
-            string upToTheFind = licenseTemplate.Substring(end, ruleMatcher.Current!.Index - end);
+            string upToTheFind = licenseTemplate.Substring(end, ruleMatcher.Current.Index - end);
             if (!string.IsNullOrWhiteSpace(upToTheFind))
             {
                 templateOutputHandler.text(upToTheFind);

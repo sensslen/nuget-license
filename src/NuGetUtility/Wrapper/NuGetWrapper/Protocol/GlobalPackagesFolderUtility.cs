@@ -41,7 +41,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 
         private static IWrappedPackageMetadata? TryGetPackageFromFolder(PackageIdentity identity, string packageFolder)
         {
-            DownloadResourceResult cachedPackage = OriginalGlobalPackagesFolderUtility.GetPackage(new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString()!)), packageFolder);
+            DownloadResourceResult cachedPackage = OriginalGlobalPackagesFolderUtility.GetPackage(new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString())), packageFolder);
             if (cachedPackage == null)
             {
                 return null;

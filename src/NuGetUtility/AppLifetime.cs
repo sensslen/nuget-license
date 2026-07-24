@@ -51,7 +51,9 @@ namespace NuGetUtility
                 }
             }
 
-            _doneEvent.Wait(TimeSpan.FromSeconds(5));
+            // Wait unconditionally for graceful completion: cancellation has just been requested on _cts,
+            // so passing that token would abort the wait immediately instead of giving Main time to exit.
+            _doneEvent.Wait(TimeSpan.FromSeconds(5), CancellationToken.None);
         }
 
         public void Done(int result)

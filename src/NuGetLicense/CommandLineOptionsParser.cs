@@ -70,7 +70,8 @@ namespace NuGetLicense
             }
 
             string jsonContent = fileSystem.File.ReadAllText(licenseMapping);
-            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize(jsonContent, CommandLineOptionsJsonContext.Default.DictionaryUriString)!;
+            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize(jsonContent, CommandLineOptionsJsonContext.Default.DictionaryUriString)
+                ?? throw new ArgumentException($"File '{licenseMapping}' contains invalid JSON: expected a license mapping but got null.");
 
             return UrlToLicenseMapping.Default.SetItems(userDictionary);
         }
@@ -102,9 +103,11 @@ namespace NuGetLicense
                 return spdxLicenseMatcher;
             }
 
-            string containingDirectory = fileSystem.Path.GetDirectoryName(fileSystem.Path.GetFullPath(licenseFileMappings))!;
+            string containingDirectory = fileSystem.Path.GetDirectoryName(fileSystem.Path.GetFullPath(licenseFileMappings))
+                ?? throw new ArgumentException($"Could not determine the containing directory of license file mapping '{licenseFileMappings}'.");
             string jsonContent = fileSystem.File.ReadAllText(licenseFileMappings);
-            Dictionary<string, string> rawMappings = JsonSerializer.Deserialize(jsonContent, CommandLineOptionsJsonContext.Default.DictionaryStringString)!;
+            Dictionary<string, string> rawMappings = JsonSerializer.Deserialize(jsonContent, CommandLineOptionsJsonContext.Default.DictionaryStringString)
+                ?? throw new ArgumentException($"File '{licenseFileMappings}' contains invalid JSON: expected a file mapping but got null.");
             var fullPathMappings = rawMappings.ToDictionary(kvp => fileSystem.Path.GetFullPath(fileSystem.Path.Combine(containingDirectory, kvp.Key)), kvp => kvp.Value);
 
             return new FileLicenseMatcher.Combine.LicenseMatcher([

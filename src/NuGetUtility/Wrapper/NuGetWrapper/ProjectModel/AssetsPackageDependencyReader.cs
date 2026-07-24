@@ -77,35 +77,40 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 
                 foreach (ILockFileTargetLibrary library in target.Libraries)
                 {
-                    if (!string.Equals(library.Type, PackageTypeIdentifier, StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    string packageNameValue = library.Name.Trim();
-                    if (string.IsNullOrEmpty(packageNameValue))
-                    {
-                        continue;
-                    }
-
-                    if (!packageDependencies.TryGetValue(packageNameValue, out HashSet<string>? dependencies))
-                    {
-                        dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                        packageDependencies[packageNameValue] = dependencies;
-                    }
-
-                    foreach (string dependencyName in library.Dependencies.Select(d => d.Id))
-                    {
-                        dependencies.Add(dependencyName);
-                        if (!packageDependencies.ContainsKey(dependencyName))
-                        {
-                            packageDependencies[dependencyName] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                        }
-                    }
+                    CollectLibraryDependencies(packageDependencies, library);
                 }
             }
 
             return packageDependencies;
+        }
+
+        private static void CollectLibraryDependencies(Dictionary<string, HashSet<string>> packageDependencies, ILockFileTargetLibrary library)
+        {
+            if (!string.Equals(library.Type, PackageTypeIdentifier, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            string packageNameValue = library.Name.Trim();
+            if (string.IsNullOrEmpty(packageNameValue))
+            {
+                return;
+            }
+
+            if (!packageDependencies.TryGetValue(packageNameValue, out HashSet<string>? dependencies))
+            {
+                dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                packageDependencies[packageNameValue] = dependencies;
+            }
+
+            foreach (string dependencyName in library.Dependencies.Select(d => d.Id))
+            {
+                dependencies.Add(dependencyName);
+                if (!packageDependencies.ContainsKey(dependencyName))
+                {
+                    packageDependencies[dependencyName] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                }
+            }
         }
     }
 }

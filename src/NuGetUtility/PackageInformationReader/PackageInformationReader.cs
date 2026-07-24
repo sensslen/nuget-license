@@ -23,68 +23,73 @@ namespace NuGetUtility.PackageInformationReader
             foreach (PackageIdentity package in projectWithReferencedPackages.ReferencedPackages)
             {
                 CustomPackageInformation? customInformation = TryGetPackageInfoFromCustomInformation(package);
+                PackageMetadataCacheKey? cacheKey = TryCreateCacheKey(projectWithReferencedPackages, package);
 
-                // A package's metadata (license / nuspec) is intrinsic to the resolved package content, so
-                // resolve it at most once per (id+version, content hash) even when many projects reference
-                // the same package - avoiding a re-open and re-parse of the same nuspec per project. The
-                // content hash (recorded in the assets file) is part of the key so that the same id+version
-                // resolved to different content (different feeds/folders) is never served a stale entry.
-                // Without a content hash we cannot prove two references resolved to the same content, so
-                // such packages are not cached. Override information is applied per result below, so it is
-                // never baked into the entry.
-                PackageMetadataCacheKey? cacheKey = null;
-                if (projectWithReferencedPackages.PackageContentHashes.TryGetValue(package, out string? contentHash) && contentHash is { Length: > 0 })
+                IPackageMetadata? metadata = TryGetCachedMetadata(cacheKey);
+                if (metadata is null)
                 {
-                    cacheKey = new PackageMetadataCacheKey(package, contentHash);
-                }
+                    metadata = TryGetPackageInformationFromGlobalPackageFolder(package)
+                               ?? await TryGetPackageInformationFromRepositories(_repositories, package, cancellation);
 
-                if (cacheKey is not null && resolvedMetadataCache.TryGetValue(cacheKey, out IPackageMetadata? cachedMetadata))
-                {
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
-                                                                  ApplyCustomInformation(cachedMetadata, customInformation));
-                    continue;
-                }
-
-                PackageSearchResult result = TryGetPackageInformationFromGlobalPackageFolder(package);
-                if (!result.Success)
-                {
-                    result = await TryGetPackageInformationFromRepositories(_repositories, package, cancellation);
-                }
-
-                if (result.Success)
-                {
-                    if (cacheKey is not null)
+                    if (metadata is not null && cacheKey is not null)
                     {
-                        resolvedMetadataCache.TryAdd(cacheKey, result.Metadata!);
+                        resolvedMetadataCache.TryAdd(cacheKey, metadata);
                     }
+                }
 
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
-                                                                  ApplyCustomInformation(result.Metadata!, customInformation));
-                    continue;
-                }
-                if (customInformation is not null)
-                {
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
-                                                                  new PackageMetadata(package, customInformation));
-                    continue;
-                }
-                // simply return input - validation will fail later, as the required fields are missing
-                yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, new PackageMetadata(package));
+                yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
+                                                              BuildPackageMetadata(package, metadata, customInformation));
             }
         }
-        private PackageSearchResult TryGetPackageInformationFromGlobalPackageFolder(PackageIdentity package)
+
+        // A package's metadata (license / nuspec) is intrinsic to the resolved package content, so
+        // resolve it at most once per (id+version, content hash) even when many projects reference
+        // the same package - avoiding a re-open and re-parse of the same nuspec per project. The
+        // content hash (recorded in the assets file) is part of the key so that the same id+version
+        // resolved to different content (different feeds/folders) is never served a stale entry.
+        // Without a content hash we cannot prove two references resolved to the same content, so
+        // such packages are not cached. Override information is applied per result, so it is
+        // never baked into the entry.
+        private static PackageMetadataCacheKey? TryCreateCacheKey(ProjectWithReferencedPackages projectWithReferencedPackages, PackageIdentity package)
         {
-            IPackageMetadata? metadata = globalPackagesFolderUtility.GetPackage(package);
+            if (projectWithReferencedPackages.PackageContentHashes.TryGetValue(package, out string? contentHash) && contentHash is { Length: > 0 })
+            {
+                return new PackageMetadataCacheKey(package, contentHash);
+            }
+            return null;
+        }
+
+        private IPackageMetadata? TryGetCachedMetadata(PackageMetadataCacheKey? cacheKey)
+        {
+            if (cacheKey is not null && resolvedMetadataCache.TryGetValue(cacheKey, out IPackageMetadata? cachedMetadata))
+            {
+                return cachedMetadata;
+            }
+            return null;
+        }
+
+        private static IPackageMetadata BuildPackageMetadata(PackageIdentity package, IPackageMetadata? metadata, CustomPackageInformation? customInformation)
+        {
             if (metadata is not null)
             {
-                return new PackageSearchResult(metadata);
+                return ApplyCustomInformation(metadata, customInformation);
             }
-            return new PackageSearchResult();
+            if (customInformation is not null)
+            {
+                return new PackageMetadata(package, customInformation);
+            }
+            // simply return input - validation will fail later, as the required fields are missing
+            return new PackageMetadata(package);
         }
 
-        private static async Task<PackageSearchResult> TryGetPackageInformationFromRepositories(ISourceRepository[] repositories,
-                                                                                                PackageIdentity package,
-                                                                                                CancellationToken cancellation)
+        private IPackageMetadata? TryGetPackageInformationFromGlobalPackageFolder(PackageIdentity package)
+        {
+            return globalPackagesFolderUtility.GetPackage(package);
+        }
+
+        private static async Task<IPackageMetadata?> TryGetPackageInformationFromRepositories(ISourceRepository[] repositories,
+                                                                                              PackageIdentity package,
+                                                                                              CancellationToken cancellation)
         {
             foreach (ISourceRepository repository in repositories)
             {
@@ -95,24 +100,26 @@ namespace NuGetUtility.PackageInformationReader
                 }
 
                 IPackageMetadata? updatedPackageMetadata = await resource.TryGetMetadataAsync(package, cancellation);
-                if (updatedPackageMetadata is not null)
+                if (updatedPackageMetadata is null)
                 {
-                    if (updatedPackageMetadata.LicenseMetadata is LicenseMetadata.File file)
-                    {
-                        IPackageDownloader? downloader = await TryGetPackageDownloaderAsync(repository, package, cancellation);
-                        if (downloader is not null)
-                        {
-                            return new PackageSearchResult(new LicenseAugmentedPackageMetadata(updatedPackageMetadata,
-                                                                                               await downloader.ReadAsync(file.FileLocation, cancellation)));
-                        }
-                        return new PackageSearchResult();
-                    }
-
-                    return new PackageSearchResult(updatedPackageMetadata);
+                    continue;
                 }
+
+                if (updatedPackageMetadata.LicenseMetadata is not LicenseMetadata.File file)
+                {
+                    return updatedPackageMetadata;
+                }
+
+                IPackageDownloader? downloader = await TryGetPackageDownloaderAsync(repository, package, cancellation);
+                if (downloader is null)
+                {
+                    return null;
+                }
+                return new LicenseAugmentedPackageMetadata(updatedPackageMetadata,
+                                                           await downloader.ReadAsync(file.FileLocation, cancellation));
             }
 
-            return new PackageSearchResult();
+            return null;
         }
 
         private CustomPackageInformation? TryGetPackageInfoFromCustomInformation(PackageIdentity package)
@@ -158,23 +165,6 @@ namespace NuGetUtility.PackageInformationReader
             catch (Exception)
             {
                 return null;
-            }
-        }
-
-        private sealed record PackageSearchResult
-        {
-            public bool Success { get; }
-            public IPackageMetadata? Metadata { get; }
-
-            public PackageSearchResult(IPackageMetadata metadata)
-            {
-                Success = true;
-                Metadata = metadata;
-            }
-
-            public PackageSearchResult()
-            {
-                Success = false;
             }
         }
     }

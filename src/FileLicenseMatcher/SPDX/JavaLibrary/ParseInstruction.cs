@@ -631,9 +631,12 @@ public sealed class ParseInstruction
                 return [];
             }
             var tokens = new List<string>();
-            foreach (IReadOnlyList<string> t in nextInstruction.SubInstructions.Select(i => i.TokenizedText).Where(t => t is not null)!)
+            foreach (ParseInstruction subInstruction in nextInstruction.SubInstructions)
             {
-                tokens.AddRange(t);
+                if (subInstruction.TokenizedText is { } tokenizedText)
+                {
+                    tokens.AddRange(tokenizedText);
+                }
             }
             return tokens;
         }

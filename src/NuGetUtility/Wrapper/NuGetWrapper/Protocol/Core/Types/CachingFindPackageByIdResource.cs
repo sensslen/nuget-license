@@ -15,7 +15,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             try
             {
                 NuGet.Packaging.IPackageDownloader result = await findPackageByIdResource.GetPackageDownloaderAsync(
-                    new NuGet.Packaging.Core.PackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString()!)),
+                    new NuGet.Packaging.Core.PackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString())),
                     cacheContext,
                     NullLogger.Instance,
                     cancellationToken);
