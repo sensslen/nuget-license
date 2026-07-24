@@ -15,7 +15,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 
         public string? GetPackageContentHash(string packageName, INuGetVersion version)
         {
-            string versionString = version.ToString()!;
+            string versionString = version.ToString();
             return file.Libraries
                        .FirstOrDefault(library => string.Equals(library.Name, packageName, StringComparison.OrdinalIgnoreCase)
                                                   && string.Equals(library.Version?.ToString(), versionString, StringComparison.Ordinal))

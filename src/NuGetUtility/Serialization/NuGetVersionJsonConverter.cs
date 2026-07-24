@@ -16,8 +16,7 @@ namespace NuGetUtility.Serialization
                 throw new JsonException("NuGet version needs to be serialized as a string.");
             }
 
-            // we already know that the token is a string so we can safely call GetString() without checking for null
-            string stringVersion = reader.GetString()!;
+            string? stringVersion = reader.GetString();
             if (WrappedNuGetVersion.TryParse(stringVersion, out WrappedNuGetVersion? version))
             {
                 return version;

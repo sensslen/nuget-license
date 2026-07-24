@@ -61,7 +61,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Versioning
             return _version;
         }
 
-        internal static bool TryParse(string stringVersion, [NotNullWhen(true)] out WrappedNuGetVersion? version)
+        internal static bool TryParse(string? stringVersion, [NotNullWhen(true)] out WrappedNuGetVersion? version)
         {
             if (NuGetVersion.TryParse(stringVersion, out NuGetVersion? internalVersion))
             {

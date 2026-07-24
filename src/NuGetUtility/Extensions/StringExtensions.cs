@@ -1,12 +1,20 @@
 ﻿// Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace NuGetUtility.Extensions
 {
     public static class StringExtensions
     {
+        // Wraps string.IsNullOrEmpty with the null-state annotation the framework method lacks on net472,
+        // so callers get null-narrowing after the check instead of needing a null-forgiving operator.
+        public static bool IsNullOrEmpty([NotNullWhen(false)] this string? value)
+        {
+            return string.IsNullOrEmpty(value);
+        }
+
         /// <summary>
         /// Compares the string against a given pattern.
         /// </summary>

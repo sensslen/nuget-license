@@ -3,6 +3,7 @@
 
 using System.Text;
 using NuGetLicense.LicenseValidator;
+using NuGetUtility.Extensions;
 
 namespace NuGetLicense.Output.Csv
 {
@@ -49,18 +50,18 @@ namespace NuGetLicense.Output.Csv
 
         private static string EscapeCsvValue(string? value)
         {
-            if (string.IsNullOrEmpty(value))
+            if (value.IsNullOrEmpty())
             {
                 return string.Empty;
             }
 
             if (value.Contains(',') || value.Contains('"') || value.Contains('\n') || value.Contains('\r'))
             {
-                string escaped = value!.Replace("\"", "\"\"");
+                string escaped = value.Replace("\"", "\"\"");
                 return $"\"{escaped}\"";
             }
 
-            return value!;
+            return value;
         }
 
         private static string GetValidationErrorsString(IEnumerable<ValidationError> errors)
