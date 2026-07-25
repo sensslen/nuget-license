@@ -33,7 +33,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="TestableIO.System.IO.Abstractions.TestingHelpers" Version="22.2.0" />
-    <PackageReference Include="TUnit" Version="1.61.29" />
+    <PackageReference Include="TUnit" Version="1.61.35" />
     <PackageReference Include="Verify.TUnit" Version="31.27.0" />
     <PackageReference Include="Verify.ParametersHashing" Version="1.0.0" />
   </ItemGroup>
