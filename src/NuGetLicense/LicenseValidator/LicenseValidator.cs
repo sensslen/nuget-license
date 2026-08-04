@@ -160,6 +160,8 @@ namespace NuGetLicense.LicenseValidator
                                                     ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
                                                     CancellationToken token)
         {
+            await fileDownloader.StoreFileAsync(file.LicenseText ?? string.Empty, GetFileName(info.Identity), token);
+
             string matchedLicense = fileLicenseMatcher.Match(file.LicenseText ?? string.Empty);
 
             if (string.IsNullOrEmpty(matchedLicense))
@@ -180,7 +182,6 @@ namespace NuGetLicense.LicenseValidator
             SpdxExpression? licenseExpression = ParseSpdxExpression(matchedLicense);
             if (IsValidLicenseExpression(licenseExpression))
             {
-                await fileDownloader.StoreFileAsync(file.LicenseText ?? string.Empty, GetFileName(info.Identity), token);
                 AddOrUpdateLicense(result, info, LicenseInformationOrigin.File, matchedLicense);
             }
             else
