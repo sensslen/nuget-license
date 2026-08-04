@@ -620,7 +620,7 @@ namespace NuGetLicense.Test.LicenseValidator
                             LicenseInformationOrigin.File,
                             [])
                     ]).Using(new LicenseValidationResultValueEqualityComparer());
-            await _fileDownloader.DidNotReceive().StoreFileAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            await _fileDownloader.Received(1).StoreFileAsync(licenseText, $"{packageId}__{packageVersion}", Arg.Any<CancellationToken>());
         }
 
         [Test]
@@ -652,7 +652,7 @@ namespace NuGetLicense.Test.LicenseValidator
                                 new ValidationError("Unable to determine license from the given license file", _context)
                             ])
                     ]).Using(new LicenseValidationResultValueEqualityComparer());
-            await _fileDownloader.DidNotReceive().StoreFileAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            await _fileDownloader.Received(1).StoreFileAsync(licenseText, $"{packageId}__{packageVersion}", Arg.Any<CancellationToken>());
         }
 
         [Test]
