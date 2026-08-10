@@ -17,7 +17,7 @@ namespace NuGetUtility.Test.Extensions.Helper.AutoFixture.NuGet.Versioning
                 return new NuGetVersion($"{_rnd.Next(100, 999)}.{_rnd.Next(100, 999)}{GetPatch()}{GetBeta()}");
             }
 
-            return new NoSpecimen();
+            return NoSpecimen.Instance;
         }
 
         private string GetBeta()
