@@ -22,7 +22,7 @@ jobs:
             9.0.x
             10.0.x
 
-      - uses: nowsprinting/check-version-format-action@ee32a64fe737aeac52fe802f1bf8c3454f93a86c # v5.0.3
+      - uses: nowsprinting/check-version-format-action@2946b47fb3590f88fc80b3579e72cd15c0fa90cb # v5.0.4
         id: version
         with:
           prefix: 'v'
