@@ -26,7 +26,7 @@ namespace NuGetUtility.Test.Extensions.Helper.AutoFixture.NuGet.Versioning
                                                     CreateOptional<Uri>(context));
             }
 
-            return new NoSpecimen();
+            return NoSpecimen.Instance;
         }
 
         private static T? CreateOptional<T>(ISpecimenContext context) where T : notnull
