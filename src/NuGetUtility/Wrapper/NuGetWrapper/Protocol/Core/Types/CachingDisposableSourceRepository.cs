@@ -24,8 +24,13 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
                 return _packageMetadataResource;
             }
 
-            _packageMetadataResource = new CachingPackageMetadataResource(await sourceRepository.GetResourceAsync<PackageMetadataResource>(token),
-                                                                          _cacheContext);
+            PackageMetadataResource? metadataResource = await sourceRepository.GetResourceAsync<PackageMetadataResource>(token);
+            if (metadataResource is null)
+            {
+                return null;
+            }
+
+            _packageMetadataResource = new CachingPackageMetadataResource(metadataResource, _cacheContext);
             return _packageMetadataResource;
         }
 
@@ -36,8 +41,13 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
                 return _findPackageByIdResource;
             }
 
-            _findPackageByIdResource = new CachingFindPackageByIdResource(await sourceRepository.GetResourceAsync<FindPackageByIdResource>(token),
-                                                                          _cacheContext);
+            FindPackageByIdResource? findPackageByIdResource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>(token);
+            if (findPackageByIdResource is null)
+            {
+                return null;
+            }
+
+            _findPackageByIdResource = new CachingFindPackageByIdResource(findPackageByIdResource, _cacheContext);
             return _findPackageByIdResource;
         }
     }
