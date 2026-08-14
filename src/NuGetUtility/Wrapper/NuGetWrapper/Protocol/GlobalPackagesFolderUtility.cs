@@ -41,13 +41,12 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 
         private static IWrappedPackageMetadata? TryGetPackageFromFolder(PackageIdentity identity, string packageFolder)
         {
-            DownloadResourceResult cachedPackage = OriginalGlobalPackagesFolderUtility.GetPackage(new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString())), packageFolder);
-            if (cachedPackage == null)
+            DownloadResourceResult? cachedPackage = OriginalGlobalPackagesFolderUtility.GetPackage(new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString())), packageFolder);
+            using PackageReaderBase? pkgStream = cachedPackage?.PackageReader;
+            if (pkgStream is null)
             {
                 return null;
             }
-
-            using PackageReaderBase pkgStream = cachedPackage.PackageReader;
             var manifest = Manifest.ReadFrom(pkgStream.GetNuspec(), true);
 
             if (manifest.Metadata.Version is not { } manifestVersion ||
