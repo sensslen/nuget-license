@@ -20,7 +20,7 @@
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="5.0.0-rc.1" />
     <PackageReference Include="AutoFixture.AutoNSubstitute" Version="5.0.0-rc.1" />
-    <PackageReference Include="NSubstitute" Version="6.1.0" />
+    <PackageReference Include="NSubstitute" Version="6.2.0" />
   </ItemGroup>
 
   <ItemGroup>
