@@ -115,9 +115,10 @@ jobs:
         shell: pwsh
         run: |
           $failed = $false
-          Get-ChildItem "tests\*\bin\TestWindows\${{ matrix.framework }}\NuGet*.Test.exe" | ForEach-Object {
-            Write-Host "Running: $_"
-            & "$_"
+          "NuGetUtility.Test", "NuGetLicense.Test" | ForEach-Object {
+            $exe = "tests\$_\bin\TestWindows\${{ matrix.framework }}\$_.exe"
+            Write-Host "Running: $exe"
+            & $exe
             if ($LASTEXITCODE -ne 0) { $failed = $true }
           }
           if ($failed) { exit 1 }
