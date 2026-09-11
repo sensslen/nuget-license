@@ -103,6 +103,14 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
                 return new() { Error = $"Failed to navigate to {licenseUrl}.\n{e}" };
             }
 
+            // An anti-bot interstitial answers 200 with nothing readable in it, which would
+            // otherwise be verified as if it were the licence and fail the comparison instead
+            // of being retried.
+            if (string.IsNullOrWhiteSpace(bodyText))
+            {
+                return new() { Error = $"Empty response from {licenseUrl}." };
+            }
+
             if (bodyText.Contains("rate limit", StringComparison.OrdinalIgnoreCase))
             {
                 return new() { Error = $"Rate limit exceeded:\n{bodyText}" };
