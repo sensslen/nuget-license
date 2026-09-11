@@ -2,6 +2,9 @@
   "test": {
     "runner": "Microsoft.Testing.Platform"
   },
+  // The Windows jobs build through Visual Studio MSBuild, whose SDK resolver skips prerelease
+  // SDKs unless global.json names one. Without this it picks the newest stable SDK on the
+  // runner and every net11.0 target fails with NETSDK1045. Drop it once .NET 11 is stable.
   "sdk": {
     "version": "11.0.100-rc.1.26425.128",
     "rollForward": "latestMinor"
