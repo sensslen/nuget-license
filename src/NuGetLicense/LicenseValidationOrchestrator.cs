@@ -23,9 +23,6 @@ using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
 
 namespace NuGetLicense
 {
-    /// <summary>
-    /// Orchestrates the license validation process.
-    /// </summary>
     public class LicenseValidationOrchestrator(IFileSystem fileSystem,
                                                ISolutionPersistenceWrapper solutionPersistence,
                                                IMsBuildAbstraction msBuild,

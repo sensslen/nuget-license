@@ -6,38 +6,17 @@ using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
-    /// <summary>
-    /// Reads package dependency relationships from a NuGet assets file for a requested target framework.
-    /// </summary>
     public class AssetsPackageDependencyReader : IAssetsPackageDependencyReader
     {
         private const string PackageTypeIdentifier = "package";
         private readonly INuGetFrameworkUtility _nuGetFrameworkUtility;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AssetsPackageDependencyReader"/> class.
-        /// </summary>
-        /// <param name="nuGetFrameworkUtility">
-        /// Utility used to determine semantic equivalence between target framework representations.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown when <paramref name="nuGetFrameworkUtility"/> is <see langword="null"/>.
-        /// </exception>
         public AssetsPackageDependencyReader(INuGetFrameworkUtility nuGetFrameworkUtility)
         {
             _nuGetFrameworkUtility = nuGetFrameworkUtility ?? throw new ArgumentNullException(nameof(nuGetFrameworkUtility));
         }
 
-        /// <summary>
-        /// Gets package-to-dependency mappings for libraries in the target framework section of the specified assets file.
-        /// </summary>
-        /// <param name="assetsPath">Path to the <c>project.assets.json</c> file to inspect.</param>
-        /// <param name="normalizedTargetFramework">Normalized target framework moniker used to select matching targets.</param>
-        /// <returns>
-        /// A dictionary that maps package IDs to a case-insensitive set of dependency package IDs
-        /// (<c>Dictionary&lt;string, HashSet&lt;string&gt;&gt;</c>).
-        /// Returns an empty dictionary when the assets file does not exist or cannot be read.
-        /// </returns>
+        /// <returns>Empty when the assets file does not exist or cannot be read.</returns>
         public Dictionary<string, HashSet<string>> GetPackageDependenciesForTargetFramework(ILockFile lockFile, string normalizedTargetFramework)
         {
             try

@@ -159,7 +159,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         private string GetPathRelativeTo(string relativeTo, string path)
 #if NETFRAMEWORK
         {
-            // Require trailing backslash for path
+            // MakeRelativeUri treats a base without a trailing separator as a file rather than a directory.
             relativeTo = relativeTo.TrimEnd(_fileSystem.Path.DirectorySeparatorChar, _fileSystem.Path.AltDirectorySeparatorChar);
             relativeTo += _fileSystem.Path.DirectorySeparatorChar;
 

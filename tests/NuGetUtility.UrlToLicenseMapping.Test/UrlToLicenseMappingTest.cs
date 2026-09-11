@@ -43,7 +43,6 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
             using var slot = new DriverSlot(s_driverSlots);
             await slot.WaitAsync();
 
-            // Grab an existing driver from the pool, or create a new one if the pool is empty
             if (!s_driverPool.TryDequeue(out DisposableWebDriver? driver))
             {
                 driver = new DisposableWebDriver();
@@ -80,7 +79,6 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
             }
             finally
             {
-                // Return the driver back to the pool so the next test case can reuse it
                 if (runSucceeded)
                 {
                     s_driverPool.Enqueue(driver);

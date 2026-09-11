@@ -36,7 +36,6 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
         public IEnumerable<PackageReferenceMetadata> GetPackageReferences()
         {
-            // Read evaluated PackageReference items from the current project context.
             return project.GetItems(PackageReferenceItemType)
                 .Select(item => new PackageReferenceMetadata(item.EvaluatedInclude, CreateMetadata(item)));
         }
@@ -67,7 +66,6 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
         private static IReadOnlyDictionary<string, string> CreateMetadata(ProjectItem item)
         {
-            // Normalize metadata names for case-insensitive lookups (e.g., Publish).
             Dictionary<string, string> metadata = new(StringComparer.OrdinalIgnoreCase);
             foreach (ProjectMetadata projectMetadata in item.Metadata)
             {
