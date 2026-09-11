@@ -363,7 +363,7 @@ jobs:
       - name: restore
         run: dotnet restore NuGetUtility.slnx -p:TargetFramework=${{ matrix.framework }}
 
-      - uses: paulhatch/semantic-version@502226b17e3e242e4befd0a45690fcbb27dd1373 # v6.0.3
+      - uses: paulhatch/semantic-version@4d6da96a9bc3116da3613309a11ff75fba58eb8d # v6.0.4
         id: version
         name: version
         with:
@@ -408,7 +408,7 @@ jobs:
           echo "publish to path: $path"
           echo "path=$path" >> $env:GITHUB_OUTPUT
 
-      - uses: paulhatch/semantic-version@502226b17e3e242e4befd0a45690fcbb27dd1373 # v6.0.3
+      - uses: paulhatch/semantic-version@4d6da96a9bc3116da3613309a11ff75fba58eb8d # v6.0.4
         id: version
         name: version
         with:
