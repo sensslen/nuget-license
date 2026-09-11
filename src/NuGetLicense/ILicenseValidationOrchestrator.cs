@@ -3,17 +3,9 @@
 
 namespace NuGetLicense
 {
-    /// <summary>
-    /// Orchestrates the license validation process.
-    /// </summary>
     public interface ILicenseValidationOrchestrator
     {
-        /// <summary>
-        /// Orchestrates the license validation process and returns the exit code.
-        /// </summary>
-        /// <param name="options">The parsed command line options.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Exit code: 0 for success, number of validation errors, or -1 for exceptions.</returns>
+        /// <returns>Exit code: 0 for success, the number of validation errors, or -1 on exception.</returns>
         Task<int> ValidateAsync(ICommandLineOptions options, CancellationToken cancellationToken = default);
     }
 }

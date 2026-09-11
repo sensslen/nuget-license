@@ -19,11 +19,6 @@ namespace NuGetUtility.ReferencedPackagesReader
     {
         private const string ProjectReferenceIdentifier = "project";
 
-        /// <summary>
-        /// Gets installed NuGet packages for the specified project.
-        /// </summary>
-        /// <param name="projectPath">Path to the project file.</param>
-        /// <param name="includeTransitive">True to include transitive dependencies; otherwise, false.</param>
         /// <param name="targetFramework">
         /// Target framework moniker to evaluate. If null, all available target frameworks are evaluated.
         /// </param>
@@ -144,7 +139,6 @@ namespace NuGetUtility.ReferencedPackagesReader
             string targetFrameworkForPublishMetadata = context.NormalizedRequestedTargetFramework ?? nuGetFrameworkUtility.Normalize(target.TargetFramework);
             string targetFrameworkCacheKey = targetFrameworkForPublishMetadata ?? string.Empty;
 
-            // Remove packages with Publish=false metadata from the evaluated PackageReferences for this target only.
             if (!context.PublishFalsePackagesByFramework.TryGetValue(targetFrameworkCacheKey, out HashSet<string>? cachedPublishFalsePackages))
             {
                 cachedPublishFalsePackages = GetPackagesExcludedFromPublish(project, targetFrameworkForPublishMetadata);

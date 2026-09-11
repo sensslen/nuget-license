@@ -43,13 +43,10 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetInputFiles_WithInputFile_ReturnsFileInArray()
             {
-                // Arrange
                 string inputFile = "/test/project.csproj";
 
-                // Act
                 string[] result = _parser.GetInputFiles(inputFile, null);
 
-                // Assert
                 await Assert.That(result).HasAtLeast(1);
                 await Assert.That(result[0]).IsEqualTo(inputFile);
             }
@@ -57,22 +54,18 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetInputFiles_WithInputJsonFile_ReadsAndDeserializesFile()
             {
-                // Arrange
                 string jsonFile = "/test/input.json";
                 string[] expectedFiles = ["/test/project1.csproj", "/test/project2.csproj"];
                 _fileSystem.AddFile(jsonFile, new MockFileData($"[\"{expectedFiles[0]}\",\"{expectedFiles[1]}\"]"));
 
-                // Act
                 string[] result = _parser.GetInputFiles(null, jsonFile);
 
-                // Assert
                 await Assert.That(result).IsEquivalentTo(expectedFiles);
             }
 
             [Test]
             public async Task GetInputFiles_WithNeitherOption_ThrowsArgumentException()
             {
-                // Act & Assert
                 ArgumentException? ex = await Assert.That(() =>
                     _parser.GetInputFiles(null, null)).Throws<ArgumentException>();
                 await Assert.That(ex!.Message).Contains("Please provide an input file using --input or --json-input");
@@ -81,15 +74,12 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetInputFiles_WithBothOptions_PrefersInputFile()
             {
-                // Arrange
                 string inputFile = "/test/project.csproj";
                 string jsonFile = "/test/input.json";
                 _fileSystem.AddFile(jsonFile, new MockFileData("[\"should_not_be_used.csproj\"]"));
 
-                // Act
                 string[] result = _parser.GetInputFiles(inputFile, jsonFile);
 
-                // Assert
                 await Assert.That(result).Count().IsEqualTo(1);
                 await Assert.That(result[0]).IsEqualTo(inputFile);
             }
@@ -100,62 +90,49 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetAllowedLicenses_WithNull_ReturnsEmptyArray()
             {
-                // Act
                 string[] result = _parser.GetAllowedLicenses(null);
 
-                // Assert
                 await Assert.That(result).IsEmpty();
             }
 
             [Test]
             public async Task GetAllowedLicenses_WithInlineList_ReturnsParsedArray()
             {
-                // Arrange
                 string allowedLicenses = "MIT;Apache-2.0;BSD-3-Clause";
 
-                // Act
                 string[] result = _parser.GetAllowedLicenses(allowedLicenses);
 
-                // Assert
                 await Assert.That(result).IsEquivalentTo(["MIT", "Apache-2.0", "BSD-3-Clause"]);
             }
 
             [Test]
             public async Task GetAllowedLicenses_WithFile_ReadsAndDeserializesFile()
             {
-                // Arrange
                 string licenseFile = "/test/allowed.json";
                 string[] expectedLicenses = ["MIT", "Apache-2.0"];
                 _fileSystem.AddFile(licenseFile, new MockFileData($"[\"{expectedLicenses[0]}\",\"{expectedLicenses[1]}\"]"));
 
-                // Act
                 string[] result = _parser.GetAllowedLicenses(licenseFile);
 
-                // Assert
                 await Assert.That(result).IsEquivalentTo(expectedLicenses);
             }
 
             [Test]
             public async Task GetAllowedLicenses_WithWhitespace_TrimsValues()
             {
-                // Arrange
                 string allowedLicenses = " MIT ; Apache-2.0 ; BSD-3-Clause ";
 
-                // Act
                 string[] result = _parser.GetAllowedLicenses(allowedLicenses);
 
-                // Assert
                 await Assert.That(result).IsEquivalentTo(["MIT", "Apache-2.0", "BSD-3-Clause"]);
             }
 
             [Test]
             public async Task GetAllowedLicenses_WithInvalidJsonFile_ThrowsArgumentException()
             {
-                // Arrange
                 string licenseFile = "/test/allowed.json";
                 _fileSystem.AddFile(licenseFile, new MockFileData("invalid json"));
 
-                // Act & Assert
                 ArgumentException? ex = await Assert.That(() =>
                     _parser.GetAllowedLicenses(licenseFile)).Throws<ArgumentException>();
                 await Assert.That(ex!.Message).Contains("Failed to parse JSON file");
@@ -167,38 +144,30 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetIgnoredPackages_WithNull_ReturnsEmptyArray()
             {
-                // Act
                 string[] result = _parser.GetIgnoredPackages(null);
 
-                // Assert
                 await Assert.That(result).IsEmpty();
             }
 
             [Test]
             public async Task GetIgnoredPackages_WithInlineList_ReturnsParsedArray()
             {
-                // Arrange
                 string ignoredPackages = "Package1;Package2;Package3";
 
-                // Act
                 string[] result = _parser.GetIgnoredPackages(ignoredPackages);
 
-                // Assert
                 await Assert.That(result).IsEquivalentTo(["Package1", "Package2", "Package3"]);
             }
 
             [Test]
             public async Task GetIgnoredPackages_WithFile_ReadsAndDeserializesFile()
             {
-                // Arrange
                 string packageFile = "/test/ignored.json";
                 string[] expectedPackages = ["MyCompany.*", "TestPackage"];
                 _fileSystem.AddFile(packageFile, new MockFileData($"[\"{expectedPackages[0]}\",\"{expectedPackages[1]}\"]"));
 
-                // Act
                 string[] result = _parser.GetIgnoredPackages(packageFile);
 
-                // Assert
                 await Assert.That(result).IsEquivalentTo(expectedPackages);
             }
         }
@@ -208,38 +177,30 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetExcludedProjects_WithNull_ReturnsEmptyArray()
             {
-                // Act
                 string[] result = _parser.GetExcludedProjects(null);
 
-                // Assert
                 await Assert.That(result).IsEmpty();
             }
 
             [Test]
             public async Task GetExcludedProjects_WithInlineList_ReturnsParsedArray()
             {
-                // Arrange
                 string excludedProjects = "*Test*;*.Test;Legacy*";
 
-                // Act
                 string[] result = _parser.GetExcludedProjects(excludedProjects);
 
-                // Assert
                 await Assert.That(result).IsEquivalentTo(["*Test*", "*.Test", "Legacy*"]);
             }
 
             [Test]
             public async Task GetExcludedProjects_WithFile_ReadsAndDeserializesFile()
             {
-                // Arrange
                 string projectFile = "/test/excluded.json";
                 string[] expectedProjects = ["*Test*", "*.Test"];
                 _fileSystem.AddFile(projectFile, new MockFileData($"[\"{expectedProjects[0]}\",\"{expectedProjects[1]}\"]"));
 
-                // Act
                 string[] result = _parser.GetExcludedProjects(projectFile);
 
-                // Assert
                 await Assert.That(result).IsEquivalentTo(expectedProjects);
             }
         }
@@ -249,10 +210,8 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetLicenseMappings_WithNull_ReturnsDefaultMapping()
             {
-                // Act
                 IImmutableDictionary<Uri, string> result = _parser.GetLicenseMappings(null);
 
-                // Assert
                 await Assert.That(result).IsNotNull();
                 await Assert.That(result.Count).IsGreaterThan(0); // Should contain default mappings
             }
@@ -260,16 +219,13 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetLicenseMappings_WithFile_MergesWithDefaultMappings()
             {
-                // Arrange
                 string mappingFile = "/test/mappings.json";
                 var customUrl = new Uri("https://example.com/license");
                 string customLicense = "CustomLicense";
                 _fileSystem.AddFile(mappingFile, new MockFileData($"{{\"{customUrl}\":\"{customLicense}\"}}"));
 
-                // Act
                 IImmutableDictionary<Uri, string> result = _parser.GetLicenseMappings(mappingFile);
 
-                // Assert
                 await Assert.That(result.ContainsKey(customUrl)).IsTrue();
                 await Assert.That(result[customUrl]).IsEqualTo(customLicense);
             }
@@ -280,24 +236,19 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithNull_ReturnsEmptyArray()
             {
-                // Act
                 CustomPackageInformation[] result = _parser.GetOverridePackageInformation(null);
 
-                // Assert
                 await Assert.That(result).IsEmpty();
             }
 
             [Test]
             public async Task GetOverridePackageInformation_WithFile_ReadsAndDeserializesFile()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"Version\":\"1.0.0\",\"License\":\"MIT\"}]"));
 
-                // Act
                 CustomPackageInformation[] result = _parser.GetOverridePackageInformation(overrideFile);
 
-                // Assert
                 await Assert.That(result).Count().IsEqualTo(1);
                 await Assert.That(result[0].Id).IsEqualTo("TestPackage");
                 await Assert.That(result[0].License).IsEqualTo("MIT");
@@ -306,11 +257,9 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithMissingId_ThrowsArgumentException()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Version\":\"1.0.0\",\"License\":\"MIT\"}]"));
 
-                // Act & Assert
                 ArgumentException? ex = await Assert.That(() =>
                     _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
                 await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
@@ -319,11 +268,9 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithMissingVersion_ThrowsArgumentException()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"License\":\"MIT\"}]"));
 
-                // Act & Assert
                 ArgumentException? ex = await Assert.That(() =>
                     _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
                 await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
@@ -332,11 +279,9 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithMissingLicense_ThrowsArgumentException()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"Version\":\"1.0.0\"}]"));
 
-                // Act & Assert
                 ArgumentException? ex = await Assert.That(() =>
                     _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
                 await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
@@ -345,11 +290,9 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithNullId_ThrowsArgumentException()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":null,\"Version\":\"1.0.0\",\"License\":\"MIT\"}]"));
 
-                // Act & Assert
                 ArgumentException? ex = await Assert.That(() =>
                     _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
                 await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
@@ -358,11 +301,9 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithNullVersion_ThrowsArgumentException()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"Version\":null,\"License\":\"MIT\"}]"));
 
-                // Act & Assert
                 ArgumentException? ex = await Assert.That(() =>
                     _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
                 await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
@@ -371,11 +312,9 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithNullLicense_ThrowsArgumentException()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"Version\":\"1.0.0\",\"License\":null}]"));
 
-                // Act & Assert
                 ArgumentException? ex = await Assert.That(() =>
                     _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
                 await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
@@ -384,11 +323,9 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithInvalidVersion_ThrowsArgumentException()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"Version\":\"not-a-version\",\"License\":\"MIT\"}]"));
 
-                // Act & Assert
                 ArgumentException? ex = await Assert.That(() =>
                     _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
                 await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
@@ -397,7 +334,6 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithValidOptionalFields_DeserializesSuccessfully()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 string jsonContent = "[{" +
                     "\"Id\":\"TestPackage\"," +
@@ -413,10 +349,8 @@ namespace NuGetLicense.Test
                     "}]";
                 _fileSystem.AddFile(overrideFile, new MockFileData(jsonContent));
 
-                // Act
                 CustomPackageInformation[] result = _parser.GetOverridePackageInformation(overrideFile);
 
-                // Assert
                 await Assert.That(result).Count().IsEqualTo(1);
                 await Assert.That(result[0].Id).IsEqualTo("TestPackage");
                 await Assert.That(result[0].Version.ToString()).IsEqualTo("1.0.0");
@@ -433,14 +367,11 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithOnlyRequiredFields_DeserializesSuccessfully()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 _fileSystem.AddFile(overrideFile, new MockFileData("[{\"Id\":\"TestPackage\",\"Version\":\"2.1.0\",\"License\":\"Apache-2.0\"}]"));
 
-                // Act
                 CustomPackageInformation[] result = _parser.GetOverridePackageInformation(overrideFile);
 
-                // Assert
                 await Assert.That(result).Count().IsEqualTo(1);
                 await Assert.That(result[0].Id).IsEqualTo("TestPackage");
                 await Assert.That(result[0].Version.ToString()).IsEqualTo("2.1.0");
@@ -457,7 +388,6 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithMultiplePackages_DeserializesAll()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 string jsonContent = "[" +
                     "{\"Id\":\"Package1\",\"Version\":\"1.0.0\",\"License\":\"MIT\"}," +
@@ -466,10 +396,8 @@ namespace NuGetLicense.Test
                     "]";
                 _fileSystem.AddFile(overrideFile, new MockFileData(jsonContent));
 
-                // Act
                 CustomPackageInformation[] result = _parser.GetOverridePackageInformation(overrideFile);
 
-                // Assert
                 await Assert.That(result).Count().IsEqualTo(3);
                 await Assert.That(result[0].Id).IsEqualTo("Package1");
                 await Assert.That(result[0].License).IsEqualTo("MIT");
@@ -482,11 +410,9 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithInvalidJson_ThrowsArgumentException()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 _fileSystem.AddFile(overrideFile, new MockFileData("not valid json"));
 
-                // Act & Assert
                 ArgumentException? ex = await Assert.That(() =>
                     _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
                 await Assert.That(ex!.Message).Contains("Failed to parse override package information file");
@@ -495,11 +421,9 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithNullContent_ThrowsArgumentException()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 _fileSystem.AddFile(overrideFile, new MockFileData("null"));
 
-                // Act & Assert
                 ArgumentException? ex = await Assert.That(() =>
                     _parser.GetOverridePackageInformation(overrideFile)).Throws<ArgumentException>();
                 await Assert.That(ex!.Message).Contains("expected an array of package information but got null");
@@ -508,14 +432,11 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOverridePackageInformation_WithEmptyArray_ReturnsEmptyArray()
             {
-                // Arrange
                 string overrideFile = "/test/override.json";
                 _fileSystem.AddFile(overrideFile, new MockFileData("[]"));
 
-                // Act
                 CustomPackageInformation[] result = _parser.GetOverridePackageInformation(overrideFile);
 
-                // Assert
                 await Assert.That(result).IsEmpty();
             }
         }
@@ -525,10 +446,8 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetLicenseMatcher_WithNull_ReturnsSpdxMatcher()
             {
-                // Act
                 IFileLicenseMatcher result = _parser.GetLicenseMatcher(null);
 
-                // Assert
                 await Assert.That(result).IsNotNull();
                 await Assert.That(result).IsTypeOf<FileLicenseMatcher.SPDX.FastLicenseMatcher>();
             }
@@ -536,16 +455,13 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetLicenseMatcher_WithFile_ReturnsCombinedMatcher()
             {
-                // Arrange
                 string mappingFile = "/test/dir/license-mappings.json";
                 string licenseFile = "/test/dir/LICENSE.txt";
                 _fileSystem.AddFile(licenseFile, new MockFileData("MIT License content"));
                 _fileSystem.AddFile(mappingFile, new MockFileData("{\"LICENSE.txt\":\"MIT\"}"));
 
-                // Act
                 IFileLicenseMatcher result = _parser.GetLicenseMatcher(mappingFile);
 
-                // Assert
                 await Assert.That(result).IsNotNull();
                 await Assert.That(result).IsTypeOf<FileLicenseMatcher.Combine.LicenseMatcher>();
             }
@@ -556,23 +472,18 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetFileDownloader_WithNull_ReturnsNopDownloader()
             {
-                // Act
                 IFileDownloader result = _parser.GetFileDownloader(null);
 
-                // Assert
                 await Assert.That(result).IsTypeOf<NopFileDownloader>();
             }
 
             [Test]
             public async Task GetFileDownloader_WithDirectory_CreatesDirectoryAndReturnsFileDownloader()
             {
-                // Arrange
                 string downloadDir = "/test/downloads";
 
-                // Act
                 IFileDownloader result = _parser.GetFileDownloader(downloadDir);
 
-                // Assert
                 await Assert.That(result).IsTypeOf<FileDownloader>();
                 await Assert.That(_fileSystem.Directory.Exists(downloadDir)).IsTrue();
             }
@@ -580,14 +491,11 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetFileDownloader_WithExistingDirectory_ReturnsFileDownloader()
             {
-                // Arrange
                 string downloadDir = "/test/downloads";
                 _fileSystem.AddDirectory(downloadDir);
 
-                // Act
                 IFileDownloader result = _parser.GetFileDownloader(downloadDir);
 
-                // Assert
                 await Assert.That(result).IsTypeOf<FileDownloader>();
             }
         }
@@ -597,47 +505,38 @@ namespace NuGetLicense.Test
             [Test]
             public async Task GetOutputFormatter_WithTable_ReturnsTableFormatter()
             {
-                // Act
                 LicenseOutput.IOutputFormatter result = _parser.GetOutputFormatter(OutputType.Table, false, false);
 
-                // Assert
                 await Assert.That(result).IsTypeOf<LicenseOutput.Table.TableOutputFormatter>();
             }
 
             [Test]
             public async Task GetOutputFormatter_WithMarkdown_ReturnsTableFormatter()
             {
-                // Act
                 LicenseOutput.IOutputFormatter result = _parser.GetOutputFormatter(OutputType.Markdown, false, false);
 
-                // Assert
                 await Assert.That(result).IsTypeOf<LicenseOutput.Table.TableOutputFormatter>();
             }
 
             [Test]
             public async Task GetOutputFormatter_WithJson_ReturnsJsonFormatter()
             {
-                // Act
                 LicenseOutput.IOutputFormatter result = _parser.GetOutputFormatter(OutputType.Json, false, false);
 
-                // Assert
                 await Assert.That(result).IsTypeOf<LicenseOutput.Json.JsonOutputFormatter>();
             }
 
             [Test]
             public async Task GetOutputFormatter_WithJsonPretty_ReturnsJsonFormatter()
             {
-                // Act
                 LicenseOutput.IOutputFormatter result = _parser.GetOutputFormatter(OutputType.JsonPretty, false, false);
 
-                // Assert
                 await Assert.That(result).IsTypeOf<LicenseOutput.Json.JsonOutputFormatter>();
             }
 
             [Test]
             public async Task GetOutputFormatter_WithInvalidType_ThrowsArgumentOutOfRangeException()
             {
-                // Act & Assert
                 await Assert.That(() =>
                     _parser.GetOutputFormatter((OutputType)999, false, false)).Throws<ArgumentOutOfRangeException>();
             }

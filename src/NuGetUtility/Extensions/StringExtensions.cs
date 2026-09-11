@@ -15,12 +15,7 @@ namespace NuGetUtility.Extensions
             return string.IsNullOrEmpty(value);
         }
 
-        /// <summary>
-        /// Compares the string against a given pattern.
-        /// </summary>
-        /// <param name="str">The string.</param>
-        /// <param name="pattern">The pattern to match, where "*" means any sequence of characters, and "?" means any single character.</param>
-        /// <returns><c>true</c> if the string matches the given pattern; otherwise <c>false</c>.</returns>
+        /// <summary>Matches case-insensitively, with "*" for any sequence of characters and "?" for any single character.</summary>
         public static bool Like(this string str, string pattern)
         {
             return new Regex(
@@ -30,12 +25,7 @@ namespace NuGetUtility.Extensions
             ).IsMatch(str);
         }
 
-        /// <summary>
-        /// Compares a path string against a given pattern, matching against both the full path and just the filename.
-        /// </summary>
-        /// <param name="path">The path string to match.</param>
-        /// <param name="pattern">The pattern to match, where "*" means any sequence of characters, and "?" means any single character.</param>
-        /// <returns><c>true</c> if either the full path or the filename matches the given pattern; otherwise <c>false</c>.</returns>
+        /// <summary>Matches the pattern against the full path and against the file name alone, so a bare "*.dll" also matches a nested path.</summary>
         public static bool PathLike(this string path, string pattern)
         {
             if (path.Like(pattern))
@@ -43,7 +33,7 @@ namespace NuGetUtility.Extensions
                 return true;
             }
 
-            // Extract the filename in a cross-platform way by finding the last path separator
+            // Path.GetFileName only honours the running platform's separator, so a Windows path would not split on Linux.
             int lastSeparatorIndex = Math.Max(path.LastIndexOf('/'), path.LastIndexOf('\\'));
             string fileName = lastSeparatorIndex >= 0 ? path[(lastSeparatorIndex + 1)..] : path;
             return fileName.Like(pattern);

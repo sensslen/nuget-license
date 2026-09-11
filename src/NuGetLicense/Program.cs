@@ -70,7 +70,6 @@ namespace NuGetLicense
 
         public async Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken cancellationToken)
         {
-            // Check if mandatory parameters are provided
             if (InputFile == null && InputJsonFile == null)
             {
                 await Console.Error.WriteLineAsync("Error: Please provide an input file using --input or --json-input");

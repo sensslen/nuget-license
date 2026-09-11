@@ -80,7 +80,6 @@ namespace FileLicenseMatcher.SPDX
             int end = 0;
             while (ruleMatches.MoveNext())
             {
-                // copy everything up to the start of the find
                 string upToTheFind = licenseTemplate.Substring(end, ruleMatches.Current.Index - end);
                 if (!string.IsNullOrWhiteSpace(upToTheFind))
                 {
@@ -123,7 +122,6 @@ namespace FileLicenseMatcher.SPDX
             {
                 throw new LicenseTemplateRuleException("Missing EndOptional rule and end of text");
             }
-            // copy the rest of the template to the end
             ParseInstruction result = instructionStack.Pop();
             string restOfTemplate = licenseTemplate.Substring(end);
             if (!string.IsNullOrWhiteSpace(restOfTemplate))

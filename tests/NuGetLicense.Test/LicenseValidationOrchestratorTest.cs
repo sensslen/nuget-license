@@ -57,7 +57,6 @@ namespace NuGetLicense.Test
         [Test]
         public async Task ValidateAsync_CallsOptionsParserWithCorrectArguments()
         {
-            // Arrange
             _options.InputFile.Returns("/test/project.csproj");
             _options.AllowedLicenses.Returns("MIT");
             _options.IgnoredPackages.Returns("TestPkg");
@@ -75,10 +74,8 @@ namespace NuGetLicense.Test
 
             _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
-            // Act
             await _orchestrator.ValidateAsync(_options);
 
-            // Assert
             _optionsParser.Received(1).GetInputFiles(_options.InputFile, _options.InputJsonFile);
             _optionsParser.Received(1).GetAllowedLicenses(_options.AllowedLicenses);
             _optionsParser.Received(1).GetIgnoredPackages(_options.IgnoredPackages);
@@ -88,23 +85,19 @@ namespace NuGetLicense.Test
         [Test]
         public async Task ValidateAsync_WithNoProjects_ReturnsZero()
         {
-            // Arrange
             _options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
             _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
-            // Act
             int result = await _orchestrator.ValidateAsync(_options);
 
-            // Assert
             await Assert.That(result).IsEqualTo(0);
         }
 
         [Test]
         public async Task ValidateAsync_WithDestinationFile_WritesToFile()
         {
-            // Arrange
             string destinationFile = "/test/output.txt";
             _fileSystem.AddDirectory("/test");
             _options.InputFile.Returns("/test/project.csproj");
@@ -113,10 +106,8 @@ namespace NuGetLicense.Test
             SetupDefaultMocks();
             _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
-            // Act
             int result = await _orchestrator.ValidateAsync(_options);
 
-            // Assert
             await Assert.That(result).IsEqualTo(0);
             await Assert.That(_fileSystem.File.Exists(destinationFile)).IsTrue();
         }
@@ -124,7 +115,6 @@ namespace NuGetLicense.Test
         [Test]
         public async Task ValidateAsync_WithDestinationFileInNonExistentDirectory_CreatesDirectoryAndWritesToFile()
         {
-            // Arrange
             string destinationFile = "/nonexistent/subdir/output.txt";
             _options.InputFile.Returns("/test/project.csproj");
             _options.DestinationFile.Returns(destinationFile);
@@ -132,10 +122,8 @@ namespace NuGetLicense.Test
             SetupDefaultMocks();
             _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
-            // Act
             int result = await _orchestrator.ValidateAsync(_options);
 
-            // Assert
             await Assert.That(result).IsEqualTo(0);
             await Assert.That(_fileSystem.File.Exists(destinationFile)).IsTrue();
             await Assert.That(_fileSystem.Directory.Exists("/nonexistent/subdir")).IsTrue();
@@ -144,16 +132,13 @@ namespace NuGetLicense.Test
         [Test]
         public async Task ValidateAsync_WithoutDestinationFile_WritesToOutputStream()
         {
-            // Arrange
             _options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
             _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
-            // Act
             int result = await _orchestrator.ValidateAsync(_options);
 
-            // Assert
             await Assert.That(result).IsEqualTo(0);
             await Assert.That(_outputStream.Length).IsGreaterThan(0);
         }
@@ -161,7 +146,6 @@ namespace NuGetLicense.Test
         [Test]
         public async Task ValidateAsync_WithExceptionInOutputFormatter_ReturnsMinusOne()
         {
-            // Arrange
             _options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
@@ -172,10 +156,8 @@ namespace NuGetLicense.Test
                 .Returns(_ => throw new InvalidOperationException("Test exception"));
             _optionsParser.GetOutputFormatter(OutputType.Table, false, false).Returns(throwingFormatter);
 
-            // Act
             int result = await _orchestrator.ValidateAsync(_options);
 
-            // Assert
             await Assert.That(result).IsEqualTo(-1);
             await Assert.That(_errorStream.Length).IsGreaterThan(0);
         }
@@ -183,7 +165,6 @@ namespace NuGetLicense.Test
         [Test]
         public async Task ValidateAsync_WithCancellationToken_CanBeCancelled()
         {
-            // Arrange
             _options.InputFile.Returns("/test/project.csproj");
 
             SetupDefaultMocks();
@@ -202,7 +183,6 @@ namespace NuGetLicense.Test
         [Test]
         public async Task ValidateAsync_UsesAllConfiguredOptions()
         {
-            // Arrange
             _options.InputFile.Returns("/test/project.csproj");
             _options.IncludeTransitive.Returns(true);
             _options.TargetFramework.Returns("net8.0");
@@ -218,10 +198,8 @@ namespace NuGetLicense.Test
             SetupDefaultMocks();
             _solutionPersistence.GetProjectsFromSolutionAsync(Arg.Any<string>()).Returns(Task.FromResult<IEnumerable<string>>([]));
 
-            // Act
             await _orchestrator.ValidateAsync(_options);
 
-            // Assert
             _optionsParser.Received(1).GetInputFiles(_options.InputFile, _options.InputJsonFile);
             _optionsParser.Received(1).GetAllowedLicenses(_options.AllowedLicenses);
             _optionsParser.Received(1).GetIgnoredPackages(_options.IgnoredPackages);

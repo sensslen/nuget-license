@@ -16,9 +16,6 @@ using System.Net.Http;
 
 namespace NuGetLicense
 {
-    /// <summary>
-    /// Parses and transforms command line options into the format required by the license validation orchestrator.
-    /// </summary>
     public class CommandLineOptionsParser(IFileSystem fileSystem, HttpClient httpClient) : ICommandLineOptionsParser
     {
         public string[] GetInputFiles(string? inputFile, string? inputJsonFile)
@@ -151,7 +148,6 @@ namespace NuGetLicense
                 return [];
             }
 
-            // Check if the value is a path to an existing file
             if (fileSystem.File.Exists(value))
             {
                 try
@@ -166,9 +162,8 @@ namespace NuGetLicense
                 }
             }
 
-            // Parse as semicolon-separated inline values
             string[] parts = value.Split([';'], StringSplitOptions.RemoveEmptyEntries);
-            // Trim each part manually for .NET Framework compatibility
+            // net472 has no StringSplitOptions.TrimEntries.
             for (int i = 0; i < parts.Length; i++)
             {
                 parts[i] = parts[i].Trim();

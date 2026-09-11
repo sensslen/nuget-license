@@ -16,19 +16,19 @@
 
 This repository provides two main tools:
 
-| Tool | Description | Supported Project Types |
-|------|-------------|------------------------|
-| **NuGetLicenseCore**<br/>(dotnet tool) | Cross-platform .NET Core global tool, installed via `dotnet tool install`. | .NET Core, .NET Standard, partial .NET Framework<sup>1</sup> |
-| **NuGetLicenseFramework.exe** | Standalone .NET Framework executable. | .NET Core, .NET Standard, .NET Framework, native C++ |
-
-<sup>1</sup> .NET Framework support via the dotnet tool may vary due to MSBuild/environment differences.
+| Tool | Description |
+|------|-------------|
+| **NuGetLicenseCore**<br/>(dotnet tool) | Cross-platform .NET Core global tool, installed via `dotnet tool install`. |
+| **NuGetLicenseFramework.exe** | Standalone .NET Framework executable. |
 
 ## Compatibility Matrix
 
 | Tool | .NET Core | .NET Standard | .NET Framework | Native C++ |
 |------|:---------:|:-------------:|:--------------:|:----------:|
-| **NuGetLicenseCore**<br/>(dotnet tool) | ✔️ | ✔️ | ⚠️<br/>Partial support | ❌ |
+| **NuGetLicenseCore**<br/>(dotnet tool) | ✔️ | ✔️ | ⚠️<br/>Partial support<sup>1</sup> | ❌ |
 | **NuGetLicenseFramework.exe** | ✔️ | ✔️ | ✔️ | ✔️ |
+
+<sup>1</sup> .NET Framework support via the dotnet tool may vary due to MSBuild/environment differences.
 
 ## Installation
 
