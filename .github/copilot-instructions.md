@@ -85,7 +85,7 @@ dotnet format
 - **Line endings**: CRLF for most files, LF for shell scripts
 - **File header**: All C# files must include the license header:
   ```csharp
-  // Licensed to the projects contributors.
+  // Licensed to the project contributors.
   // The license conditions are provided in the LICENSE file located in the project root
   ```
 - **Namespaces**: Use block-scoped namespaces (not file-scoped)

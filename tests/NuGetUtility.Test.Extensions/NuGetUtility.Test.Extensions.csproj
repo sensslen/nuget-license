@@ -17,10 +17,18 @@
     <LangVersion>12.0</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <!-- This project holds test helpers rather than tests, so TUnit's generated test host
+         infrastructure is dead weight, and its module initializer does not compile on net472. -->
+    <EnableTUnitSourceGeneration>false</EnableTUnitSourceGeneration>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="5.0.0-rc.1" />
-    <PackageReference Include="AutoFixture.AutoNSubstitute" Version="5.0.0-rc.1" />
-    <PackageReference Include="NSubstitute" Version="6.2.0" />
+    <PackageReference Include="AutoFixture" />
+    <PackageReference Include="AutoFixture.AutoNSubstitute" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="System.IO.Hashing" />
+    <PackageReference Include="TUnit.Core" />
   </ItemGroup>
 
   <ItemGroup>

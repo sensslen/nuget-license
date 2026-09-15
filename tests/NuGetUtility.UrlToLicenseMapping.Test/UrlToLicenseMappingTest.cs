@@ -2,6 +2,7 @@
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.Collections.Concurrent;
+using NuGetUtility.Test.Extensions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
@@ -56,7 +57,7 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
 
                     if (licenseResult.IsSuccess)
                     {
-                        await Verify(licenseResult.Value).HashParameters().UseStringComparer(CompareLicense);
+                        Snapshot.Verify(licenseResult.Value, comparer: CompareLicense);
                         runSucceeded = true;
                         return;
                     }
@@ -119,11 +120,11 @@ namespace NuGetUtility.Test.UrlToLicenseMapping
             return new() { Value = bodyText };
         }
 
-        private static Task<CompareResult> CompareLicense(string received, string verified, IReadOnlyDictionary<string, object> context)
+        private static bool CompareLicense(string received, string verified)
         {
             string trimmedReceived = string.Join(' ', received.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries));
             string trimmedVerified = string.Join(' ', verified.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries));
-            return Task.FromResult(new CompareResult(!string.IsNullOrWhiteSpace(trimmedVerified) && trimmedReceived.Contains(trimmedVerified)));
+            return !string.IsNullOrWhiteSpace(trimmedVerified) && trimmedReceived.Contains(trimmedVerified);
         }
 
         private sealed class DisposableWebDriver : IDisposable
