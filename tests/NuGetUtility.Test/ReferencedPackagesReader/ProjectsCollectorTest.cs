@@ -6,6 +6,7 @@ using System.IO.Abstractions.TestingHelpers;
 using AutoFixture;
 using NSubstitute;
 using NuGetUtility.ReferencedPackagesReader;
+using NuGetUtility.Test.Extensions;
 using NuGetUtility.Test.Extensions.Helper.ShuffelledEnumerable;
 using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
 
@@ -15,8 +16,6 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
     {
         public ProjectsCollectorTest()
         {
-            _osPlatformSpecificVerifySettings = new();
-            _osPlatformSpecificVerifySettings.UniqueForOSPlatform();
             _fixture = new Fixture();
             _solutionPersistenceWrapper = Substitute.For<ISolutionPersistenceWrapper>();
             _fileSystem = new MockFileSystem();
@@ -27,7 +26,6 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         private readonly IFileSystem _fileSystem;
         private readonly ProjectsCollector _uut;
         private readonly Fixture _fixture;
-        private readonly VerifySettings _osPlatformSpecificVerifySettings;
 
         [Test]
         [Arguments("A.csproj")]
@@ -132,7 +130,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             await Assert.That(result.Select(_fileSystem.Path.IsPathRooted).All(v => v)).IsTrue();
 
-            await Verify(string.Join(",", result.Select(p => GetPathRelativeTo(solutionFolder, p))), _osPlatformSpecificVerifySettings);
+            Snapshot.Verify(string.Join(",", result.Select(p => GetPathRelativeTo(solutionFolder, p))), Snapshot.OperatingSystem);
         }
 
         [Test]
@@ -145,7 +143,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             await Assert.That(result.Select(_fileSystem.Path.IsPathRooted).All(v => v)).IsTrue();
 
-            await Verify(string.Join(",", result.Select(p => GetPathRelativeTo(solutionFolder, p))), _osPlatformSpecificVerifySettings);
+            Snapshot.Verify(string.Join(",", result.Select(p => GetPathRelativeTo(solutionFolder, p))), Snapshot.OperatingSystem);
         }
 
         private void CreateFiles(IEnumerable<string> files)

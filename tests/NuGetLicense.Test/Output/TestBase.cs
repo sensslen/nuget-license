@@ -83,7 +83,7 @@ namespace NuGetLicense.Test.Output
                 .ToList();
             await _uut.Write(stream, result);
 
-            await Verify(stream.AsString()).HashParameters();
+            Snapshot.Verify(stream.AsString());
         }
 
         [Test, MatrixDataSource]
@@ -94,7 +94,7 @@ namespace NuGetLicense.Test.Output
             var validated = _validatedLicenseFaker.GenerateForever().Take(validatedLicenseCount).ToList();
             await _uut.Write(stream, validated);
 
-            await Verify(stream.AsString()).HashParameters();
+            Snapshot.Verify(stream.AsString());
         }
     }
 }

@@ -26,11 +26,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Selenium.WebDriver" />
-    <PackageReference Include="Verify.TUnit" />
-    <PackageReference Include="Verify.ParametersHashing" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\NuGetLicense\NuGetLicense.csproj" />
+    <ProjectReference Include="..\NuGetUtility.Test.Extensions\NuGetUtility.Test.Extensions.csproj" />
   </ItemGroup>
 </Project>

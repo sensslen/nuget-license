@@ -34,8 +34,6 @@
     </PackageReference>
     <PackageReference Include="TestableIO.System.IO.Abstractions.TestingHelpers" />
     <PackageReference Include="TUnit" />
-    <PackageReference Include="Verify.TUnit" />
-    <PackageReference Include="Verify.ParametersHashing" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
