@@ -1,0 +1,10 @@
+<Project>
+
+  <!-- These projects are inputs to the tool's own tests. They declare their package versions
+       inline on purpose, so each fixture stays self contained and independent of the versions
+       the product itself consumes. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+</Project>
