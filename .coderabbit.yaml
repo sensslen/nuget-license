@@ -1,7 +1,7 @@
 reviews:
   # Filter out specific file patterns from the review
   path_filters:
-    # Exclude all Verify snapshot testing files
+    # Exclude all snapshot testing files
     - "!**/*.verified.txt"
   # Provide custom prompt instructions to CodeRabbit
   instructions: |
