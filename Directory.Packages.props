@@ -22,7 +22,7 @@
     <PackageVersion Include="PolySharp" Version="1.16.0" />
     <PackageVersion Include="RichardSzalay.MockHttp" Version="7.1.0" />
     <PackageVersion Include="Selenium.WebDriver" Version="4.49.0" />
-    <PackageVersion Include="Sensslen.SPDX.Licenses.Net" Version="3.28.0" />
+    <PackageVersion Include="Sensslen.SPDX.Licenses.Net" Version="3.29.0" />
     <PackageVersion Include="System.Collections.Immutable" Version="10.0.12" />
     <PackageVersion Include="System.IO.Hashing" Version="10.0.12" />
     <PackageVersion Include="System.Text.Json" Version="10.0.12" />
