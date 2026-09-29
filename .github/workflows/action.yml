@@ -82,6 +82,14 @@ jobs:
       - name: test
         run: dotnet test --project ./tests/NuGetUtility.UrlToLicenseMapping.Test/NuGetUtility.UrlToLicenseMapping.Test.csproj --configuration Release --no-restore
 
+      - name: Upload failed license snapshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: url-to-license-mapping-received
+          path: tests/NuGetUtility.UrlToLicenseMapping.Test/*.received.txt
+          if-no-files-found: ignore
+
   test_windows:
     runs-on: windows-2025-vs2026
     strategy:
