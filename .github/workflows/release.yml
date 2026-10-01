@@ -23,7 +23,7 @@ jobs:
             10.0.x
             11.0.100-rc.1.26425.128
 
-      - uses: nowsprinting/check-version-format-action@af8787bf5058bea78ecc228899471187575e48c3 # v5.0.6
+      - uses: nowsprinting/check-version-format-action@bb367e7a6d58988a1d3eeaf55168fb8013573a1c # v5.0.7
         id: version
         with:
           prefix: 'v'
