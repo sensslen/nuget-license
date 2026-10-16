@@ -29,6 +29,10 @@
     <PackageReference Include="TestableIO.System.IO.Abstractions" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
+    <PackageReference Include="System.Security.Cryptography.Pkcs" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="System.IO.Hashing" />
     <PackageReference Include="System.Collections.Immutable" />
