@@ -32,14 +32,14 @@ jobs:
       - name: build
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release NuGetUtility.slnx
 
-      - name: test
-        uses: josepho0918/vstest-action@678efa7c0bdf7a46f6977b47c50f9c6a184ae00e
-        with:
-          testAssembly: |
-            NuGetUtility.Test.dll
-            NuGetLicense.Test.dll
-          searchFolder: "tests/*/bin/Release/net11.0/"
-          runInParallel: true
+      - name: test (NuGetUtility.Test, net11.0)
+        run: dotnet test --project ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f net11.0 --no-restore --no-build
+      - name: test (NuGetLicense.Test, net11.0)
+        run: dotnet test --project ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration Release -f net11.0 --no-restore --no-build
+      - name: test (NuGetUtility.Test, net10.0)
+        run: dotnet test --project ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f net10.0 --no-restore --no-build
+      - name: test (NuGetLicense.Test, net10.0)
+        run: dotnet test --project ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration Release -f net10.0 --no-restore --no-build
 
       - name: fully qualify artifacts path
         id: artifacts_path
