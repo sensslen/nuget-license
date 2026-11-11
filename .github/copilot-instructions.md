@@ -26,8 +26,8 @@ This repository contains **nuget-license**, a .NET tool for analyzing, printing,
 
 ### Prerequisites
 
-- .NET SDK 10.0.101 or later (with rollForward to support minor versions)
-  - The project also targets net8.0 and net9.0, which require their respective SDKs
+- .NET SDK 11.0.100 or later
+  - The project also targets net10.0, which requires the .NET 10 runtime to run its tests
 - MSBuild (for .NET Framework and C++ projects on Windows)
 
 ### Build Commands
@@ -58,7 +58,7 @@ dotnet test --configuration Release --no-restore
 dotnet test --project ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release
 
 # Run tests for a specific framework
-dotnet test --project ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f net10.0
+dotnet test --project ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f net11.0
 ```
 
 ### Test Organization
@@ -126,7 +126,7 @@ dotnet format
 ## Dependencies
 
 - Avoid adding new NuGet dependencies unless absolutely necessary
-- When adding dependencies, ensure they work with all target frameworks (net8.0, net9.0, net10.0, net472)
+- When adding dependencies, ensure they work with all target frameworks (net11.0, net10.0, net472)
 - Consider cross-platform compatibility when adding dependencies
 
 ## Multi-targeting Considerations
@@ -139,7 +139,7 @@ dotnet format
 
 - `.github/workflows/action.yml`: Main CI workflow that runs tests, code formatting checks, and license validation
 - `.github/workflows/release.yml`: Release workflow for publishing packages
-- The CI validates against multiple frameworks: net8.0, net9.0, net10.0, and net472
+- The CI validates against multiple frameworks: net11.0, net10.0, and net472
 
 ## Additional Notes
 

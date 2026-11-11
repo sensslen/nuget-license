@@ -18,10 +18,8 @@ jobs:
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: | 
-            8.0.x
-            9.0.x
             10.0.x
-            11.0.100-rc.1.26425.128
+            11.0.x
 
       - uses: nowsprinting/check-version-format-action@313abf385e508f201f555bef71d99afe329a80b5 # v5.0.9
         id: version
@@ -34,14 +32,14 @@ jobs:
       - name: build
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release NuGetUtility.slnx
 
-      - name: test
-        uses: josepho0918/vstest-action@678efa7c0bdf7a46f6977b47c50f9c6a184ae00e
-        with:
-          testAssembly: |
-            NuGetUtility.Test.dll
-            NuGetLicense.Test.dll
-          searchFolder: "tests/*/bin/Release/net10.0/"
-          runInParallel: true
+      - name: test (NuGetUtility.Test, net11.0)
+        run: dotnet test --project ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f net11.0 --no-restore --no-build
+      - name: test (NuGetLicense.Test, net11.0)
+        run: dotnet test --project ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration Release -f net11.0 --no-restore --no-build
+      - name: test (NuGetUtility.Test, net10.0)
+        run: dotnet test --project ./tests/NuGetUtility.Test/NuGetUtility.Test.csproj --configuration Release -f net10.0 --no-restore --no-build
+      - name: test (NuGetLicense.Test, net10.0)
+        run: dotnet test --project ./tests/NuGetLicense.Test/NuGetLicense.Test.csproj --configuration Release -f net10.0 --no-restore --no-build
 
       - name: fully qualify artifacts path
         id: artifacts_path
@@ -51,10 +49,6 @@ jobs:
           echo "publish to path: $path"
           echo "path=$path" >> $env:GITHUB_OUTPUT
 
-      - name: Publish the application binaries (.net8)
-        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net8 -f net8.0 -p:Version=${{ steps.version.outputs.full_without_prefix }} -p:ContinuousIntegrationBuild=true
-      - name: Publish the application binaries (.net9)
-        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net9 -f net9.0 -p:Version=${{ steps.version.outputs.full_without_prefix }} -p:ContinuousIntegrationBuild=true
       - name: Publish the application binaries (.net10)
         run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net10 -f net10.0 -p:Version=${{ steps.version.outputs.full_without_prefix }} -p:ContinuousIntegrationBuild=true
       - name: Publish the application binaries (.net11)
