@@ -39,11 +39,11 @@
   <!-- Microsoft.Build must stay aligned with the MSBuild that ships in each target's SDK,
        because Microsoft.Build.Locator loads the installed MSBuild at runtime. -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <PackageVersion Include="Microsoft.Build" Version="18.9.6" />
+    <PackageVersion Include="Microsoft.Build" Version="18.12.2" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net11.0' OR '$(TargetFramework)' == 'net472'">
-    <PackageVersion Include="Microsoft.Build" Version="18.11.0" />
+    <PackageVersion Include="Microsoft.Build" Version="18.12.2" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0' OR '$(TargetFramework)' == 'net11.0'">
