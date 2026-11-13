@@ -18,10 +18,15 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
         {
             try
             {
-                IPackageSearchMetadata result = await metadataResource.GetMetadataAsync(new NuGet.Packaging.Core.PackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString())),
-                                                                                        cacheContext,
-                                                                                        NullLogger.Instance,
-                                                                                        cancellationToken);
+                IPackageSearchMetadata? result = await metadataResource.GetMetadataAsync(new NuGet.Packaging.Core.PackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString())),
+                                                                                         cacheContext,
+                                                                                         NullLogger.Instance,
+                                                                                         cancellationToken);
+                if (result is null)
+                {
+                    return null;
+                }
+
                 return new WrappedPackageSearchMetadata(result);
             }
             catch (Exception)
