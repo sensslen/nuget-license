@@ -9,6 +9,12 @@
   "packageRules": [
     {
       "matchPackageNames": [
+        "SonarAnalyzer.CSharp"
+      ],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": [
         "Microsoft.Build"
       ],
       "description": "Each Microsoft.Build release line ships exactly one .NET lib asset (17.11 net8.0, 17.14 net9.0, 18.9 net10.0, 18.10 net11.0), so a reference under a given TargetFramework condition cannot move off its line.",
