@@ -46,4 +46,8 @@
     <PackageVersion Include="Microsoft.Build" Version="18.11.0" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageVersion Update="System.Text.Json" Version="10.0.15" />
+  </ItemGroup>
+
 </Project>
