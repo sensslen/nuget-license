@@ -36,9 +36,9 @@ namespace NuGetLicense.LicenseValidator
                 {
                     await ValidateLicenseByMetadataAsync(info.PackageInfo, info.Context, result, token);
                 }
-                else if (info.PackageInfo.LicenseUrl is not null)
+                else if (info.PackageInfo.LicenseUrl is { } licenseUrl)
                 {
-                    await ValidateLicenseByUrl(info.PackageInfo, info.Context, result, token);
+                    await ValidateLicenseByUrl(info.PackageInfo, licenseUrl, info.Context, result, token);
                 }
                 else
                 {
@@ -201,16 +201,17 @@ namespace NuGetLicense.LicenseValidator
         };
 
         private async Task ValidateLicenseByUrl(IPackageMetadata info,
+                                                Uri licenseUrl,
                                                 string context,
                                                 ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
                                                 CancellationToken token)
         {
-            if (info.LicenseUrl!.IsAbsoluteUri)
+            if (licenseUrl.IsAbsoluteUri)
             {
-                await DownloadLicenseAsync(info.LicenseUrl, info.Identity, context, token);
+                await DownloadLicenseAsync(licenseUrl, info.Identity, context, token);
             }
 
-            if (licenseMapping.TryGetValue(info.LicenseUrl, out string? licenseId))
+            if (licenseMapping.TryGetValue(licenseUrl, out string? licenseId))
             {
                 SpdxExpression? licenseExpression = ParseSpdxExpression(licenseId);
 
@@ -235,15 +236,15 @@ namespace NuGetLicense.LicenseValidator
                 AddOrUpdateLicense(result,
                                    info,
                                    LicenseInformationOrigin.Url,
-                                   info.LicenseUrl.ToString());
+                                   licenseUrl.ToString());
             }
             else
             {
                 AddOrUpdateLicense(result,
                                    info,
                                    LicenseInformationOrigin.Url,
-                                   new ValidationError($"Cannot determine License type for url {info.LicenseUrl}", context),
-                                   info.LicenseUrl.ToString());
+                                   new ValidationError($"Cannot determine License type for url {licenseUrl}", context),
+                                   licenseUrl.ToString());
             }
         }
 

@@ -141,8 +141,7 @@ public class CompareTemplateOutputHandler : ILicenseTemplateOutputHandler
                         else
                         {
                             ParseInstruction? nextNormal = instruction.getNextNormalTextInstruction();
-                            string? nextNormalText = nextNormal?.TokenizedText?[0];
-                            if (nextNormalText != null)
+                            if (nextNormal?.TokenizedText?[0] is { } nextNormalText)
                             {
                                 compareToken = compareToken + nextNormalText;
                                 string compareWithoutOptional = nextTextToken + nextNormalText;
@@ -150,7 +149,7 @@ public class CompareTemplateOutputHandler : ILicenseTemplateOutputHandler
                                         LicenseTextHelper.tokensEquivalent(compareWithoutOptional, nextMatchToken))
                                 {
                                     instruction.skipNextInstruction();
-                                    nextNormal!.SkipFirstTextToken = true;
+                                    nextNormal.SkipFirstTextToken = true;
                                     return matchTokenCounter;
                                 }
                             }
