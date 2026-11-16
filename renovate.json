@@ -8,8 +8,10 @@
   ],
   "packageRules": [
     {
-      "matchPackageNames": [
-        "SonarAnalyzer.CSharp"
+      "description": "Fixture projects are inputs for the tests, which assert their exact dependency graphs.",
+      "matchFileNames": [
+        "tests/targets/**",
+        "integration/**"
       ],
       "enabled": false
     }
