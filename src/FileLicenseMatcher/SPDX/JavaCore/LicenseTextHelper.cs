@@ -25,7 +25,6 @@ public static class LicenseTextHelper
 
     private const string TOKEN_SPLIT_REGEX = "(^|[^\\s.,?'();:\"/\\[\\]<>]{1,100})((\\s|\\.|,|\\?|'|\"|\\(|\\)|;|:|/|\\[|]|<|>|$){1,100})";
     public static readonly Regex TOKEN_SPLIT_PATTERN = new(TOKEN_SPLIT_REGEX, RegexOptions.Compiled);
-#pragma warning disable IDE1006
     private static readonly ImmutableHashSet<string> PUNCTUATION = [".", ",", "?", "\"", "'", "(", ")", ";", ":", "/", "[", "]", "<", ">"];
     // most of these are comments for common programming languages (C style, Java, Ruby, Python)
     private static readonly ImmutableHashSet<string> SKIPPABLE_TOKENS = ["//", "/*", "*/", "/**", "#", "##", "*", "**", "\"\"\"", "/", "=begin", "=end"];
@@ -43,7 +42,6 @@ public static class LicenseTextHelper
     static readonly Regex COPYRIGHT_OWNERS_PATTERN_LF = new("copyright\\s{0,100}\\n{1,10}\\s{0,100}owners", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     static readonly Regex COPYRIGHT_OWNER_PATTERN_LF = new("copyright\\s{0,100}\\n{1,10}\\s{0,100}owner", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     static readonly Regex COPYRIGHT_SYMBOL_PATTERN = new("\\(c\\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-#pragma warning restore IDE1006
     public static readonly IImmutableDictionary<string, string> NORMALIZE_TOKENS = ImmutableDictionary.CreateRange(
         [
         new KeyValuePair<string,string>("&","and"),

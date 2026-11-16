@@ -84,7 +84,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                     ILockFileTargetLibrary[] referencedLibraries = _lockFileLibraries.Shuffle(rnd)
                         .Take(5)
                         .ToArray();
-                    _referencedPackagesForFramework[targetFrameworksIterator.Current] = referencedLibraries.Select(l => new PackageIdentity(l.Name, l.Version!)).ToArray();
+                    _referencedPackagesForFramework[targetFrameworksIterator.Current] = referencedLibraries.Select(l => new PackageIdentity(l.Name, l.Version)).ToArray();
                     lockFileTarget.Libraries.Returns(referencedLibraries);
                 }
             }
@@ -357,7 +357,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 .ToArray();
             ILockFileLibrary[] expectedResult = _lockFileLibraries.Where(l =>
                     Array.Exists(expectedReferences, e => e.Id.Equals(l.Name)) &&
-                    Array.Exists(expectedReferences, e => e.Version!.Equals(l.Version)))
+                    Array.Exists(expectedReferences, e => e.Version.Equals(l.Version)))
                 .ToArray();
             await Assert.That(result).IsEquivalentTo(expectedResult.Select(l => new PackageIdentity(l.Name, l.Version)));
         }

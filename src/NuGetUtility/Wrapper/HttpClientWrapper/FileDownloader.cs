@@ -46,9 +46,7 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
             throw new DownloadFailedException(url);
         }
 
-#pragma warning disable S1172 // Unused parameter
         private async Task<string?> TryDownload(string fileNameStem, Uri url, CancellationToken token)
-#pragma warning restore S1172 // Unused parameter
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, url);
 
@@ -75,11 +73,11 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
 #else
             await using FileStream file = File.OpenWrite(Path.Combine(downloadDirectory, fileName));
 #endif
-            using Stream downloadStream = await response.Content.ReadAsStreamAsync();
-
 #if NETFRAMEWORK
+            using Stream downloadStream = await response.Content.ReadAsStreamAsync();
             await downloadStream.CopyToAsync(file);
 #else
+            using Stream downloadStream = await response.Content.ReadAsStreamAsync(token);
             await downloadStream.CopyToAsync(file, token);
 #endif
             return fileName;

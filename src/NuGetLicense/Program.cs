@@ -1,16 +1,13 @@
 // Licensed to the project contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.Net.Http;
 using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
 using NuGetUtility;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.SolutionPersistenceWrapper;
-
-#if !NET
-using System.Net.Http;
-#endif
 
 namespace NuGetLicense
 {

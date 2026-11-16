@@ -18,9 +18,7 @@ namespace FileLicenseMatcher.Test.SPDX
         [ClassDataSource<AllSpdxLicensesFastLicenseMatcher>(Shared = SharedType.PerTestSession)]
         public required AllSpdxLicensesFastLicenseMatcher FastlicenseMatcher { get; init; }
 
-#pragma warning disable S101 // Types should be named in PascalCase
-        public static class SPDXLicensesTestSource
-#pragma warning restore S101 // Types should be named in PascalCase
+        public static class SpdxLicensesTestSource
         {
             private const string PREFIX = "FileLicenseMatcher.Test.SPDX.SPDXLicenses.";
             private static readonly int s_prefixLength = PREFIX.Length;
@@ -40,9 +38,7 @@ namespace FileLicenseMatcher.Test.SPDX
             }
         }
 
-#pragma warning disable S101 // Types should be named in PascalCase
-        public static class NonSPDXLicensesTestSource
-#pragma warning restore S101 // Types should be named in PascalCase
+        public static class NonSpdxLicensesTestSource
         {
             private const string PREFIX = "FileLicenseMatcher.Test.SPDX.NonSpdxTestLicenses.";
             public static IEnumerable<Func<string>> GetCases()
@@ -80,14 +76,14 @@ namespace FileLicenseMatcher.Test.SPDX
         }
 
         [Test]
-        [MethodDataSource(typeof(SPDXLicensesTestSource), nameof(SPDXLicensesTestSource.GetCases))]
+        [MethodDataSource(typeof(SpdxLicensesTestSource), nameof(SpdxLicensesTestSource.GetCases))]
         public async Task Fast_License_Matcher_Should_Pick_Correct_License(Case @case)
         {
             _ = await Assert.That(FastlicenseMatcher.Match(@case.Content)).Contains(@case.Identifier);
         }
 
         [Test]
-        [MethodDataSource(typeof(NonSPDXLicensesTestSource), nameof(NonSPDXLicensesTestSource.GetCases))]
+        [MethodDataSource(typeof(NonSpdxLicensesTestSource), nameof(NonSpdxLicensesTestSource.GetCases))]
         public async Task Fast_License_Matcher_Should_Not_Pick_A_License(string licenseText)
         {
             _ = await Assert.That(FastlicenseMatcher.Match(licenseText)).IsEmpty();

@@ -17,11 +17,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
         public ReferencedPackagesReaderIntegrationTest()
         {
-#if NETFRAMEWORK
-            IPackagesConfigReader packagesConfigReader = new WindowsPackagesConfigReader();
-#else
             IPackagesConfigReader packagesConfigReader = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new WindowsPackagesConfigReader() : new FailingPackagesConfigReader();
-#endif
 
             try
             {

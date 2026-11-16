@@ -10,6 +10,7 @@ namespace NuGetLicense.LicenseValidator
     {
 
         [SuppressMessage("Major Code Smell", "S1075:URIs should not be hardcoded", Justification = "License mapping requires hardcoded URIs.")]
+        [SuppressMessage("Security Hotspot", "S5332:Using clear-text protocols is security-sensitive", Justification = "The http URLs are lookup keys matching the licenseUrl values packages declare; nothing is fetched from them here.")]
         public static IImmutableDictionary<Uri, string> Default { get; } = ImmutableDictionary.CreateRange(
             [
                 new KeyValuePair<Uri, string>(new Uri("http://www.apache.org/licenses/LICENSE-2.0.html"), LicenseExpressions.Apache20),

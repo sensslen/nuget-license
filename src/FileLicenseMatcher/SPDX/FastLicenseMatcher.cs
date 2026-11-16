@@ -24,13 +24,11 @@ namespace FileLicenseMatcher.SPDX
 
         private const string START_COMMENT_CHAR_PATTERN = "(//|/\\*|\\*|#|' |REM |<!--|--|;|\\(\\*|\\{-)|\\.\\\\\"";
 
-#pragma warning disable IDE1006
         private static readonly Regex RULE_PATTERN = new(START_RULE + "\\s*(beginOptional|endOptional|var)", RegexOptions.Compiled);
         private static readonly Regex END_RULE_PATTERN = new(END_RULE, RegexOptions.Compiled);
         private static readonly Regex END_COMMENT_PATTERN = new("(\\*/|-->|-}|\\*\\)|\\s\\*)\\s*$", RegexOptions.Compiled);
         private static readonly Regex START_COMMENT_PATTERN = new("^\\s*" + START_COMMENT_CHAR_PATTERN, RegexOptions.Compiled);
         private static readonly Regex BEGIN_OPTIONAL_COMMENT_PATTERN = new("^\\s*<<beginOptional>>\\s*" + START_COMMENT_CHAR_PATTERN, RegexOptions.Compiled);
-#pragma warning restore IDE1006
 
         private readonly IImmutableDictionary<string, ParseInstruction> _templateInstructions;
 

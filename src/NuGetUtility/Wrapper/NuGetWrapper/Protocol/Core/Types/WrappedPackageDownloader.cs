@@ -10,7 +10,11 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             string normalizedPath = NuGet.Common.PathUtility.GetPathWithDirectorySeparator(path);
             using Stream stream = await downloader.CoreReader.GetStreamAsync(normalizedPath, cancellationToken);
             using var reader = new StreamReader(stream);
+#if NETFRAMEWORK
             return await reader.ReadToEndAsync();
+#else
+            return await reader.ReadToEndAsync(cancellationToken);
+#endif
         }
     }
 }
