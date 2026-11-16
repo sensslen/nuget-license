@@ -113,6 +113,50 @@ jobs:
           }
           if ($failed) { exit 1 }
 
+  sonar:
+    # Fork PRs get no OIDC token, so they can't authenticate against SonarCloud.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: windows-2025-vs2026
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            10.0.x
+            11.0.x
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3
+
+      - name: install scanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: authenticate with SonarCloud
+        id: sonar_auth
+        uses: SonarSource/sonarqube-auth-action@a0aa643acde4162396015b4f12536c1b9c4aab82 # v1.1.0
+
+      - name: begin analysis
+        run: dotnet-sonarscanner begin /k:"${{ steps.sonar_auth.outputs.project-key }}" /o:"${{ steps.sonar_auth.outputs.organization }}" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io"
+
+      - name: build
+        run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release NuGetUtility.slnx
+
+      - name: end analysis
+        run: dotnet-sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
+
   check_code_format:
     runs-on: ubuntu-latest
     steps:
