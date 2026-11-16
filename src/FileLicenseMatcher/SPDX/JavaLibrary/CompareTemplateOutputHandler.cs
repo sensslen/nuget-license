@@ -34,7 +34,7 @@ public class CompareTemplateOutputHandler : ILicenseTemplateOutputHandler
 {
     private readonly IReadOnlyList<string> _compareTokens;
     private readonly string _compareText;
-    private readonly IDictionary<int, LineColumn> _tokenToLocation = new Dictionary<int, LineColumn>();
+    private readonly Dictionary<int, LineColumn> _tokenToLocation = new();
     private readonly ParseInstruction _topLevelInstruction = new(null, null);
     public DifferenceDescription Differences { get; } = new();
     private ParseInstruction? _currentOptionalInstruction;
@@ -132,7 +132,7 @@ public class CompareTemplateOutputHandler : ILicenseTemplateOutputHandler
                         //less than a token at the end of a compare
                         //Yes - this is a bit of a hack
                         IReadOnlyList<string> nextOptionalTextTokens = instruction.getNextOptionalTextTokens();
-                        string compareToken = nextTextToken + (nextOptionalTextTokens.Any() ? nextOptionalTextTokens[0] : 0);
+                        string compareToken = nextTextToken + (nextOptionalTextTokens.Count > 0 ? nextOptionalTextTokens[0] : 0);
                         if (LicenseTextHelper.tokensEquivalent(compareToken, nextMatchToken))
                         {
                             instruction.skipNextInstruction();
@@ -141,8 +141,7 @@ public class CompareTemplateOutputHandler : ILicenseTemplateOutputHandler
                         else
                         {
                             ParseInstruction? nextNormal = instruction.getNextNormalTextInstruction();
-                            string? nextNormalText = nextNormal?.TokenizedText?[0];
-                            if (nextNormalText != null)
+                            if (nextNormal?.TokenizedText?[0] is { } nextNormalText)
                             {
                                 compareToken = compareToken + nextNormalText;
                                 string compareWithoutOptional = nextTextToken + nextNormalText;
@@ -150,7 +149,7 @@ public class CompareTemplateOutputHandler : ILicenseTemplateOutputHandler
                                         LicenseTextHelper.tokensEquivalent(compareWithoutOptional, nextMatchToken))
                                 {
                                     instruction.skipNextInstruction();
-                                    nextNormal!.SkipFirstTextToken = true;
+                                    nextNormal.SkipFirstTextToken = true;
                                     return matchTokenCounter;
                                 }
                             }
