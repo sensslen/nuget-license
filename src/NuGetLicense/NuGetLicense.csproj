@@ -2,19 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>net11.0;net10.0;net472</TargetFrameworks>
-    <RepositoryType>git</RepositoryType>
-    <Version>100.100.100</Version>
-    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <Configurations>Debug;Release;TestWindows</Configurations>
-    <Platforms>AnyCPU</Platforms>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="  '$(TargetFramework)' == 'net472' ">
-    <LangVersion>14.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,8 +15,6 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="System.Text.Json" />
-    <PackageReference Include="System.IO.Hashing" />
-    <PackageReference Include="System.Collections.Immutable" />
     <PackageReference Include="PolySharp">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

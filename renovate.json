@@ -9,7 +9,17 @@
   "packageRules": [
     {
       "matchPackageNames": [
-        "SonarAnalyzer.CSharp"
+        "Microsoft.Build"
+      ],
+      "description": "Microsoft.Build.Locator loads the MSBuild of the installed SDK, so the net10.0 reference must stay on 18.9, the line the .NET 10 SDK ships.",
+      "matchCurrentValue": "/^18\\.9\\./",
+      "enabled": false
+    },
+    {
+      "description": "Fixture projects are inputs for the tests, which assert their exact dependency graphs.",
+      "matchFileNames": [
+        "tests/targets/**",
+        "integration/**"
       ],
       "enabled": false
     }
