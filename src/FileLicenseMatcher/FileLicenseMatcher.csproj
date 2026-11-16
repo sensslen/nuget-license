@@ -2,23 +2,20 @@
 
   <PropertyGroup>
     <TargetFrameworks>net11.0;net10.0;net472</TargetFrameworks>
-    <Nullable>enable</Nullable>
-
-    <Configurations>Debug;Release;TestWindows</Configurations>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="  '$(TargetFramework)' == 'net472' ">
-    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PolySharp">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Sensslen.SPDX.Licenses.Net" />
     <PackageReference Include="TestableIO.System.IO.Abstractions" />
     <PackageReference Include="TestableIO.System.IO.Abstractions.Analyzers">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="PolySharp">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -1,0 +1,4 @@
+<Project>
+  <!-- These projects are inputs for the tests. This empty file stops MSBuild from importing
+       tests/Directory.Build.props into them, so they build exactly as written. -->
+</Project>

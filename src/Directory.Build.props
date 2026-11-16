@@ -1,0 +1,21 @@
+<Project>
+
+  <PropertyGroup>
+    <RepositoryType>git</RepositoryType>
+    <Version>100.100.100</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Configurations>Debug;Release;TestWindows</Configurations>
+    <Platforms>AnyCPU</Platforms>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- TargetFramework is only known here for the inner builds of multi-targeting projects.
+       A project with a single TargetFramework sets its LangVersion itself. -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
+    <LangVersion>14.0</LangVersion>
+  </PropertyGroup>
+
+</Project>
