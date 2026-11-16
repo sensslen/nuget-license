@@ -149,10 +149,21 @@ jobs:
         uses: SonarSource/sonarqube-auth-action@a0aa643acde4162396015b4f12536c1b9c4aab82 # v1.1.0
 
       - name: begin analysis
-        run: dotnet-sonarscanner begin /k:"${{ steps.sonar_auth.outputs.project-key }}" /o:"${{ steps.sonar_auth.outputs.organization }}" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io"
+        run: dotnet-sonarscanner begin /k:"${{ steps.sonar_auth.outputs.project-key }}" /o:"${{ steps.sonar_auth.outputs.organization }}" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths="coverage/*.xml"
 
       - name: build
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release NuGetUtility.slnx
+
+      # UrlToLicenseMapping.Test is left out: it fetches live license URLs and needs Chrome.
+      - name: test with coverage
+        shell: pwsh
+        run: |
+          $failed = $false
+          "NuGetUtility.Test", "NuGetLicense.Test", "FileLicenseMatcher.Test" | ForEach-Object {
+            dotnet test --project "tests/$_/$_.csproj" --configuration Release -f net11.0 --no-build --coverage --coverage-output-format xml --results-directory "$PWD/coverage" --coverage-output "$_.xml"
+            if ($LASTEXITCODE -ne 0) { $failed = $true }
+          }
+          if ($failed) { exit 1 }
 
       - name: end analysis
         run: dotnet-sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
