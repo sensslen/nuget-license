@@ -3,16 +3,13 @@
 
 using System.Collections.Immutable;
 using System.IO.Abstractions.TestingHelpers;
+using System.Net.Http;
 using FileLicenseMatcher;
 using NuGetUtility;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using RichardSzalay.MockHttp;
 using LicenseOutput = NuGetLicense.Output;
-
-#if !NET
-using System.Net.Http;
-#endif
 
 namespace NuGetLicense.Test
 {

@@ -16,11 +16,9 @@ internal static class LicenseCompareHelper
 {
     private const string START_COMMENT_CHAR_PATTERN = "(//|/\\*|\\*|#|' |REM |<!--|--|;|\\(\\*|\\{-)|\\.\\\\\"";
 
-#pragma warning disable IDE1006
     private static readonly Regex END_COMMENT_PATTERN = new("(\\*/|-->|-}|\\*\\)|\\s\\*)\\s*$", RegexOptions.Compiled);
     private static readonly Regex START_COMMENT_PATTERN = new("^\\s*" + START_COMMENT_CHAR_PATTERN, RegexOptions.Compiled);
     private static readonly Regex BEGIN_OPTIONAL_COMMENT_PATTERN = new("^\\s*<<beginOptional>>\\s*" + START_COMMENT_CHAR_PATTERN, RegexOptions.Compiled);
-#pragma warning restore IDE1006
 
     #region Additions to optimize matching performance (not available in the original java code)
     private static readonly IImmutableDictionary<string, string> s_cleanedTemplateMap = BuildLicenseMap();

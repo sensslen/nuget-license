@@ -27,9 +27,7 @@ public class LicenseTemplateRule
     public string? Example { get; set; }
     public string? Match { get; set; }
 
-#pragma warning disable IDE1006
     static readonly Regex SPLIT_REGEX = new("[^\\\\];", RegexOptions.Compiled);
-#pragma warning restore IDE1006
     private const string EXAMPLE_KEYWORD = "example";
     private const string NAME_KEYWORD = "name";
     private const string ORIGINAL_KEYWORD = "original";

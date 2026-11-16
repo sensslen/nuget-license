@@ -385,14 +385,6 @@ namespace NuGetUtility.Test.PackageInformationReader
             return CreatePackageMetadata(packageInformation, new LicenseMetadata.Expression(packageInformation.License));
         }
 
-        private static string? GetLicense(LicenseMetadata? licenseMetadata) => licenseMetadata switch
-        {
-            LicenseMetadata.Expression expression => expression.License,
-            LicenseMetadata.Overwrite overwrite => overwrite.License,
-            LicenseMetadata.File file => file.FileLocation,
-            _ => null,
-        };
-
         private static IPackageMetadata CreatePackageMetadata(CustomPackageInformation packageInformation, LicenseMetadata licenseMetadata)
         {
             var identity = new PackageIdentity(packageInformation.Id, packageInformation.Version);
@@ -408,6 +400,14 @@ namespace NuGetUtility.Test.PackageInformationReader
             metadata.LicenseMetadata.Returns(licenseMetadata);
             return metadata;
         }
+
+        private static string? GetLicense(LicenseMetadata? licenseMetadata) => licenseMetadata switch
+        {
+            LicenseMetadata.Expression expression => expression.License,
+            LicenseMetadata.Overwrite overwrite => overwrite.License,
+            LicenseMetadata.File file => file.FileLocation,
+            _ => null,
+        };
 
         private CustomPackageInformation CreatePackageInformationWithOptionalFields(string? id = null, INuGetVersion? version = null)
         {
@@ -456,7 +456,7 @@ namespace NuGetUtility.Test.PackageInformationReader
         {
             string project = _fixture.Create<string>();
             var packageSearchRequest = new ProjectWithReferencedPackages(project, searchedPackages, []);
-            ReferencedPackageWithContext[] result = (await _uut!.GetPackageInfo(packageSearchRequest, CancellationToken.None).Synchronize())
+            ReferencedPackageWithContext[] result = (await _uut.GetPackageInfo(packageSearchRequest, CancellationToken.None).Synchronize())
                 .ToArray();
             return (project, result);
         }
@@ -521,7 +521,7 @@ namespace NuGetUtility.Test.PackageInformationReader
         [Test]
         public async Task GetPackageInfo_Should_IterateThroughRepositoriesToGetAdditionalInformation()
         {
-            IEnumerable<ISourceRepository> shuffledRepositories = _repositories!.Shuffle(14563);
+            IEnumerable<ISourceRepository> shuffledRepositories = _repositories.Shuffle(14563);
             IGrouping<int, (int Index, ISourceRepository Repo)>[] splitRepositories = shuffledRepositories.Select((repo, index) => (Index: index, Repo: repo))
                 .GroupBy(e => e.Index % 2)
                 .ToArray();

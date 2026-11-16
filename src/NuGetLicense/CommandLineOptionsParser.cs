@@ -3,6 +3,7 @@
 
 using System.Collections.Immutable;
 using System.IO.Abstractions;
+using System.Net.Http;
 using System.Text.Json;
 using FileLicenseMatcher;
 using NuGetLicense.LicenseValidator;
@@ -10,9 +11,6 @@ using NuGetLicense.Output;
 using NuGetUtility;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
-#if !NET
-using System.Net.Http;
-#endif
 
 namespace NuGetLicense
 {
