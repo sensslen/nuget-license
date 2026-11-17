@@ -148,8 +148,16 @@ jobs:
         id: sonar_auth
         uses: SonarSource/sonarqube-auth-action@a0aa643acde4162396015b4f12536c1b9c4aab82 # v1.1.0
 
+      # The new code period is "previous version". Without a version every analysis reports
+      # "not provided", so new code would reach back to the first analysis. The latest release
+      # tag makes new code mean everything since the last release.
+      # The SPDX Java* folders are a direct port of the Java SPDX library and are only covered by
+      # integration tests, so they are left out of coverage. The same goes for the Wrapper folder,
+      # which only wraps the NuGet, MSBuild, HTTP and solution persistence APIs.
       - name: begin analysis
-        run: dotnet-sonarscanner begin /k:"${{ steps.sonar_auth.outputs.project-key }}" /o:"${{ steps.sonar_auth.outputs.organization }}" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths="coverage/*.xml"
+        run: |
+          $version = git describe --tags --abbrev=0
+          dotnet-sonarscanner begin /k:"${{ steps.sonar_auth.outputs.project-key }}" /o:"${{ steps.sonar_auth.outputs.organization }}" /v:"$version" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths="coverage/*.xml" /d:sonar.coverage.exclusions="scripts/**,src/FileLicenseMatcher/SPDX/JavaCore/**,src/FileLicenseMatcher/SPDX/JavaLibrary/**,src/NuGetUtility/Wrapper/**"
 
       - name: build
         run: msbuild -t:rebuild -restore -p:RestorePackagesConfig=true -property:Configuration=Release NuGetUtility.slnx

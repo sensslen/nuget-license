@@ -80,6 +80,18 @@ namespace NuGetLicense.Test
                 await Assert.That(result).Count().IsEqualTo(1);
                 await Assert.That(result[0]).IsEqualTo(inputFile);
             }
+
+            [Test]
+            public async Task GetInputFiles_WithMalformedInputJsonFile_ThrowsArgumentException()
+            {
+                string jsonFile = "/test/input.json";
+                _fileSystem.AddFile(jsonFile, new MockFileData("[\"missing_closing_bracket.csproj\""));
+
+                ArgumentException? ex = await Assert.That(() =>
+                    _parser.GetInputFiles(null, jsonFile)).Throws<ArgumentException>();
+                await Assert.That(ex!.Message).StartsWith($"Failed to parse JSON file '{jsonFile}':");
+                await Assert.That(ex.InnerException).IsTypeOf<System.Text.Json.JsonException>();
+            }
         }
 
         public class GetAllowedLicensesTests : CommandLineOptionsParserTest
@@ -529,6 +541,14 @@ namespace NuGetLicense.Test
                 LicenseOutput.IOutputFormatter result = _parser.GetOutputFormatter(OutputType.JsonPretty, false, false);
 
                 await Assert.That(result).IsTypeOf<LicenseOutput.Json.JsonOutputFormatter>();
+            }
+
+            [Test]
+            public async Task GetOutputFormatter_WithCsv_ReturnsCsvFormatter()
+            {
+                LicenseOutput.IOutputFormatter result = _parser.GetOutputFormatter(OutputType.Csv, false, false);
+
+                await Assert.That(result).IsTypeOf<LicenseOutput.Csv.CsvOutputFormatter>();
             }
 
             [Test]
