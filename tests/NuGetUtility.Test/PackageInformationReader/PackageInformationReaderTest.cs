@@ -366,6 +366,48 @@ namespace NuGetUtility.Test.PackageInformationReader
             await Assert.That(result.PackageInfo.LicenseMetadata).IsTypeOf<LicenseMetadata.Overwrite>();
         }
 
+        [Test]
+        public async Task GetPackageInfo_Should_ReturnDummyPackageMetadata_If_RepositoryFileLicenseHasNoArchiveReader()
+        {
+            CustomPackageInformation packageMetadata = _fixture.Create<CustomPackageInformation>();
+            var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
+            IPackageMetadataResource metadataResource = SetupFileLicenseMetadataInFirstRepository(packageMetadata, identity);
+            _repositories[0].GetPackageArchiveReaderAsync(default).Returns(_ => Task.FromResult<IFindPackageByIdResource?>(null));
+
+            ReferencedPackageWithContext result = await GetSinglePackageInfo(_uut, identity);
+
+            await Assert.That(result.PackageInfo.Identity).IsEqualTo(identity);
+            await Assert.That(result.PackageInfo.LicenseMetadata).IsNull();
+            await metadataResource.Received(1).TryGetMetadataAsync(identity, Arg.Any<CancellationToken>());
+        }
+
+        [Test]
+        public async Task GetPackageInfo_Should_ReturnDummyPackageMetadata_If_RepositoryFileLicenseHasNoPackageDownloader()
+        {
+            CustomPackageInformation packageMetadata = _fixture.Create<CustomPackageInformation>();
+            var identity = new PackageIdentity(packageMetadata.Id, packageMetadata.Version);
+            IPackageMetadataResource metadataResource = SetupFileLicenseMetadataInFirstRepository(packageMetadata, identity);
+            IFindPackageByIdResource archiveReader = Substitute.For<IFindPackageByIdResource>();
+            _repositories[0].GetPackageArchiveReaderAsync(default).Returns(_ => Task.FromResult<IFindPackageByIdResource?>(archiveReader));
+            archiveReader.TryGetPackageDownloader(identity, Arg.Any<CancellationToken>())
+                .Returns(_ => Task.FromResult<IPackageDownloader?>(null));
+
+            ReferencedPackageWithContext result = await GetSinglePackageInfo(_uut, identity);
+
+            await Assert.That(result.PackageInfo.Identity).IsEqualTo(identity);
+            await Assert.That(result.PackageInfo.LicenseMetadata).IsNull();
+            await metadataResource.Received(1).TryGetMetadataAsync(identity, Arg.Any<CancellationToken>());
+        }
+
+        private IPackageMetadataResource SetupFileLicenseMetadataInFirstRepository(CustomPackageInformation packageMetadata, PackageIdentity identity)
+        {
+            IPackageMetadataResource metadataResource = Substitute.For<IPackageMetadataResource>();
+            _repositories[0].GetPackageMetadataResourceAsync(default).Returns(_ => Task.FromResult<IPackageMetadataResource?>(metadataResource));
+            metadataResource.TryGetMetadataAsync(identity, Arg.Any<CancellationToken>())
+                .Returns(_ => Task.FromResult<IPackageMetadata?>(CreatePackageMetadata(packageMetadata, new LicenseMetadata.File("LICENSE.txt"))));
+            return metadataResource;
+        }
+
         private async Task<ReferencedPackageWithContext> GetSinglePackageInfo(
             NuGetUtility.PackageInformationReader.PackageInformationReader packageInformationReader,
             PackageIdentity packageIdentity)

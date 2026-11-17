@@ -262,6 +262,17 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
+        [Arguments("")]
+        [Arguments("   ")]
+        public async Task GetInstalledPackages_Should_ReturnPackagesOfAllTargetFrameworks_If_RequestedTargetFrameworkIsBlank(string requestedTargetFramework)
+        {
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, requestedTargetFramework).ReferencedPackages;
+
+            await Assert.That(result).IsEquivalentTo(_referencedPackagesForFramework.SelectMany(kvp => kvp.Value).Distinct());
+            _nuGetFrameworkUtility.DidNotReceive().Normalize(requestedTargetFramework);
+        }
+
+        [Test]
         public async Task GetInstalledPackages_Should_OnlyReturnPackages_For_TargetFramework()
         {
             const string requestedTargetFramework = "net8.0";

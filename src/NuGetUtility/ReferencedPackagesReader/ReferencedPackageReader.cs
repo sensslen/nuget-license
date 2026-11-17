@@ -239,11 +239,6 @@ namespace NuGetUtility.ReferencedPackagesReader
                                                                                      ISet<string> publishFalseDirectDependencies)
         {
             HashSet<string> excludedPackages = new(publishFalseDirectDependencies, StringComparer.OrdinalIgnoreCase);
-            if (packageDependencies.Count == 0)
-            {
-                return excludedPackages;
-            }
-
             HashSet<string> publishableRoots = new(
                 directDependencies.Where(package => !publishFalseDirectDependencies.Contains(package)),
                 StringComparer.OrdinalIgnoreCase);

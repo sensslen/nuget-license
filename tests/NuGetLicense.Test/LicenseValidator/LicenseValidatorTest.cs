@@ -1299,6 +1299,144 @@ namespace NuGetLicense.Test.LicenseValidator
                             LicenseInformationOrigin.Ignored)
                     ]).Using(new LicenseValidationResultValueEqualityComparer());
         }
+
+        [Test]
+        public async Task ValidatingLicenses_Should_MergeValidationErrors_If_PackageIsReferencedInMultipleContexts()
+        {
+            string packageId = _fixture.Create<string>();
+            INuGetVersion packageVersion = _fixture.Create<INuGetVersion>();
+            string otherContext = _fixture.Create<string>();
+            IPackageMetadata package = SetupPackage(packageId, packageVersion);
+            IAsyncEnumerable<ReferencedPackageWithContext> input = new[]
+            {
+                new ReferencedPackageWithContext(_context, package),
+                new ReferencedPackageWithContext(otherContext, package)
+            }.AsAsyncEnumerable();
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(input, _token.Token);
+
+            await Assert.That(result).IsEquivalentTo(
+                    [
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            LicenseInformationOrigin.Unknown,
+                            [
+                                new ValidationError("No license information found", _context),
+                                new ValidationError("No license information found", otherContext)
+                            ])
+                    ]).Using(new LicenseValidationResultValueEqualityComparer());
+        }
+
+        [Test]
+        public async Task ValidatingLicenses_Should_TakeLicenseFromLaterResult_If_EarlierResultHasNoLicense()
+        {
+            string packageId = _fixture.Create<string>();
+            INuGetVersion packageVersion = _fixture.Create<INuGetVersion>();
+            string license = _fixture.Create<string>();
+            string otherContext = _fixture.Create<string>();
+            var uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
+                _allowedLicenses.Append(license),
+                _fileDownloader,
+                _licenseMatcher,
+                _ignoredLicenses);
+            IPackageMetadata packageWithoutLicense = SetupPackage(packageId, packageVersion);
+            IPackageMetadata packageWithLicense = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, license);
+            IAsyncEnumerable<ReferencedPackageWithContext> input = new[]
+            {
+                new ReferencedPackageWithContext(_context, packageWithoutLicense),
+                new ReferencedPackageWithContext(otherContext, packageWithLicense)
+            }.AsAsyncEnumerable();
+
+            IEnumerable<LicenseValidationResult> result = await uut.Validate(input, _token.Token);
+
+            await Assert.That(result).IsEquivalentTo(
+                    [
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            license,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            LicenseInformationOrigin.Expression,
+                            [
+                                new ValidationError("No license information found", _context)
+                            ])
+                    ]).Using(new LicenseValidationResultValueEqualityComparer());
+        }
+
+        [Test]
+        public async Task ValidatingLicensesWithFileLicenseMetadata_Should_GiveCorrectResult_When_Matched_And_NotAllowed()
+        {
+            string packageId = _fixture.Create<string>();
+            INuGetVersion packageVersion = _fixture.Create<INuGetVersion>();
+            string licenseText = _fixture.Create<string>();
+            string fileLocation = _fixture.Create<string>();
+            string licenseId = _fixture.Create<string>();
+            IPackageMetadata package = SetupPackageWithFileLicenseInformation(packageId, packageVersion, licenseText, fileLocation);
+            _licenseMatcher.Match(licenseText).Returns(licenseId);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+
+            await Assert.That(result).IsEquivalentTo(
+                    [
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            licenseId,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            LicenseInformationOrigin.File,
+                            [
+                                new ValidationError($"License \"{licenseId}\" not found in list of supported licenses", _context)
+                            ])
+                    ]).Using(new LicenseValidationResultValueEqualityComparer());
+        }
+
+        [Test]
+        public async Task ValidatingLicensesWithExpressionLicenseInformation_Should_StillGiveResult_If_DownloadIsCancelled()
+        {
+            string packageId = _fixture.Create<string>();
+            INuGetVersion packageVersion = _fixture.Create<INuGetVersion>();
+            string license = _fixture.Create<string>();
+            var uut = new NuGetLicense.LicenseValidator.LicenseValidator(_licenseMapping,
+                _allowedLicenses.Append(license),
+                _fileDownloader,
+                _licenseMatcher,
+                _ignoredLicenses);
+            IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, license);
+            _fileDownloader.When(m => m.DownloadFile(Arg.Any<Uri>(), Arg.Any<string>(), Arg.Any<CancellationToken>()))
+                .Do(_ => throw new OperationCanceledException());
+
+            IEnumerable<LicenseValidationResult> result = await uut.Validate(CreateInput(package, _context), _token.Token);
+
+            await Assert.That(result).IsEquivalentTo(
+                    [
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            license,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            LicenseInformationOrigin.Expression,
+                            [])
+                    ]).Using(new LicenseValidationResultValueEqualityComparer());
+        }
     }
 
 }

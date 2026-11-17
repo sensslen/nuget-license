@@ -18,6 +18,7 @@ namespace NuGetLicense.Test
     {
         private readonly MockFileSystem _fileSystem;
         private readonly ISolutionPersistenceWrapper _solutionPersistence;
+        private readonly IMsBuildAbstraction _msBuild;
         private readonly ICommandLineOptionsParser _optionsParser;
         private readonly MemoryStream _outputStream;
         private readonly MemoryStream _errorStream;
@@ -28,7 +29,7 @@ namespace NuGetLicense.Test
         {
             _fileSystem = new MockFileSystem();
             _solutionPersistence = Substitute.For<ISolutionPersistenceWrapper>();
-            IMsBuildAbstraction msBuild = Substitute.For<IMsBuildAbstraction>();
+            _msBuild = Substitute.For<IMsBuildAbstraction>();
             IPackagesConfigReader packagesConfigReader = Substitute.For<IPackagesConfigReader>();
             _optionsParser = Substitute.For<ICommandLineOptionsParser>();
             _outputStream = new MemoryStream();
@@ -40,7 +41,7 @@ namespace NuGetLicense.Test
             _orchestrator = new LicenseValidationOrchestrator(
                 _fileSystem,
                 _solutionPersistence,
-                msBuild,
+                _msBuild,
                 packagesConfigReader,
                 _optionsParser,
                 _outputStream,
@@ -160,6 +161,21 @@ namespace NuGetLicense.Test
 
             await Assert.That(result).IsEqualTo(-1);
             await Assert.That(_errorStream.Length).IsGreaterThan(0);
+        }
+
+        [Test]
+        public async Task ValidateAsync_WithExceptionWhileReadingProject_WritesExceptionToErrorStreamAndReturnsMinusOne()
+        {
+            _options.InputFile.Returns("/test/project.csproj");
+
+            SetupDefaultMocks();
+            _msBuild.GetProject(Arg.Any<string>()).Returns(_ => throw new InvalidOperationException("Project could not be loaded"));
+
+            int result = await _orchestrator.ValidateAsync(_options);
+
+            await Assert.That(result).IsEqualTo(-1);
+            await Assert.That(System.Text.Encoding.UTF8.GetString(_errorStream.ToArray())).Contains("Project could not be loaded");
+            await Assert.That(_outputStream.Length).IsEqualTo(0);
         }
 
         [Test]

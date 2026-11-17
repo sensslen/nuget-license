@@ -69,8 +69,12 @@ namespace NuGetLicense
         {
             if (InputFile == null && InputJsonFile == null)
             {
-                await Console.Error.WriteLineAsync("Error: Please provide an input file using --input or --json-input");
-                await Console.Error.WriteLineAsync();
+                string missingInputError = "Error: Please provide an input file using --input or --json-input" + Environment.NewLine;
+#if NETFRAMEWORK
+                await Console.Error.WriteLineAsync(missingInputError);
+#else
+                await Console.Error.WriteLineAsync(missingInputError.AsMemory(), cancellationToken);
+#endif
                 app.ShowHelp();
                 return 1;
             }
