@@ -146,7 +146,7 @@ jobs:
 
       - name: authenticate with SonarCloud
         id: sonar_auth
-        uses: SonarSource/sonarqube-auth-action@a0aa643acde4162396015b4f12536c1b9c4aab82 # v1.1.0
+        uses: SonarSource/sonarqube-auth-action@b372e2c2930aadfcc4f4399446da1e12772709ad # v1.2
 
       # The new code period is "previous version". Without a version every analysis reports
       # "not provided", so new code would reach back to the first analysis. The latest release
