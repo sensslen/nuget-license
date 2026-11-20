@@ -35,8 +35,8 @@
     <PackageVersion Include="TestableIO.System.IO.Abstractions.TestingHelpers" Version="23.0.1" />
     <PackageVersion Include="TestableIO.System.IO.Abstractions.Wrappers" Version="23.0.1" />
     <PackageVersion Include="Tethys.SPDX.ExpressionParser" Version="2.2.0" />
-    <PackageVersion Include="TUnit" Version="1.86.6" />
-    <PackageVersion Include="TUnit.Core" Version="1.86.6" />
+    <PackageVersion Include="TUnit" Version="1.87.0" />
+    <PackageVersion Include="TUnit.Core" Version="1.87.0" />
   </ItemGroup>
 
   <!-- Microsoft.Build must stay aligned with the MSBuild that ships in each target's SDK,
